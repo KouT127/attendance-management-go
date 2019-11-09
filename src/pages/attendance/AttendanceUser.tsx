@@ -2,6 +2,8 @@ import React, {useEffect, useState} from "react";
 import "./AttendanceUser.sass";
 import {RoundedButton} from "../../components/button/RoundedButton";
 import * as Moment from "moment";
+import {AttendanceUserListItem} from "../../components/list_item/AttendanceUserListItem";
+import {AttendanceUserInformationHeader} from "../../components/header/AttendanceUserInfomationHeader";
 
 function useTimer() {
     let timer: NodeJS.Timeout;
@@ -35,7 +37,7 @@ export const AttendanceUser = () => {
     }, []);
     return (
         <div className='attendance'>
-            <AttendanceUserInformation/>
+            <AttendanceUserInformationHeader/>
             <section className='attendance-section'>
                 <h3 className='attendance-date'>
                     {currentDate}
@@ -48,40 +50,8 @@ export const AttendanceUser = () => {
                     appearance={"black"}/>
             </section>
             <ol className='attendance-list'>
-                <AttendanceUserItem/>
+                <AttendanceUserListItem/>
             </ol>
-        </div>
-    );
-};
-
-const AttendanceUserItem = () => {
-    return (
-        <li className='attendance-list-item'>
-            <div className='attendance-list-item-left'>
-                <h3 className='attendance-list-item-left-name'>name</h3>
-                <p className='attendance-list-item-left-kind'>出勤</p>
-            </div>
-            <p className='attendance-list-item-right'>0:02:28</p>
-        </li>
-    );
-};
-
-const AttendanceUserInformation = () => {
-    return (
-        <div className='attendance-user'>
-            <div className='attendance-user-information'>
-                <figure className='attendance-user-information-icon'>
-                    <img className='attendance-user-information-icon-image' src='http://via.placeholder.com/80x80'/>
-                </figure>
-                <section className='attendance-user-information-body'>
-                    <h3 className='attendance-user-information-body-name'>
-                        name
-                    </h3>
-                    <p className='attendance-user-information-body-identifier'>
-                        ID: <span>1234678</span>
-                    </p>
-                </section>
-            </div>
         </div>
     );
 };
