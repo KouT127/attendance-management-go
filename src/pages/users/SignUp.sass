@@ -1,0 +1,69 @@
+@import "../../base/base"
+
+.container
+  padding: 0
+  @media (min-width: $large)
+    max-width: 700px
+    margin-top: 40px
+
+  &-header
+    background-color: black
+
+    &-title
+      padding: 15px 10px
+      margin: 0
+      color: #fff
+      font-size: 15px
+
+  &-section
+    margin: 24px 0
+
+    &-image
+      display: flex
+      justify-content: center
+
+      &-icon
+        border-radius: 50%
+
+      &-title
+        margin: 8px 0
+        display: block
+
+        &::before
+          content: ' □ '
+
+  &-input
+    &-label
+      display: block
+      font-size: 14px
+      color: #202020
+
+    &-text
+      margin: 10px 10px
+
+      &-area
+        height: 22px
+        width: 100%
+        max-width: 100%
+        position: relative
+        display: inline-block
+        -webkit-box-align: center
+        align-items: center
+        -webkit-box-pack: center
+        justify-content: center
+        padding: 8px 0
+        font-size: 14px
+        line-height: 24px
+        vertical-align: top
+        border: 1px solid transparent
+        background-color: #fff
+        border-color: #8e8e93
+        box-shadow: none
+        -webkit-appearance: none
+        -moz-appearance: none
+        appearance: none
+        color: #202020
+        border-radius: 4px
+
+    &-button-section
+      text-align: center
