@@ -1,0 +1,93 @@
+@import "../../base/base"
+
+.attendance
+  width: 300px
+  margin: 0 auto
+  @media screen and (min-width: $medium)
+    width: 700px
+
+
+  &-section
+    text-align: center
+
+  &-date
+    font-size: 30px
+    @media screen and (min-width: $medium)
+      font-size: 40px
+
+  &-timestamp
+    font-size: 50px
+    @media screen and (min-width: $medium)
+      font-size: 60px
+
+  &-list
+    padding: 0
+    text-decoration: none
+    border-top: solid 1px grey
+
+    &-item
+      display: flex
+      margin-top: 5px
+      justify-content: space-between
+      padding-bottom: 8px
+      border-bottom: solid 1px grey
+
+      &-left
+        display: flex
+        flex-direction: column
+
+        margin-left: 10px
+
+        &-name
+          margin: 0
+          @media screen and (min-width: $large)
+            font-size: 20px
+
+        &-kind
+          padding-top: 8px
+          margin: 0
+          @media screen and (min-width: $large)
+            font-size: 18px
+
+      &-right
+        display: flex
+        flex-direction: column
+        justify-content: center
+        margin-right: 10px
+
+  &-user
+    margin: 10px 0
+    padding-bottom: 10px
+    border-bottom: solid 1px grey
+
+    &-information
+      display: flex
+      flex-direction: row
+      justify-content: start
+      margin-left: 10px
+
+      &-icon
+        &-image
+          height: 60px
+          width: 60px
+          border-radius: 50%
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, .1), 0 2px 4px -1px rgba(0, 0, 0, .06)
+
+
+      &-body
+        display: flex
+        flex-direction: column
+        justify-content: center
+        margin-left: 30px
+
+        &-name
+          margin: 8px 0
+          @media screen and (min-width: $large)
+            font-size: 20px
+
+        &-identifier
+          margin: 0
+          @media screen and (min-width: $large)
+            font-size: 18px
+
+

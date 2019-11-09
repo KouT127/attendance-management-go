@@ -3,8 +3,8 @@ import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 
 import {SignUp} from "./pages/users/SignUp";
 import {DefaultLayout} from "./layouts/DefaultLayout";
-import {TimesUser} from "./pages/times/TimesUser";
-import {TimesScan} from "./pages/times/TimesScan";
+import {AttendanceUser} from "./pages/attendance/AttendanceUser";
+import {AttendanceScan} from "./pages/attendance/AttendanceScan";
 
 
 const App: React.FC = () => {
@@ -23,14 +23,14 @@ const App: React.FC = () => {
 const DefaultRoute = () => {
     return (
         <>
-            <Route path="/times" exact>
+            <Route path="/attendance" exact>
                 <DefaultLayout>
-                    <TimesUser/>
+                    <AttendanceUser/>
                 </DefaultLayout>
             </Route>
-            <Route path="/times/scan" exact>
+            <Route path="/attendance/scan" exact>
                 <DefaultLayout>
-                    <TimesScan/>
+                    <AttendanceScan/>
                 </DefaultLayout>
             </Route>
         </>

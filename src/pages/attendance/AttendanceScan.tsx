@@ -1,12 +1,13 @@
 import React, {useState} from "react";
 import QrReader from 'react-qr-reader'
+import './AttendanceScan.sass'
 
 enum FacingMode {
     User = 'user',
     Environment = 'environment',
 };
 
-export const TimesScan = () => {
+export const AttendanceScan = () => {
     const [facingMode, setFacingMode] = useState<FacingMode>(FacingMode.Environment);
     const {scanData} = useScanner();
     const handleError = (err: string) => {
@@ -17,8 +18,6 @@ export const TimesScan = () => {
             return FacingMode.User
         }
         return FacingMode.Environment
-
-
     };
     const handleClickToggleButton = () => {
         setFacingMode(toggleMode(facingMode));
@@ -26,16 +25,23 @@ export const TimesScan = () => {
     };
     return (
         <div>
-            <QrReader
-                delay={300}
-                facingMode={facingMode}
-                onError={handleError}
-                onScan={scanData}
-                style={{width: '300px'}}
-            />
-            <button onClick={handleClickToggleButton}>
-                切り替え
-            </button>
+            <section className='attendance-scan-area'>
+                <figure className='attendance-scan-area-camera'>
+                    <QrReader
+                        delay={300}
+                        facingMode={facingMode}
+                        onError={handleError}
+                        onScan={scanData}
+                        style={{width: '100%'}}
+                    />
+                </figure>
+                <button onClick={handleClickToggleButton}>
+                    切り替え
+                </button>
+            </section>
+            <section className='attendance-infomation-area'>
+                test
+            </section>
         </div>
     )
 };
