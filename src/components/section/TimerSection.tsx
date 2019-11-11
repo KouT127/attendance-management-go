@@ -32,6 +32,9 @@ export const TimerSection = () => {
     const {currentDate, currentTime, startTimer} = useTimer();
     useEffect(() => {
         startTimer();
+        return () => {
+            console.log('clean up')
+        }
     }, []);
     return (<section className='timer-section'>
             <h3 className='timer-section-date'>
@@ -40,6 +43,7 @@ export const TimerSection = () => {
             <h2 className='timer-section-timestamp'>
                 {currentTime}
             </h2>
+            <textarea className='timer-section-textarea'/>
             <RoundedButton
                 title={"出勤する"}
                 appearance={"black"}/>

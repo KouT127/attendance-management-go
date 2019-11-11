@@ -8,7 +8,7 @@ type Props = {
 export const DefaultLayout = (props: Props) => {
   return (
     <>
-      <Header title='React'/>
+      <Header title='Time'/>
       {props.children}
     </>
   );
