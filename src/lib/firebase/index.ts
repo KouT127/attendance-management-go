@@ -1,5 +1,5 @@
-import { firebaseConfig } from "./lib/config";
+import {firebaseConfig} from './config';
 import * as firebase from "firebase";
 
 export const firebaseApp = firebase.initializeApp(firebaseConfig);
-export const firestoreApp = firebaseApp.firestore();
+export const db = firebaseApp.firestore();
