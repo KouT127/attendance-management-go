@@ -40,6 +40,7 @@ export const TimerSection = () => {
         createdAt: undefined,
         updatedAt: undefined,
     });
+
     const onChangeInputText = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setAttendance({
             ...attendance,
@@ -49,14 +50,9 @@ export const TimerSection = () => {
 
     useEffect(() => {
         startTimer();
-        return () => {
-            console.log('clean up')
-        }
     }, []);
 
-
     const addAttendance = () => {
-        console.log(attendance);
         db.collection('users')
             .doc('a324al-sdflasdf')
             .collection('attendances')
@@ -66,6 +62,7 @@ export const TimerSection = () => {
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
             })
     };
+
     return (<section className='timer-section'>
             <h3 className='timer-section-date'>
                 {currentDate}
