@@ -40,11 +40,20 @@ export const TimerSection = () => {
         createdAt: undefined,
         updatedAt: undefined,
     });
-
-    const handleChangeTextareaText = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
         setAttendance({
             ...attendance,
             [event.target.name]: event.target.value
+        });
+    };
+
+    const handleChangeTextareaText = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const target = event.target;
+        setAttendance({
+            ...attendance,
+            [target.name]: target.value
         });
     };
 
@@ -73,7 +82,7 @@ export const TimerSection = () => {
             <textarea
                 name='content'
                 className='timer-section-textarea'
-                onChange={onChangeInputText}/>
+                onChange={handleChangeTextareaText}/>
             <RoundedButton
                 title={"出勤する"}
                 appearance={"black"}
