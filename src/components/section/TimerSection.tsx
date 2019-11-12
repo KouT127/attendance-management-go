@@ -41,7 +41,7 @@ export const TimerSection = () => {
         updatedAt: undefined,
     });
 
-    const onChangeInputText = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const handleChangeTextareaText = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setAttendance({
             ...attendance,
             [event.target.name]: event.target.value
