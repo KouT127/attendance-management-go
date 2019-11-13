@@ -1,31 +1,30 @@
 @import "../../base/base"
 
-.attendance
-    &-list-item
+.attendance-user-item
       display: flex
       margin-top: 5px
       justify-content: space-between
       padding-bottom: 8px
       border-bottom: solid 1px grey
 
-      &-left
+      &__left
         display: flex
         flex-direction: column
 
         margin-left: 10px
 
-        &-name
-          margin: 0
-          @media screen and (min-width: $large)
-            font-size: 20px
+      &__left-name
+        margin: 0
+        @media screen and (min-width: $large)
+          font-size: 20px
 
-        &-kind
-          padding-top: 8px
-          margin: 0
-          @media screen and (min-width: $large)
-            font-size: 18px
+      &__left-kind
+        padding-top: 8px
+        margin: 0
+        @media screen and (min-width: $large)
+          font-size: 18px
 
-      &-right
+      &__right
         display: flex
         flex-direction: column
         justify-content: center
