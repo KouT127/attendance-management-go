@@ -4,7 +4,7 @@ import * as Moment from "moment";
 import "./TimerSection.sass"
 import {db} from "../../lib/firebase";
 import * as firebase from "firebase";
-import {AttendanceType, IAttendance} from "../../domains/attendance/model";
+import {AttendanceKind, AttendanceKindEnum, IAttendance} from "../../domains/attendance/model";
 
 
 function useTimer() {
@@ -35,7 +35,7 @@ function useTimer() {
 export const TimerSection = () => {
     const {currentDate, currentTime, startTimer} = useTimer();
     const [attendance, setAttendance] = useState<IAttendance>({
-        type: AttendanceType.GO_TO_WORK,
+        type: AttendanceKindEnum.GO_TO_WORK,
         content: '',
         createdAt: undefined,
         updatedAt: undefined,
