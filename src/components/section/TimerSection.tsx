@@ -73,15 +73,15 @@ export const TimerSection = () => {
     };
 
     return (<section className='timer-section'>
-            <h3 className='timer-section-date'>
+            <h3 className='timer-section__date'>
                 {currentDate}
             </h3>
-            <h2 className='timer-section-timestamp'>
+            <h2 className='timer-section__timestamp'>
                 {currentTime}
             </h2>
             <textarea
                 name='content'
-                className='timer-section-textarea'
+                className='timer-section__textarea'
                 onChange={handleChangeTextareaText}/>
             <RoundedButton
                 title={"出勤する"}
