@@ -33,7 +33,7 @@ const Routes = () => {
             <Header title='Time'/>
             <Router>
                 <Switch>
-                    <main>
+                    <main className={'contents'}>
                         <UsersRoute/>
                         <Auth isAuthenticated={isAuthenticated}>
                             <Route path="/attendance" exact component={AttendanceUser}/>
