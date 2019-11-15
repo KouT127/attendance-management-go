@@ -1,9 +1,10 @@
-import React, {FC, useState} from "react";
-// @ts-ignore
+import React, {FC, useEffect, useState} from "react";
 import {RoundedButton} from "../../components/button/RoundedButton";
-import "./SignUp.sass";
+import "./SignIn.sass";
 import "../../base/base.sass";
 import {firebaseApp} from "../../lib/firebase";
+import {useAuthUser} from "../../hooks/auth";
+import useRouter from "use-react-router";
 
 
 const signUp = async (email: string, password: string) => {
@@ -21,8 +22,18 @@ interface IInputInformation {
     password?: string
 }
 
-export const SignUp: FC = () => {
+export const SignIn: FC = () => {
+    const {history} = useRouter();
+    const {user} = useAuthUser();
     const [input, setInput] = useState<IInputInformation>({});
+    useEffect(() => {
+        if (!user) {
+            return;
+        }
+        history.push('/attendance')
+    }, [user]);
+
+
     const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInput({
             ...input,

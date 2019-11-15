@@ -61,7 +61,7 @@ export const userStateReducer = (state: IUserState = initialState, action: Loade
     switch (action.type) {
         case "LOADED_USER": {
             const user = action.payload.userState;
-            return {...state, user};
+            return {...state, ...user};
         }
         default:
             return state;

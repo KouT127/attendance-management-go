@@ -1,8 +1,7 @@
-import React, {Component, Suspense} from "react";
+import React from "react";
 import {BrowserRouter as Router, Redirect, Route, Switch} from "react-router-dom";
 
-import {SignUp} from "./pages/users/SignUp";
-import {DefaultLayout} from "./layouts/DefaultLayout";
+import {SignIn} from "./pages/auth/SignIn";
 import {AttendanceUser} from "./pages/attendance/AttendanceUser";
 import {AttendanceScan} from "./pages/attendance/AttendanceScan";
 import {useDispatch} from "react-redux";
@@ -10,16 +9,11 @@ import {actionCreator} from "./store";
 import {useAuthUser} from "./hooks/auth";
 import {Header} from "./components/header/Header";
 
-;
 
 interface AuthParameters {
     isAuthenticated: boolean;
     children: any
 }
-
-const Auth = (props: AuthParameters) => {
-    return props.isAuthenticated ? props.children : <Redirect to={'/users/new'}/>
-};
 
 const App: React.FC = () => {
     const dispatch = useDispatch();
@@ -27,9 +21,14 @@ const App: React.FC = () => {
     return (<Routes/>)
 };
 
+const Auth = (props: AuthParameters) => {
+    console.log(props.children);
+    return props.isAuthenticated ? props.children : <Redirect to={'/signin'}/>
+};
+
 const Routes = () => {
     const {isAuthenticated} = useAuthUser();
-    // const user = DefaultLayout(AttendanceUser)
+    console.log(isAuthenticated);
     return (
         <>
             <Header title='Time'/>
@@ -38,7 +37,7 @@ const Routes = () => {
                     <Switch>
                         <UsersRoute/>
                         <Auth isAuthenticated={isAuthenticated}>
-                            <Route path="/attendance" component={AttendanceUser}/>
+                            <Route path="/attendance" exact component={AttendanceUser}/>
                             <Route path="/attendance/scan" exact component={AttendanceScan}/>
                         </Auth>
                     </Switch>
@@ -49,10 +48,9 @@ const Routes = () => {
 };
 
 const UsersRoute = () => {
-
     return (
         <>
-            <Route path="/users/new" exact component={SignUp}/>
+            <Route path="/signin" exact component={SignIn}/>
         </>
     );
 };
