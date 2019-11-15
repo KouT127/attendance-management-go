@@ -1,20 +1,19 @@
-import React, {useState} from "react";
+import React, {FC, useState} from "react";
 // @ts-ignore
 import {RoundedButton} from "../../components/button/RoundedButton";
 import "./SignUp.sass";
 import "../../base/base.sass";
-import firebase from "firebase";
+import {firebaseApp} from "../../lib/firebase";
 
 
 const signUp = async (email: string, password: string) => {
     try {
-        const context = await firebase.auth().signInWithEmailAndPassword(email, password);
-        console.log(context)
+        const context = await firebaseApp.auth().signInWithEmailAndPassword(email, password);
+        console.log(context);
         return context.user;
     } catch (e) {
         console.error('auth', e)
     }
-
 };
 
 interface IInputInformation {
@@ -22,7 +21,7 @@ interface IInputInformation {
     password?: string
 }
 
-export const SignUp = () => {
+export const SignUp: FC = () => {
     const [input, setInput] = useState<IInputInformation>({});
     const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInput({
@@ -31,13 +30,13 @@ export const SignUp = () => {
         });
     };
     const handleSubmit = () => {
-        if (input.email == undefined || input.password == undefined) {
+        if (input.email === undefined || input.password === undefined) {
             return;
         }
         signUp(input.email, input.password)
     };
     return (
-        <div>
+        <>
             <div className='container'>
                 <div className='container-header'>
                     <h2 className='container-header-title'>
@@ -69,6 +68,6 @@ export const SignUp = () => {
                         onClick={handleSubmit}/>
                 </div>
             </div>
-        </div>
+        </>
     );
 };

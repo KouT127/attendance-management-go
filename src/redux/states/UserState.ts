@@ -1,12 +1,7 @@
 import {Action, AnyAction, Dispatch} from "redux";
 import {ThunkAction} from "redux-thunk";
 import {actionCreator, AppState} from "../../store";
-import firebase from "firebase";
-
-export type UserPayload = {
-    userState: IUserState
-};
-
+import {firebaseApp} from "../../lib/firebase";
 
 export interface IUserState {
     id: string
@@ -25,32 +20,27 @@ export const initialState: IUserState = {
 //Actionの定義
 //Action-Creatorの定義store
 //Reducerの定義
+export type UserPayload = {
+    userState: IUserState
+};
+
 export interface LoadedUserAction extends Action {
     type: "LOADED_USER";
     payload: UserPayload;
 }
 
-export const loadedUser = (payload: UserPayload): LoadedUserAction => {
+const loadedUser = (payload: UserPayload): LoadedUserAction => {
     return {
         type: "LOADED_USER",
         payload
     };
 };
 
-export const userStateReducer = (state: IUserState = initialState, action: LoadedUserAction) => {
-    switch (action.type) {
-        case "LOADED_USER": {
-            const user = action.payload.userState;
-            return {...state, user};
-        }
-        default:
-            return state;
-    }
-};
-
 //Thunk-Actionの定義
-export const observeAuth = (payload: void): ThunkAction<void, AppState, any, AnyAction> => (dispatch: Dispatch) => {
-    firebase.auth().onAuthStateChanged((user) => {
+const observeAuth = (payload: void): ThunkAction<void, AppState, any, AnyAction> => (dispatch: Dispatch) => {
+    console.log('observe');
+    firebaseApp.auth().onAuthStateChanged((user) => {
+        console.log(user);
         if (!user || !user.uid || !user.email) {
             // implement error
             return;
@@ -63,8 +53,19 @@ export const observeAuth = (payload: void): ThunkAction<void, AppState, any, Any
                 imageUrl: user.photoURL
             }
         };
-        dispatch(userActionCreator.loadedUser(payload))
+        dispatch(actionCreator.userActionCreator.loadedUser(payload))
     });
+};
+
+export const userStateReducer = (state: IUserState = initialState, action: LoadedUserAction) => {
+    switch (action.type) {
+        case "LOADED_USER": {
+            const user = action.payload.userState;
+            return {...state, user};
+        }
+        default:
+            return state;
+    }
 };
 
 //ドメイン毎にまとめる。

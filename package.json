@@ -25,7 +25,8 @@
     "redux-thunk": "2.3.0",
     "sass-loader": "8.0.0",
     "typescript": "3.7.2",
-    "use-react-router": "1.0.7"
+    "use-react-router": "1.0.7",
+    "redux-devtools-extension": "latest"
   },
   "scripts": {
     "dev": "react-scripts start",
