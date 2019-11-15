@@ -28,20 +28,19 @@ const Auth = (props: AuthParameters) => {
 
 const Routes = () => {
     const {isAuthenticated} = useAuthUser();
-    console.log(isAuthenticated);
     return (
         <>
             <Header title='Time'/>
             <Router>
-                <div className='contents'>
-                    <Switch>
+                <Switch>
+                    <main>
                         <UsersRoute/>
                         <Auth isAuthenticated={isAuthenticated}>
                             <Route path="/attendance" exact component={AttendanceUser}/>
                             <Route path="/attendance/scan" exact component={AttendanceScan}/>
                         </Auth>
-                    </Switch>
-                </div>
+                    </main>
+                </Switch>
             </Router>
         </>
     );
