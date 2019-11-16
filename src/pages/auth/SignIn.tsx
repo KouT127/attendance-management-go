@@ -30,7 +30,7 @@ export const SignIn: FC = () => {
         if (!isAuthenticated) {
             return;
         }
-        history.replace('/');
+        history.replace('/home');
     }, [user]);
 
 
