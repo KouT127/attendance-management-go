@@ -26,7 +26,7 @@ export const Splash: FC = () => {
             <PacmanLoader
                 sizeUnit={"px"}
                 size={30}
-                color={'#123abc'}
+                color={'black'}
                 loading={true}
             />
         </div>
