@@ -3,12 +3,12 @@ import {PacmanLoader} from "react-spinners";
 
 import "./InitialLoading.sass"
 import {useApplication} from "../../hooks/application";
-import {useAuthUser} from "../../hooks/auth";
+import {useUserSelector} from "../../hooks/auth";
 import {useHistory} from "react-router";
 
 export const Splash: FC = () => {
     const {initialLoaded} = useApplication();
-    const {isAuthenticated} = useAuthUser();
+    const {isAuthenticated} = useUserSelector();
     const {push} = useHistory();
     useEffect(() => {
         if (!initialLoaded) {

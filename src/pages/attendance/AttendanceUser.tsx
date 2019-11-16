@@ -6,7 +6,7 @@ import {AttendanceKind, IAttendance} from "../../domains/attendance/model";
 import {firebaseApp} from "../../lib/firebase";
 import * as firebase from "firebase";
 import {AttendanceUserListItem} from "../../components/list_item/AttendanceUserListItem";
-import {useAuthUser} from "../../hooks/auth";
+import {useUserSelector} from "../../hooks/auth";
 import {IUserState} from "../../redux/states/UserState";
 
 const useAttendanceDocuments = () => {
@@ -29,7 +29,8 @@ const useAttendanceDocuments = () => {
 };
 
 export const AttendanceUser = () => {
-    const {user} = useAuthUser();
+    console.log('AttendanceUser render');
+    const {user} = useUserSelector();
     const {documents, getAttendance} = useAttendanceDocuments();
     useEffect(() => {
         getAttendance();
@@ -49,6 +50,7 @@ type ListProps = {
 }
 
 const AttendanceUserList = (props: ListProps) => {
+    console.log('AttendanceUserList render');
     return <ol className='attendance-list'>
         {props.attendances.map((doc, index) => {
             const data = doc.data();

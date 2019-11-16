@@ -1,12 +1,10 @@
-import React, {Component, useEffect} from "react";
+import React, {useEffect} from "react";
 import {BrowserRouter as Router, Redirect, Route, Switch} from "react-router-dom";
 
 import {SignIn} from "./pages/auth/SignIn";
 import {AttendanceUser} from "./pages/attendance/AttendanceUser";
 import {AttendanceScan} from "./pages/attendance/AttendanceScan";
-import {useDispatch} from "react-redux";
-import {actionCreator} from "./store";
-import {useAuthUser} from "./hooks/auth";
+import {useAuth, useUserSelector} from "./hooks/auth";
 import {Header} from "./components/header/Header";
 import {useApplication} from "./hooks/application";
 import {PulseLoader} from "react-spinners";
@@ -23,13 +21,13 @@ export type Props = {
 }
 
 const App: React.FC = () => {
-    const dispatch = useDispatch();
-    dispatch(actionCreator.userActionCreator.observeAuth());
+    const {observeAuth} = useAuth();
+    observeAuth();
     return (<Routes/>)
 };
 
 const Auth: React.FC<HeaderProps> = (props) => {
-    const {isAuthenticated} = useAuthUser();
+    const {isAuthenticated} = useUserSelector();
     return isAuthenticated ? props.children : <Redirect to={'/signin'}/>
 };
 
@@ -47,7 +45,7 @@ const ProtectedRoute = (props: Props) => {
 };
 export const Loading = (props: HeaderProps) => {
     const {initialLoaded} = useApplication();
-    const {isAuthenticated} = useAuthUser();
+    const {isAuthenticated} = useUserSelector();
     useEffect(() => {
         if (!initialLoaded) {
             return;

@@ -3,7 +3,7 @@ import {RoundedButton} from "../../components/button/RoundedButton";
 import "./SignIn.sass";
 import "../../base/base.sass";
 import {firebaseApp} from "../../lib/firebase";
-import {useAuthUser} from "../../hooks/auth";
+import {useUserSelector} from "../../hooks/auth";
 import {useHistory} from "react-router";
 
 
@@ -24,7 +24,7 @@ interface IInputInformation {
 
 export const SignIn: FC = () => {
     const history = useHistory();
-    const {user, isAuthenticated} = useAuthUser();
+    const {user, isAuthenticated} = useUserSelector();
     const [input, setInput] = useState<IInputInformation>({});
     useEffect(() => {
         if (!isAuthenticated) {
