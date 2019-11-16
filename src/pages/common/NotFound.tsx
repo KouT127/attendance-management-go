@@ -2,9 +2,9 @@ import React, {useEffect} from "react";
 import useRouter from "use-react-router";
 
 export const NotFound = () => {
-    const {match} = useRouter();
+    const {location, match, history} = useRouter();
     useEffect(() => {
-        console.log(match);
+        console.log(match, location, history);
     }, [match]);
     return (
         <div>

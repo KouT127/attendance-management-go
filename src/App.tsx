@@ -11,6 +11,7 @@ import {Header} from "./components/header/Header";
 import {useApplication} from "./hooks/application";
 import {PulseLoader} from "react-spinners";
 import {Splash} from "./pages/common/Splash";
+import {NotFound} from "./pages/common/NotFound";
 
 
 export type HeaderProps = {
@@ -54,19 +55,19 @@ const Routes = () => {
     return (
         <>
             <Header title='Time'/>
-            <Router>
-                <Switch>
-                    <main className={'contents'}>
+            <main className={'contents'}>
+                <Router>
+                    <Switch>
                         <Loading>
-                            <AuthRoute/>
                             <Auth>
-                                <Route path="/home" component={AttendanceUser}/>
-                                <Route path="/scan" exact component={AttendanceScan}/>
+                                <Route exact path="/home" component={AttendanceUser}/>
+                                <Route exact path="/scan" component={AttendanceScan}/>
                             </Auth>
+                            <AuthRoute/>
                         </Loading>
-                    </main>
-                </Switch>
-            </Router>
+                    </Switch>
+                </Router>
+            </main>
         </>
     );
 };
@@ -74,8 +75,9 @@ const Routes = () => {
 const AuthRoute = () => {
     return (
         <>
-            <Route path="/" exact component={Splash}/>
-            <Route path="/signin" exact component={SignIn}/>
+            <Route exact path="/" component={Splash}/>
+            <Route exact path="/signin" component={SignIn}/>
+            <Route component={NotFound}/>
         </>
     );
 };

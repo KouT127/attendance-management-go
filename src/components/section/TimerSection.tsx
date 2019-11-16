@@ -17,7 +17,7 @@ function useTimer() {
             console.log('unsubscribe timer');
             clearInterval(timer);
         }
-    });
+    }, []);
 
     const setCurrentTime = () => {
         // @ts-ignore
