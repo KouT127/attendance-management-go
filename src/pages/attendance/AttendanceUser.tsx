@@ -1,7 +1,7 @@
 import React, {FC} from "react";
 import "./AttendanceUser.sass";
 import {AttendanceUserListItem} from "../../components/list_item/AttendanceUserListItem";
-import {AttendanceUserInformationHeader} from "../../components/header/AttendanceUserInfomationHeader";
+import {AttendanceUserInformationHeader} from "../../components/header/AttendanceUserInformationHeader";
 import {TimerSection} from "../../components/section/TimerSection";
 import {AttendanceKind, AttendanceKindEnum} from "../../domains/attendance/model";
 

@@ -4,13 +4,20 @@ import * as Moment from "moment";
 import "./TimerSection.sass"
 import {db} from "../../lib/firebase";
 import * as firebase from "firebase";
-import {AttendanceKind, AttendanceKindEnum, IAttendance} from "../../domains/attendance/model";
+import {AttendanceKindEnum, IAttendance} from "../../domains/attendance/model";
 
 
 function useTimer() {
     let timer: NodeJS.Timeout;
     const [currentDate, setDate] = useState("");
     const [currentTime, setTime] = useState("");
+
+    useEffect(() =>{
+        return () => {
+            console.log('unsubscribe timer');
+            clearInterval(timer);
+        }
+    });
 
     const setCurrentTime = () => {
         // @ts-ignore
@@ -40,14 +47,14 @@ export const TimerSection = () => {
         createdAt: undefined,
         updatedAt: undefined,
     });
-    const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
-        setAttendance({
-            ...attendance,
-            [event.target.name]: event.target.value
-        });
-    };
+    // const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     const target = event.target;
+    //     const value = target.type === 'checkbox' ? target.checked : target.value;
+    //     setAttendance({
+    //         ...attendance,
+    //         [event.target.name]: event.target.value
+    //     });
+    // };
 
     const handleChangeTextareaText = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         const target = event.target;

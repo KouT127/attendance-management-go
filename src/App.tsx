@@ -11,7 +11,6 @@ import {Header} from "./components/header/Header";
 import {useApplication} from "./hooks/application";
 import {PulseLoader} from "react-spinners";
 import {Splash} from "./pages/common/Splash";
-import {firebaseApp} from "./lib/firebase";
 
 
 export type HeaderProps = {
@@ -19,7 +18,6 @@ export type HeaderProps = {
 }
 
 const App: React.FC = () => {
-    firebaseApp.auth().signOut()
     const dispatch = useDispatch();
     dispatch(actionCreator.userActionCreator.observeAuth());
     return (<Routes/>)
