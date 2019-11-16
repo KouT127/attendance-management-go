@@ -10,6 +10,8 @@ import {useAuthUser} from "./hooks/auth";
 import {Header} from "./components/header/Header";
 import {useApplication} from "./hooks/application";
 import {PulseLoader} from "react-spinners";
+import {Splash} from "./pages/common/Splash";
+import {firebaseApp} from "./lib/firebase";
 
 
 export type HeaderProps = {
@@ -17,6 +19,7 @@ export type HeaderProps = {
 }
 
 const App: React.FC = () => {
+    firebaseApp.auth().signOut()
     const dispatch = useDispatch();
     dispatch(actionCreator.userActionCreator.observeAuth());
     return (<Routes/>)
@@ -59,7 +62,7 @@ const Routes = () => {
                         <Loading>
                             <AuthRoute/>
                             <Auth>
-                                <Route path="/home" exact component={AttendanceUser}/>
+                                <Route path="/home" component={AttendanceUser}/>
                                 <Route path="/scan" exact component={AttendanceScan}/>
                             </Auth>
                         </Loading>
@@ -73,6 +76,7 @@ const Routes = () => {
 const AuthRoute = () => {
     return (
         <>
+            <Route path="/" exact component={Splash}/>
             <Route path="/signin" exact component={SignIn}/>
         </>
     );
