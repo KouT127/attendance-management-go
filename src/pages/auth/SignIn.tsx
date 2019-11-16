@@ -24,13 +24,13 @@ interface IInputInformation {
 
 export const SignIn: FC = () => {
     const {history} = useRouter();
-    const {user} = useAuthUser();
+    const {user, isAuthenticated} = useAuthUser();
     const [input, setInput] = useState<IInputInformation>({});
     useEffect(() => {
-        if (!user) {
+        if (!isAuthenticated) {
             return;
         }
-        history.push('/attendance')
+        history.replace('/');
     }, [user]);
 
 

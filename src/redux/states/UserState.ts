@@ -3,6 +3,7 @@ import {ThunkAction} from "redux-thunk";
 import {actionCreator, AppState} from "../../store";
 import {firebaseApp} from "../../lib/firebase";
 
+
 export interface IUserState {
     id: string
     name: string | null
@@ -21,6 +22,7 @@ export const initialState: IUserState = {
 //Action-Creatorの定義store
 //Reducerの定義
 export type UserPayload = {
+    initialLoaded: boolean
     userState: IUserState
 };
 
@@ -38,14 +40,14 @@ const loadedUser = (payload: UserPayload): LoadedUserAction => {
 
 //Thunk-Actionの定義
 const observeAuth = (payload: void): ThunkAction<void, AppState, any, AnyAction> => (dispatch: Dispatch) => {
-    console.log('observe');
     firebaseApp.auth().onAuthStateChanged((user) => {
-        console.log(user);
+        console.log('redux');
         if (!user || !user.uid || !user.email) {
-            // implement error
+            dispatch(actionCreator.applicationActionCreator.loadedApplication());
             return;
         }
         const payload: UserPayload = {
+            initialLoaded: true,
             userState: {
                 id: user.uid,
                 name: user.displayName,
@@ -53,7 +55,8 @@ const observeAuth = (payload: void): ThunkAction<void, AppState, any, AnyAction>
                 imageUrl: user.photoURL
             }
         };
-        dispatch(actionCreator.userActionCreator.loadedUser(payload))
+        dispatch(actionCreator.userActionCreator.loadedUser(payload));
+        dispatch(actionCreator.applicationActionCreator.loadedApplication());
     });
 };
 

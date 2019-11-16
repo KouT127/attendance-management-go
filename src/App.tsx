@@ -8,10 +8,11 @@ import {useDispatch} from "react-redux";
 import {actionCreator} from "./store";
 import {useAuthUser} from "./hooks/auth";
 import {Header} from "./components/header/Header";
+import {InitialLoading} from "./pages/common/InitialLoading";
+import {firebaseApp} from "./lib/firebase";
 
 
 interface AuthParameters {
-    isAuthenticated: boolean;
     children: any
 }
 
@@ -22,21 +23,20 @@ const App: React.FC = () => {
 };
 
 const Auth = (props: AuthParameters) => {
-    console.log(props.children);
-    return props.isAuthenticated ? props.children : <Redirect to={'/signin'}/>
+    const {isAuthenticated} = useAuthUser();
+    return isAuthenticated ? props.children : <Redirect to={'/'}/>
 };
 
 const Routes = () => {
-    const {isAuthenticated} = useAuthUser();
     return (
         <>
             <Header title='Time'/>
             <Router>
                 <Switch>
                     <main className={'contents'}>
-                        <UsersRoute/>
-                        <Auth isAuthenticated={isAuthenticated}>
-                            <Route path="/attendance" exact component={AttendanceUser}/>
+                        <AuthRoute/>
+                        <Auth>
+                            <Route path="/home" exact component={AttendanceUser}/>
                             <Route path="/attendance/scan" exact component={AttendanceScan}/>
                         </Auth>
                     </main>
@@ -46,9 +46,10 @@ const Routes = () => {
     );
 };
 
-const UsersRoute = () => {
+const AuthRoute = () => {
     return (
         <>
+            <Route path='/' exact component={InitialLoading}/>
             <Route path="/signin" exact component={SignIn}/>
         </>
     );
