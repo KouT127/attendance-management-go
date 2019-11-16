@@ -5,7 +5,7 @@ import {AttendanceUserInformationHeader} from "../../components/header/Attendanc
 import {TimerSection} from "../../components/section/TimerSection";
 import {AttendanceKind, AttendanceKindEnum} from "../../domains/attendance/model";
 
-export const AttendanceUser: FC = () => {
+export const AttendanceUser = () => {
     return (
         <div className='attendance'>
             <AttendanceUserInformationHeader/>

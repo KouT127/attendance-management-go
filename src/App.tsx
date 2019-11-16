@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {Component, useEffect} from "react";
 import {BrowserRouter as Router, Redirect, Route, Switch} from "react-router-dom";
 
 import {SignIn} from "./pages/auth/SignIn";
@@ -18,7 +18,7 @@ export type HeaderProps = {
     children: any
 }
 export type Props = {
-    component: any
+    component: () => object
     path: string
 }
 
@@ -88,6 +88,5 @@ const Routes = () => {
         </>
     );
 };
-
 
 export default App;
