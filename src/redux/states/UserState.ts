@@ -40,8 +40,8 @@ const loadedUser = (payload: UserPayload): LoadedUserAction => {
 
 //Thunk-Actionの定義
 const observeAuth = (payload: void): ThunkAction<void, AppState, any, AnyAction> => (dispatch: Dispatch) => {
+    console.log('observe');
     firebaseApp.auth().onAuthStateChanged((user) => {
-        console.log('redux');
         if (!user || !user.uid || !user.email) {
             dispatch(actionCreator.applicationActionCreator.loadedApplication());
             return;

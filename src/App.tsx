@@ -17,6 +17,10 @@ import {NotFound} from "./pages/common/NotFound";
 export type HeaderProps = {
     children: any
 }
+export type Props = {
+    component: any
+    path: string
+}
 
 const App: React.FC = () => {
     const dispatch = useDispatch();
@@ -27,6 +31,19 @@ const App: React.FC = () => {
 const Auth: React.FC<HeaderProps> = (props) => {
     const {isAuthenticated} = useAuthUser();
     return isAuthenticated ? props.children : <Redirect to={'/signin'}/>
+};
+
+const ProtectedRoute = (props: Props) => {
+    const component = props.component();
+    return (
+        <Route exact path={props.path} render={() => {
+            return (
+                <Auth>
+                    {component}
+                </Auth>
+            )
+        }}/>
+    );
 };
 export const Loading = (props: HeaderProps) => {
     const {initialLoaded} = useApplication();
@@ -57,27 +74,17 @@ const Routes = () => {
             <Header title='Time'/>
             <main className={'contents'}>
                 <Router>
-                    <Switch>
-                        <Loading>
-                            <Auth>
-                                <Route exact path="/home" component={AttendanceUser}/>
-                                <Route exact path="/scan" component={AttendanceScan}/>
-                            </Auth>
-                            <AuthRoute/>
-                        </Loading>
-                    </Switch>
+                    <Loading>
+                        <Switch>
+                            <Route exact path="/" component={Splash}/>
+                            <Route exact path="/signin" component={SignIn}/>
+                            <ProtectedRoute component={AttendanceUser} path="/home"/>
+                            <ProtectedRoute component={AttendanceScan} path="/scan"/>
+                            <Route path={'*'} component={NotFound}/>
+                        </Switch>
+                    </Loading>
                 </Router>
             </main>
-        </>
-    );
-};
-
-const AuthRoute = () => {
-    return (
-        <>
-            <Route exact path="/" component={Splash}/>
-            <Route exact path="/signin" component={SignIn}/>
-            <Route component={NotFound}/>
         </>
     );
 };

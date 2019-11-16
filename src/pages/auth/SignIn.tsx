@@ -4,7 +4,7 @@ import "./SignIn.sass";
 import "../../base/base.sass";
 import {firebaseApp} from "../../lib/firebase";
 import {useAuthUser} from "../../hooks/auth";
-import useRouter from "use-react-router";
+import {useHistory} from "react-router";
 
 
 const signUp = async (email: string, password: string) => {
@@ -23,7 +23,7 @@ interface IInputInformation {
 }
 
 export const SignIn: FC = () => {
-    const {history} = useRouter();
+    const history = useHistory();
     const {user, isAuthenticated} = useAuthUser();
     const [input, setInput] = useState<IInputInformation>({});
     useEffect(() => {
