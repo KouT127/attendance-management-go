@@ -1,8 +1,9 @@
-import * as firebase from "firebase";
+import firebase from "firebase";
+
 
 interface IDocument {
-    createdAt?: firebase.firestore.FieldValue
-    updatedAt?: firebase.firestore.FieldValue
+    createdAt?: firebase.firestore.Timestamp
+    updatedAt?: firebase.firestore.Timestamp
 }
 
 export enum AttendanceKindEnum {

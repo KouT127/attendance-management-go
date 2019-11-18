@@ -8,18 +8,25 @@ import * as firebase from "firebase";
 import {AttendanceUserListItem} from "../../components/list_item/AttendanceUserListItem";
 import {useUserSelector} from "../../hooks/auth";
 import {IUserState} from "../../redux/states/UserState";
+import moment from "moment";
+import {appendToMemberExpression} from "@babel/types";
 
 const useAttendanceDocuments = () => {
     const [documents, setDocuments] = useState<firebase.firestore.QueryDocumentSnapshot[]>([]);
 
     const getAttendance = useCallback(async () => {
-        const snapshot = await firebaseApp
+        firebaseApp
             .firestore()
             .collection('users')
             .doc('a324al-sdflasdf')
-            .collection('attendances').get();
-        const documents = snapshot.docs;
-        setDocuments(documents)
+            .collection('attendances')
+            .orderBy('createdAt', 'desc')
+            .limit(5)
+            .onSnapshot((snapshot) => {
+                const documents = snapshot.docs;
+                setDocuments(documents)
+            });
+
     }, []);
 
     return {
@@ -60,11 +67,15 @@ const AttendanceUserList = (props: ListProps) => {
                 createdAt: data.createdAt,
                 updatedAt: data.updatedAt,
             };
+            const timestamp = attendance && attendance.createdAt;
+            const unix = timestamp && timestamp.seconds;
+            const formattedTime = unix === null || unix === undefined ?
+                '' : moment.unix(unix).format('YYYY/MM/DD hh:mm:ss');
             return (<AttendanceUserListItem
                 key={'attendance-user-list-item' + index}
                 name={props.user.name || 'No Name'}
                 attendanceKind={new AttendanceKind(attendance.type)}
-                submittedAt={''}
+                submittedAt={formattedTime}
             />)
         })}
     </ol>
