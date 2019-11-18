@@ -5,13 +5,21 @@ import {RoundedButton} from "../button/RoundedButton";
 import * as firebase from "firebase";
 import {TimerSection} from "../section/TimerSection";
 
-export const AttendanceForm = () => {
+type props = {
+    documents: firebase.firestore.QueryDocumentSnapshot[]
+}
+
+export const AttendanceForm = (props: props) => {
     const [attendance, setAttendance] = useState<IAttendance>({
         type: AttendanceKindEnum.GO_TO_WORK,
         content: '',
         createdAt: undefined,
         updatedAt: undefined,
     });
+
+    const latestAttendance = props.documents.length > 0 ? props.documents[0] : undefined;
+    const latestKindType = latestAttendance && latestAttendance.data().type;
+   
     // const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     //     const target = event.target;
     //     const value = target.type === 'checkbox' ? target.checked : target.value;
@@ -48,7 +56,7 @@ export const AttendanceForm = () => {
                 className='timer-section__textarea'
                 onChange={handleChangeTextareaText}/>
             <RoundedButton
-                title={"出勤する"}
+                title={latestKindType === 10 ? '出勤する': '退勤する'}
                 appearance={"black"}
                 onClick={addAttendance}/>
         </section>

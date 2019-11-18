@@ -45,7 +45,9 @@ export const AttendanceUser = () => {
     return (
         <div className='attendance'>
             <AttendanceUserInformationHeader/>
-            <AttendanceForm/>
+            <AttendanceForm
+                documents={documents}
+            />
             <AttendanceUserList user={user} attendances={documents}/>
         </div>
     );
