@@ -9,12 +9,12 @@ import {AttendanceUserListItem} from "../../components/list_item/AttendanceUserL
 import {useUserSelector} from "../../hooks/auth";
 import {IUserState} from "../../redux/states/UserState";
 import moment from "moment";
-import {appendToMemberExpression} from "@babel/types";
+import {AttendanceForm} from "../../components/form/AttendanceForm";
 
-const useAttendanceDocuments = () => {
+export const useAttendanceDocuments = () => {
     const [documents, setDocuments] = useState<firebase.firestore.QueryDocumentSnapshot[]>([]);
 
-    const getAttendance = useCallback(async () => {
+    const observeAttendance = useCallback(async () => {
         firebaseApp
             .firestore()
             .collection('users')
@@ -30,7 +30,7 @@ const useAttendanceDocuments = () => {
     }, []);
 
     return {
-        getAttendance,
+        observeAttendance,
         documents
     }
 };
@@ -38,14 +38,14 @@ const useAttendanceDocuments = () => {
 export const AttendanceUser = () => {
     console.log('AttendanceUser render');
     const {user} = useUserSelector();
-    const {documents, getAttendance} = useAttendanceDocuments();
+    const {documents, observeAttendance} = useAttendanceDocuments();
     useEffect(() => {
-        getAttendance();
+        observeAttendance();
     }, []);
     return (
         <div className='attendance'>
             <AttendanceUserInformationHeader/>
-            <TimerSection/>
+            <AttendanceForm/>
             <AttendanceUserList user={user} attendances={documents}/>
         </div>
     );
