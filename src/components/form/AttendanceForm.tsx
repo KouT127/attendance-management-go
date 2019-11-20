@@ -55,6 +55,7 @@ export const AttendanceFormContainer = (props: Props) => {
         })
     )
 };
+
 type AttendanceFormProps = {
     buttonTitle: string
     onChangeTextArea: (event: React.ChangeEvent<HTMLTextAreaElement>) => void

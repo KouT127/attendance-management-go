@@ -6,7 +6,7 @@ import {useApplication} from "../../hooks/application";
 import {useUserSelector} from "../../hooks/auth";
 import {useHistory} from "react-router";
 
-export const Splash: FC = () => {
+export const Splash = () => {
     const {initialLoaded} = useApplication();
     const {isAuthenticated} = useUserSelector();
     const {push} = useHistory();
