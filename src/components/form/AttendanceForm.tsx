@@ -1,15 +1,16 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {AttendanceKindEnum, IAttendance} from "../../domains/attendance/model";
 import {db} from "../../lib/firebase";
 import {RoundedButton} from "../button/RoundedButton";
 import * as firebase from "firebase";
 import {TimerSection} from "../section/TimerSection";
 
-type props = {
+type Props = {
     documents: firebase.firestore.QueryDocumentSnapshot[]
 }
 
-export const AttendanceForm = (props: props) => {
+export const AttendanceFormContainer = (props: Props) => {
+    const [title, setTitle] = useState('');
     const [attendance, setAttendance] = useState<IAttendance>({
         type: AttendanceKindEnum.GO_TO_WORK,
         content: '',
@@ -17,17 +18,16 @@ export const AttendanceForm = (props: props) => {
         updatedAt: undefined,
     });
 
-    const latestAttendance = props.documents.length > 0 ? props.documents[0] : undefined;
-    const latestKindType = latestAttendance && latestAttendance.data().type;
-   
-    // const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //     const target = event.target;
-    //     const value = target.type === 'checkbox' ? target.checked : target.value;
-    //     setAttendance({
-    //         ...attendance,
-    //         [event.target.name]: event.target.value
-    //     });
-    // };
+    useEffect(() => {
+        const latestAttendance = props.documents.length > 0 ? props.documents[0] : undefined;
+        const latestKindType: AttendanceKindEnum = latestAttendance && latestAttendance.data().type;
+        const kindType = latestKindType === AttendanceKindEnum.GO_TO_WORK ? AttendanceKindEnum.LEAVE_WORK : AttendanceKindEnum.GO_TO_WORK
+        const buttonTitle = kindType === AttendanceKindEnum.GO_TO_WORK ? '出勤する' : '退勤する';
+        setTitle(buttonTitle);
+        setAttendance({
+            type: kindType,
+        })
+    }, [props.documents]);
 
     const handleChangeTextareaText = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         const target = event.target;
@@ -36,7 +36,6 @@ export const AttendanceForm = (props: props) => {
             [target.name]: target.value
         });
     };
-
     const addAttendance = () => {
         db.collection('users')
             .doc('a324al-sdflasdf')
@@ -49,16 +48,42 @@ export const AttendanceForm = (props: props) => {
     };
 
     return (
+        AttendanceForm({
+            buttonTitle: title,
+            onClickButton: addAttendance,
+            onChangeTextArea: handleChangeTextareaText
+        })
+    )
+};
+type AttendanceFormProps = {
+    buttonTitle: string
+    onChangeTextArea: (event: React.ChangeEvent<HTMLTextAreaElement>) => void
+    onClickButton: () => void
+}
+
+export const AttendanceForm = (props: AttendanceFormProps) => {
+
+
+    // const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     const target = event.target;
+    //     const value = target.type === 'checkbox' ? target.checked : target.value;
+    //     setAttendance({
+    //         ...attendance,
+    //         [event.target.name]: event.target.value
+    //     });
+    // };
+
+    return (
         <section className='timer-section'>
             <TimerSection/>
             <textarea
                 name='content'
                 className='timer-section__textarea'
-                onChange={handleChangeTextareaText}/>
+                onChange={props.onChangeTextArea}/>
             <RoundedButton
-                title={latestKindType === 10 ? '出勤する': '退勤する'}
+                title={props.buttonTitle}
                 appearance={"black"}
-                onClick={addAttendance}/>
+                onClick={props.onClickButton}/>
         </section>
     )
 };

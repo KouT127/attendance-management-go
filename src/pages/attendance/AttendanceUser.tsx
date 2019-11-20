@@ -9,7 +9,7 @@ import {AttendanceUserListItem} from "../../components/list_item/AttendanceUserL
 import {useUserSelector} from "../../hooks/auth";
 import {IUserState} from "../../redux/states/UserState";
 import moment from "moment";
-import {AttendanceForm} from "../../components/form/AttendanceForm";
+import {AttendanceForm, AttendanceFormContainer} from "../../components/form/AttendanceForm";
 
 export const useAttendanceDocuments = () => {
     const [documents, setDocuments] = useState<firebase.firestore.QueryDocumentSnapshot[]>([]);
@@ -45,7 +45,7 @@ export const AttendanceUser = () => {
     return (
         <div className='attendance'>
             <AttendanceUserInformationHeader/>
-            <AttendanceForm
+            <AttendanceFormContainer
                 documents={documents}
             />
             <AttendanceUserList user={user} attendances={documents}/>
