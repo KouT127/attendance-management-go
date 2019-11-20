@@ -38,27 +38,6 @@ const loadedUser = (payload: UserPayload): LoadedUserAction => {
     };
 };
 
-//Thunk-Actionの定義
-const observeAuth = (payload: void): ThunkAction<void, AppState, any, AnyAction> => (dispatch: Dispatch) => {
-    console.log('observe');
-    firebaseApp.auth().onAuthStateChanged((user) => {
-        if (!user || !user.uid || !user.email) {
-            dispatch(actionCreator.applicationActionCreator.loadedApplication());
-            return;
-        }
-        const payload: UserPayload = {
-            initialLoaded: true,
-            userState: {
-                id: user.uid,
-                name: user.displayName,
-                email: user.email,
-                imageUrl: user.photoURL
-            }
-        };
-        dispatch(actionCreator.userActionCreator.loadedUser(payload));
-        dispatch(actionCreator.applicationActionCreator.loadedApplication());
-    });
-};
 
 export const userStateReducer = (state: IUserState = initialState, action: LoadedUserAction) => {
     switch (action.type) {
@@ -73,6 +52,5 @@ export const userStateReducer = (state: IUserState = initialState, action: Loade
 
 //ドメイン毎にまとめる。
 export const userActionCreator = {
-    loadedUser,
-    observeAuth
+    loadedUser
 };
