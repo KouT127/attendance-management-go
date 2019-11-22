@@ -1,39 +1,14 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import "./AttendanceUser.sass";
 import {AttendanceUserInformationHeader} from "../../components/header/AttendanceUserInformationHeader";
-import {TimerSection} from "../../components/section/TimerSection";
 import {AttendanceKind, IAttendance} from "../../domains/attendance/model";
-import {firebaseApp} from "../../lib/firebase";
 import * as firebase from "firebase";
 import {AttendanceUserListItem} from "../../components/list_item/AttendanceUserListItem";
 import {useUserSelector} from "../../hooks/auth";
 import {IUserState} from "../../redux/states/UserState";
 import moment from "moment";
-import {AttendanceForm, AttendanceFormContainer} from "../../components/form/AttendanceForm";
-
-export const useAttendanceDocuments = () => {
-    const [documents, setDocuments] = useState<firebase.firestore.QueryDocumentSnapshot[]>([]);
-
-    const observeAttendance = useCallback(async () => {
-        firebaseApp
-            .firestore()
-            .collection('users')
-            .doc('a324al-sdflasdf')
-            .collection('attendances')
-            .orderBy('createdAt', 'desc')
-            .limit(5)
-            .onSnapshot((snapshot) => {
-                const documents = snapshot.docs;
-                setDocuments(documents)
-            });
-
-    }, []);
-
-    return {
-        observeAttendance,
-        documents
-    }
-};
+import {AttendanceFormContainer} from "../../components/form/AttendanceForm";
+import {useAttendanceDocuments} from "../../hooks/firestore";
 
 export const AttendanceUser = () => {
     console.log('AttendanceUser render');

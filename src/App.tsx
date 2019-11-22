@@ -1,5 +1,5 @@
-import React, {useEffect, Suspense, Component} from "react";
-import {BrowserRouter as Router, Redirect, Route, RouteComponentProps, Switch} from "react-router-dom";
+import React, {Component, Suspense, useEffect} from "react";
+import {BrowserRouter as Router, Redirect, Route, Switch} from "react-router-dom";
 
 import {AttendanceScan} from "./pages/attendance/AttendanceScan";
 import {useAuth, useUserSelector} from "./hooks/auth";
@@ -7,12 +7,18 @@ import {Header} from "./components/header/Header";
 import {useApplication} from "./hooks/application";
 import {PulseLoader} from "react-spinners";
 import {NotFound} from "./pages/common/NotFound";
-import {AttendanceUser} from "./pages/attendance/AttendanceUser";
 import {Splash} from "./pages/common/Splash";
 
 const SignIn = React.lazy(() => import('./pages/auth/SignIn')
     .then(importedModule => ({
         default: importedModule.SignIn
+    }))
+);
+
+
+const AttendanceUser = React.lazy(() => import("./pages/attendance/AttendanceUser")
+    .then(importedModule => ({
+        default: importedModule.AttendanceUser
     }))
 );
 

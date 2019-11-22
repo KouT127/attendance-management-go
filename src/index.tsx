@@ -5,7 +5,7 @@ import * as serviceWorker from "./serviceWorker";
 import { Provider } from "react-redux";
 import { store } from "./store";
 import 'normalize.css';
-import './base/base.sass'
+import './styles/base.sass'
 
 
 ReactDOM.render(

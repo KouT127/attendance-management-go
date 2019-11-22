@@ -1,7 +1,7 @@
 import React, {FC, useEffect, useState} from "react";
 import {RoundedButton} from "../../components/button/RoundedButton";
 import "./SignIn.sass";
-import "../../base/base.sass";
+import "../../styles/base.sass";
 import {firebaseApp} from "../../lib/firebase";
 import {useUserSelector} from "../../hooks/auth";
 import {useHistory} from "react-router";
