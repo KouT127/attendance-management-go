@@ -1,7 +1,21 @@
-import React from "react"
+import React, {useCallback, useState} from "react"
 import './EditUser.sass'
 
+type FormProps = {
+    username: string
+}
+
 export const EditUser = () => {
+    const [inputValue, setInputValue] = useState<FormProps>({username: ''});
+    const handleChangeInput = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        setInputValue({
+            ...inputValue,
+            [event.target.name]: value
+        });
+    }, [inputValue]);
+
     return (
         <div>
             <form>
@@ -15,9 +29,14 @@ export const EditUser = () => {
                 </section>
                 <div className='edit-user__form-section'>
                     <label>メールアドレス</label>
-                    <input className='edit-user__text-input' type={'text'}/>
+                    <input className='edit-user__text-input'
+                           type={'text'}
+                           disabled={true}
+                           value={'example@example.com'}/>
                     <label>ユーザー名</label>
-                    <input className='edit-user__text-input' type={'text'}/>
+                    <input className='edit-user__text-input'
+                           type={'text'}
+                           onChange={handleChangeInput}/>
                 </div>
             </form>
         </div>

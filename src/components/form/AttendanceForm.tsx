@@ -64,16 +64,6 @@ type AttendanceFormProps = {
 
 export const AttendanceForm = (props: AttendanceFormProps) => {
 
-
-    // const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //     const target = event.target;
-    //     const value = target.type === 'checkbox' ? target.checked : target.value;
-    //     setAttendance({
-    //         ...attendance,
-    //         [event.target.name]: event.target.value
-    //     });
-    // };
-
     return (
         <section className='timer-section'>
             <TimerSection/>
