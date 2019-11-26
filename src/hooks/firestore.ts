@@ -1,5 +1,6 @@
 import {useCallback, useState} from "react";
 import {firebaseApp} from "../lib/firebase";
+import {useUserSelector} from "./auth";
 
 export const useAttendanceDocuments = () => {
     const [documents, setDocuments] = useState<firebase.firestore.QueryDocumentSnapshot[]>([]);
@@ -21,6 +22,27 @@ export const useAttendanceDocuments = () => {
 
     return {
         observeAttendance,
+        documents
+    }
+};
+
+export const useUserDocuments = () => {
+    const {user} = useUserSelector();
+    const [documents, setDocuments] = useState<firebase.firestore.QueryDocumentSnapshot[]>([]);
+
+    const setUserDocument = useCallback(async (name: string) => {
+        console.log(name)
+        await firebaseApp
+            .firestore()
+            .collection('users')
+            .doc(user.id)
+            .set({
+                name: name
+            })
+    }, []);
+
+    return {
+        setUserDocument,
         documents
     }
 };

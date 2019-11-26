@@ -1,5 +1,6 @@
 import React, {useCallback, useState} from "react"
 import './EditUser.sass'
+import {useUserDocuments} from "../../hooks/firestore";
 
 type FormProps = {
     username: string
@@ -7,6 +8,7 @@ type FormProps = {
 
 export const EditUser = () => {
     const [inputValue, setInputValue] = useState<FormProps>({username: ''});
+    const {setUserDocument} = useUserDocuments();
     const handleChangeInput = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
@@ -14,6 +16,10 @@ export const EditUser = () => {
             ...inputValue,
             [event.target.name]: value
         });
+    }, [inputValue]);
+
+    const handleClick = useCallback( async () => {
+        await setUserDocument(inputValue.username)
     }, [inputValue]);
 
     return (
@@ -36,8 +42,14 @@ export const EditUser = () => {
                     <label>ユーザー名</label>
                     <input className='edit-user__text-input'
                            type={'text'}
+                           name={'username'}
                            onChange={handleChangeInput}/>
                 </div>
+                <input className='edit-user__button'
+                        type={'button'}
+                       name='enter'
+                       value='登録'
+                       onClick={handleClick}/>
             </form>
         </div>
     )
