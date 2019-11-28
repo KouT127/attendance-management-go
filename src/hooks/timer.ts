@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import * as Moment from "moment";
+import Moment from "moment";
 
 export const useTimer = () => {
     let timer: NodeJS.Timeout;
@@ -14,10 +14,10 @@ export const useTimer = () => {
     }, []);
 
     const setCurrentTime = () => {
-        // @ts-ignore
-        let date = Moment().format("YYYY/MM/DD");
-        // @ts-ignore
-        let time = Moment().format("HH:mm:ss");
+        const moment = Moment();
+        let date = moment.format("YYYY/MM/DD");
+
+        let time = moment.format("HH:mm:ss");
         setDate(date);
         setTime(time);
     };
@@ -31,4 +31,4 @@ export const useTimer = () => {
         currentTime,
         startTimer
     };
-}
+};
