@@ -1,7 +1,7 @@
 import React, {useEffect} from "react";
 import "./AttendanceUser.sass";
 import {AttendanceUserInformationHeader} from "../../components/header/AttendanceUserInformationHeader";
-import {AttendanceKind, IAttendance} from "../../domains/attendance/model";
+import {AttendanceKind, IAttendance} from "../../domains/attendance/attendance";
 import * as firebase from "firebase";
 import {AttendanceUserListItem} from "../../components/list_item/AttendanceUserListItem";
 import {useUserSelector} from "../../hooks/auth";
@@ -35,6 +35,7 @@ type ListProps = {
 
 const AttendanceUserList = (props: ListProps) => {
     console.log('AttendanceUserList render');
+    console.log(props.user);
     return <ol className='attendance-list'>
         {props.attendances.map((doc, index) => {
             const data = doc.data();
@@ -48,12 +49,14 @@ const AttendanceUserList = (props: ListProps) => {
             const unix = timestamp && timestamp.seconds;
             const formattedTime = unix === null || unix === undefined ?
                 '' : moment.unix(unix).format('YYYY/MM/DD hh:mm:ss');
-            return (<AttendanceUserListItem
-                key={'attendance-user-list-item' + index}
-                name={props.user.name || 'No Name'}
-                attendanceKind={new AttendanceKind(attendance.type)}
-                submittedAt={formattedTime}
-            />)
+            return (
+                <AttendanceUserListItem
+                    key={'attendance-user-list-item' + index}
+                    name={props.user.name || 'name'}
+                    attendanceKind={new AttendanceKind(attendance.type)}
+                    submittedAt={formattedTime}
+                />
+            )
         })}
     </ol>
 };

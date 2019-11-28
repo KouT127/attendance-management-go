@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from "react";
-import {AttendanceKindEnum, IAttendance} from "../../domains/attendance/model";
+import {AttendanceKindEnum, IAttendance} from "../../domains/attendance/attendance";
 import {db} from "../../lib/firebase";
 import {RoundedButton} from "../button/RoundedButton";
 import * as firebase from "firebase";
 import {TimerSection} from "../section/TimerSection";
+import {TimerSectionContainer} from "../../containers/time/TimerSectionContainer";
 
 type Props = {
     documents: firebase.firestore.QueryDocumentSnapshot[]
@@ -66,7 +67,7 @@ export const AttendanceForm = (props: AttendanceFormProps) => {
 
     return (
         <section className='timer-section'>
-            <TimerSection/>
+            <TimerSectionContainer/>
             <textarea
                 name='content'
                 className='timer-section__textarea'

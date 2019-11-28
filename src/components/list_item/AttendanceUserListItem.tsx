@@ -1,6 +1,6 @@
 import React from "react";
 import "./AttendanceUserListItem.sass"
-import {AttendanceKind} from "../../domains/attendance/model";
+import {AttendanceKind} from "../../domains/attendance/attendance";
 
 interface Props {
     name: string
@@ -9,6 +9,7 @@ interface Props {
 }
 
 export const AttendanceUserListItem = (props: Props) => {
+
     return (
         <li className='attendance-user-item'>
             <div className='attendance-user-item__left'>
