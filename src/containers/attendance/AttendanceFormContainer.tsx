@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useState} from "react";
 import {AttendanceKindEnum, IAttendance} from "../../domains/attendance/attendance";
 import {db} from "../../lib/firebase";
 import * as firebase from "firebase";
-import {AttendanceForm} from "../../components/attendance/AttendanceFormContainer";
+import {AttendanceForm} from "../../components/attendance/AttendanceForm";
 
 type Props = {
     documents: firebase.firestore.QueryDocumentSnapshot[]

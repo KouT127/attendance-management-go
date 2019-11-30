@@ -7,8 +7,8 @@ import {AttendanceUserListItem} from "../../components/attendance/AttendanceUser
 import {useUserSelector} from "../../hooks/auth";
 import {IUserState} from "../../redux/states/UserState";
 import moment from "moment";
-import {AttendanceFormContainer} from "../../components/attendance/AttendanceForm";
 import {useAttendanceDocuments} from "../../hooks/firestore";
+import {AttendanceFormContainer} from "../../containers/attendance/AttendanceFormContainer";
 
 export const AttendanceUser = () => {
     console.log('AttendanceUser render');
