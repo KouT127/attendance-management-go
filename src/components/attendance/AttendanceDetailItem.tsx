@@ -1,5 +1,5 @@
 import React from "react";
-import "./AttendanceUserListItem.sass"
+import "./AttendanceDetailItem.sass"
 import {AttendanceKind} from "../../domains/attendance/attendance";
 
 interface Props {
@@ -8,19 +8,19 @@ interface Props {
     submittedAt: string
 }
 
-export const AttendanceUserListItem = (props: Props) => {
+export const AttendanceDetailItem = (props: Props) => {
 
     return (
-        <li className='attendance-user-item'>
-            <div className='attendance-user-item__left'>
-                <h3 className='attendance-user-item__left-name'>
+        <li className='attendance-detail-item'>
+            <div className='attendance-detail-item__left'>
+                <h3 className='attendance-detail-item__left-name'>
                     {props.name}
                 </h3>
-                <p className='attendance-user-item__left-kind'>
+                <p className='attendance-detail-item__left-kind'>
                     {AttendanceKind.toString(props.attendanceKind.kind)}
                 </p>
             </div>
-            <p className='attendance-user-item__right'>
+            <p className='attendance-detail-item__right'>
                 {props.submittedAt}
             </p>
         </li>
