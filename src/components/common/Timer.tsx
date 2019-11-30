@@ -1,13 +1,13 @@
-import React, {useEffect, useState} from "react";
+import React from "react";
 
-import "./TimerSection.sass"
+import "./Timer.sass"
 
 type Props = {
     formatted_date: string
     formatted_time: string
 }
 
-export const TimerSection: React.FC<Props> = (props: Props) => {
+export const Timer: React.FC<Props> = (props: Props) => {
     return (
         <>
             <p className='timer-section__date'>

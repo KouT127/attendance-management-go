@@ -1,10 +1,9 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {AttendanceKindEnum, IAttendance} from "../../domains/attendance/attendance";
 import {db} from "../../lib/firebase";
-import {RoundedButton} from "../button/RoundedButton";
+import {RoundedButton} from "../common/RoundedButton";
 import * as firebase from "firebase";
-import {TimerSection} from "../section/TimerSection";
-import {TimerSectionContainer} from "../../containers/time/TimerSectionContainer";
+import {AttendanceTimerContainer} from "../../containers/attendance/AttendanceTimerContainer";
 
 type Props = {
     documents: firebase.firestore.QueryDocumentSnapshot[]
@@ -30,14 +29,16 @@ export const AttendanceFormContainer = (props: Props) => {
         })
     }, [props.documents]);
 
-    const handleChangeTextareaText = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const handleChangeTextareaText = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
         const target = event.target;
         setAttendance({
             ...attendance,
             [target.name]: target.value
         });
-    };
-    const addAttendance = () => {
+    }, []);
+
+
+    const handleClickButton = useCallback(() => {
         db.collection('users')
             .doc('a324al-sdflasdf')
             .collection('attendances')
@@ -46,12 +47,12 @@ export const AttendanceFormContainer = (props: Props) => {
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
             })
-    };
+    }, []);
 
     return (
         AttendanceForm({
             buttonTitle: title,
-            onClickButton: addAttendance,
+            onClickButton: handleClickButton,
             onChangeTextArea: handleChangeTextareaText
         })
     )
@@ -67,7 +68,7 @@ export const AttendanceForm = (props: AttendanceFormProps) => {
 
     return (
         <section className='timer-section'>
-            <TimerSectionContainer/>
+            <AttendanceTimerContainer/>
             <textarea
                 name='content'
                 className='timer-section__textarea'

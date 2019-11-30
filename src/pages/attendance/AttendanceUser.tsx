@@ -1,13 +1,13 @@
 import React, {useEffect} from "react";
 import "./AttendanceUser.sass";
-import {AttendanceUserInformationHeader} from "../../components/header/AttendanceUserInformationHeader";
+import {AttendanceUserInformationHeader} from "../../components/attendance/AttendanceUserInformationHeader";
 import {AttendanceKind, IAttendance} from "../../domains/attendance/attendance";
 import * as firebase from "firebase";
-import {AttendanceUserListItem} from "../../components/list_item/AttendanceUserListItem";
+import {AttendanceUserListItem} from "../../components/attendance/AttendanceUserListItem";
 import {useUserSelector} from "../../hooks/auth";
 import {IUserState} from "../../redux/states/UserState";
 import moment from "moment";
-import {AttendanceFormContainer} from "../../components/form/AttendanceForm";
+import {AttendanceFormContainer} from "../../components/attendance/AttendanceForm";
 import {useAttendanceDocuments} from "../../hooks/firestore";
 
 export const AttendanceUser = () => {

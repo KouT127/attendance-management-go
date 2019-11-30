@@ -1,8 +1,8 @@
 import React, {useEffect} from "react";
 import {useTimer} from "../../hooks/timer";
-import {TimerSection} from "../../components/section/TimerSection";
+import {Timer} from "../../components/common/Timer";
 
-export const TimerSectionContainer: React.FC = () => {
+export const AttendanceTimerContainer: React.FC = () => {
     const {currentDate, currentTime, startTimer} = useTimer();
 
     useEffect(() => {
@@ -11,8 +11,8 @@ export const TimerSectionContainer: React.FC = () => {
 
 
     return (
-        <TimerSection formatted_date={currentDate}
-                      formatted_time={currentTime}
+        <Timer formatted_date={currentDate}
+               formatted_time={currentTime}
         />
     )
 };

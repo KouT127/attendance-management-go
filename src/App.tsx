@@ -3,7 +3,7 @@ import {BrowserRouter as Router, Redirect, Route, Switch} from "react-router-dom
 
 import {AttendanceScan} from "./pages/attendance/AttendanceScan";
 import {useAuth, useUserSelector} from "./hooks/auth";
-import {Header} from "./components/header/Header";
+import {Header} from "./components/common/Header";
 import {useApplication} from "./hooks/application";
 import {PulseLoader} from "react-spinners";
 import {NotFound} from "./pages/common/NotFound";

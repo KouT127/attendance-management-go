@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useState} from "react";
-import {RoundedButton} from "../../components/button/RoundedButton";
+import {RoundedButton} from "../../components/common/RoundedButton";
 import "./SignIn.sass";
 import "../../styles/base.sass";
 import {firebaseApp} from "../../lib/firebase";

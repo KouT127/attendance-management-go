@@ -1,5 +1,5 @@
 import React from "react";
-import "../../components/header/AttendanceUserInformationHeader.sass"
+import "./AttendanceUserInformationHeader.sass"
 
 export const AttendanceUserInformationHeader = () => {
     return (
