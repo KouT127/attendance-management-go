@@ -1,9 +1,8 @@
 import React, {useCallback, useEffect, useState} from "react";
 import {AttendanceKindEnum, IAttendance} from "../../domains/attendance/attendance";
 import {db} from "../../lib/firebase";
-import {RoundedButton} from "../common/RoundedButton";
 import * as firebase from "firebase";
-import {AttendanceTimerContainer} from "../../containers/attendance/AttendanceTimerContainer";
+import {AttendanceForm} from "../../components/attendance/AttendanceFormContainer";
 
 type Props = {
     documents: firebase.firestore.QueryDocumentSnapshot[]
@@ -55,28 +54,5 @@ export const AttendanceFormContainer = (props: Props) => {
             onClickButton: handleClickButton,
             onChangeTextArea: handleChangeTextareaText
         })
-    )
-};
-
-type AttendanceFormProps = {
-    buttonTitle: string
-    onChangeTextArea: (event: React.ChangeEvent<HTMLTextAreaElement>) => void
-    onClickButton: () => void
-}
-
-export const AttendanceForm = (props: AttendanceFormProps) => {
-
-    return (
-        <section className='timer-section'>
-            <AttendanceTimerContainer/>
-            <textarea
-                name='content'
-                className='timer-section__textarea'
-                onChange={props.onChangeTextArea}/>
-            <RoundedButton
-                title={props.buttonTitle}
-                appearance={"black"}
-                onClick={props.onClickButton}/>
-        </section>
     )
 };
