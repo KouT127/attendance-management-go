@@ -15,4 +15,12 @@ export class User extends Document {
     static initializeUser(): User {
         return new User('', '', '', true)
     }
+
+    toJson(){
+        return {
+            user_name: this.username,
+            email: this.email,
+            imageUrl: this.imageUrl,
+        }
+    }
 }

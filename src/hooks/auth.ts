@@ -10,15 +10,17 @@ const userSelector = (state: AppState) => state.user;
 export const useAuth = () => {
     const dispatch = useDispatch();
 
-    const getUserDocument = async (user_id: string): Promise<User> => {
-        const documentSnapshot = await firebaseApp
+    const getOrCreateUserDocument = async (user_id: string): Promise<User> => {
+        const docReference = firebaseApp
             .firestore()
             .collection('users')
-            .doc(user_id)
-            .get();
+            .doc(user_id);
+        const documentSnapshot = await docReference.get();
         const data = documentSnapshot.data();
         if (!data) {
-            return User.initializeUser();
+            const user = User.initializeUser();
+            await docReference.set(user.toJson());
+            return user
         }
         return new User(data.username, data.email, data.imageUrl, false);
     };
@@ -29,7 +31,7 @@ export const useAuth = () => {
                 dispatch(actionCreator.applicationActionCreator.loadedApplication());
                 return;
             }
-            const userDocument = await getUserDocument(user.uid);
+            const userDocument = await getOrCreateUserDocument(user.uid);
             const payload: UserPayload = {
                 initialLoaded: true,
                 userState: {

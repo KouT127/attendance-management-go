@@ -31,13 +31,12 @@ export const useUserDocuments = () => {
     const [documents, setDocuments] = useState<firebase.firestore.QueryDocumentSnapshot[]>([]);
 
     const setUserDocument = useCallback(async (name: string) => {
-        console.log(name)
         await firebaseApp
             .firestore()
             .collection('users')
             .doc(user.id)
-            .set({
-                name: name
+            .update({
+                username: name
             })
     }, []);
 
