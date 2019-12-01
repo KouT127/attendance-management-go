@@ -38,7 +38,10 @@ const App: React.FC = () => {
 };
 
 const Auth: React.FC<HeaderProps> = (props) => {
-    const {isAuthenticated} = useUserSelector();
+    const {isAuthenticated, shouldEdit} = useUserSelector();
+    if (shouldEdit) {
+        return <Redirect to={'/users/new'}/>;
+    }
     return isAuthenticated ? props.children : <Redirect to={'/signin'}/>
 };
 

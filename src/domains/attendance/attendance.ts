@@ -1,10 +1,4 @@
-import firebase from "firebase";
-
-
-interface IDocument {
-    createdAt?: firebase.firestore.Timestamp
-    updatedAt?: firebase.firestore.Timestamp
-}
+import {Document} from "../common/document";
 
 export enum AttendanceKindEnum {
     GO_TO_WORK = 10,
@@ -31,7 +25,7 @@ export class AttendanceKind {
 }
 
 
-export interface IAttendance extends IDocument {
+export interface Attendance extends Document {
     type: AttendanceKindEnum
     content?: string
 }

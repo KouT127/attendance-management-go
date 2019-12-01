@@ -1,6 +1,6 @@
 import React from "react";
 import {IUserState} from "../../redux/states/UserState";
-import {AttendanceKind, IAttendance} from "../../domains/attendance/attendance";
+import {AttendanceKind, Attendance} from "../../domains/attendance/attendance";
 import * as firebase from "firebase";
 import * as moment from "moment";
 import {AttendanceDetailItem} from "../../components/attendance/AttendanceDetailItem";
@@ -16,7 +16,7 @@ export const AttendanceDetailListContainer = (props: Props) => {
             {
                 props.attendances.map((doc, index) => {
                     const data = doc.data();
-                    const attendance: IAttendance = {
+                    const attendance: Attendance = {
                         type: data.type,
                         content: data.content,
                         createdAt: data.createdAt,

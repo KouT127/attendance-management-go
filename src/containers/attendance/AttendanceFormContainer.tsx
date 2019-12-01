@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from "react";
-import {AttendanceKindEnum, IAttendance} from "../../domains/attendance/attendance";
+import {AttendanceKindEnum, Attendance} from "../../domains/attendance/attendance";
 import {db} from "../../lib/firebase";
 import * as firebase from "firebase";
 import {AttendanceForm} from "../../components/attendance/AttendanceForm";
@@ -10,7 +10,7 @@ type Props = {
 
 export const AttendanceFormContainer = (props: Props) => {
     const [title, setTitle] = useState('');
-    const [attendance, setAttendance] = useState<IAttendance>({
+    const [attendance, setAttendance] = useState<Attendance>({
         type: AttendanceKindEnum.GO_TO_WORK,
         content: '',
         createdAt: undefined,

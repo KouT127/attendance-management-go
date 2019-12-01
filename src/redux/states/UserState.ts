@@ -1,7 +1,4 @@
-import {Action, AnyAction, Dispatch} from "redux";
-import {ThunkAction} from "redux-thunk";
-import {actionCreator, AppState} from "../../store";
-import {firebaseApp} from "../../lib/firebase";
+import {Action} from "redux";
 
 
 export interface IUserState {
@@ -9,13 +6,15 @@ export interface IUserState {
     name: string | null
     email: string
     imageUrl: string | null
+    shouldEdit: boolean
 }
 
 export const initialState: IUserState = {
     id: '',
     name: '',
     email: '',
-    imageUrl: ''
+    imageUrl: '',
+    shouldEdit: true
 };
 
 //Actionの定義
