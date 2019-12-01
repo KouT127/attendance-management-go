@@ -42,7 +42,10 @@ const Auth: React.FC<HeaderProps> = (props) => {
     if (shouldEdit) {
         return <Redirect to={'/users/new'}/>;
     }
-    return isAuthenticated ? props.children : <Redirect to={'/signin'}/>
+    if (!isAuthenticated) {
+        return <Redirect to={'/signin'}/>
+    }
+    return props.children
 };
 
 interface IRouteProps {
