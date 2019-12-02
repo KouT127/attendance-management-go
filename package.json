@@ -27,6 +27,7 @@
     "sass-loader": "8.0.0",
     "typescript": "3.7.2",
     "react-spinners": "0.6.1",
+    "react-hook-form": "3.28.11",
     "redux-devtools-extension": "latest"
   },
   "scripts": {

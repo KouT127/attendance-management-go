@@ -1,55 +1,46 @@
 import React, {useCallback, useState} from "react"
 import './EditUser.sass'
 import {useUserDocuments} from "../../hooks/firestore";
+import useForm from "react-hook-form";
+import { useHistory } from 'react-router-dom'
 
-type FormProps = {
+type FormData = {
     username: string
 }
 
 export const EditUser = () => {
-    const [inputValue, setInputValue] = useState<FormProps>({username: ''});
+    const {handleSubmit, setValue, register, errors} = useForm<FormData>();
     const {setUserDocument} = useUserDocuments();
-    const handleChangeInput = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-        const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
-        setInputValue({
-            ...inputValue,
-            [event.target.name]: value
-        });
-    }, [inputValue]);
+    const history = useHistory();
 
-    const handleClick = useCallback( async () => {
-        await setUserDocument(inputValue.username)
-    }, [inputValue]);
+    const onSubmit = handleSubmit(async ({username}) => {
+        await setUserDocument(username);
+        history.push('/home')
+    });
 
+    console.log(errors)
     return (
         <div>
-            <form>
+            <div>
+
+            </div>
+            <form onSubmit={onSubmit}>
                 <section className='edit-user__header'>
-                    <h1 className='edit-user__header-title'>ユーザー</h1>
-                </section>
-                <section className='edit-user__image-box'>
-                    <figure>
-                        <img className='edit-user__image'/>
-                    </figure>
+                    <h1 className='edit-user__header-title'>ユーザー作成</h1>
                 </section>
                 <div className='edit-user__form-section'>
-                    <label>メールアドレス</label>
-                    <input className='edit-user__text-input'
-                           type={'text'}
-                           disabled={true}
-                           value={'example@example.com'}/>
                     <label>ユーザー名</label>
                     <input className='edit-user__text-input'
                            type={'text'}
                            name={'username'}
-                           onChange={handleChangeInput}/>
+                           ref={register({ required: true, maxLength: 50 })}/>
+                    {errors.username && <p className='edit-user__error-message'>ユーザー名は必須です</p>}
                 </div>
+
                 <input className='edit-user__button'
-                        type={'button'}
+                       type='submit'
                        name='enter'
-                       value='登録'
-                       onClick={handleClick}/>
+                       value='登録'/>
             </form>
         </div>
     )
