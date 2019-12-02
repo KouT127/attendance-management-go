@@ -8,7 +8,7 @@ import {useApplication} from "./hooks/application";
 import {PulseLoader} from "react-spinners";
 import {NotFound} from "./pages/common/NotFound";
 import {Splash} from "./pages/common/Splash";
-import {EditUser} from "./pages/auth/EditUser";
+import {CreateUser} from "./pages/auth/CreateUser";
 
 const SignIn = React.lazy(() => import('./pages/auth/SignIn')
     .then(importedModule => ({
@@ -100,7 +100,7 @@ const Routes = () => {
                             <Switch>
                                 <Route exact path="/" component={Splash}/>
                                 <Route exact path="/signin" component={SignIn}/>
-                                <Route exact path="/users/new" component={EditUser}/>
+                                <Route exact path="/users/new" component={CreateUser}/>
                                 <ProtectedRoute component={AttendanceUser} path="/home"/>
                                 <ProtectedRoute component={AttendanceScan} path="/scan"/>
                                 <Route path={'*'} component={NotFound}/>
