@@ -1,4 +1,4 @@
-import {useCallback, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {firebaseApp} from "../lib/firebase";
 import {useUserSelector} from "./auth";
 
@@ -29,18 +29,28 @@ export const useAttendanceDocuments = () => {
 export const useUserDocuments = () => {
     const {user} = useUserSelector();
     const [documents, setDocuments] = useState<firebase.firestore.QueryDocumentSnapshot[]>([]);
+    const [userDocumentRef, setUserDocumentRef] = useState<firebase.firestore.DocumentReference | undefined>();
 
-    const setUserDocument = useCallback(async (name: string) => {
-        await firebaseApp
+    useEffect(() => {
+        const reference = firebaseApp
             .firestore()
             .collection('users')
-            .doc(user.id)
+            .doc(user.id);
+        setUserDocumentRef(reference)
+    }, []);
+
+    const setUserDocument = useCallback(async (name: string) => {
+        if (!userDocumentRef) {
+            return;
+        }
+        await userDocumentRef
             .update({
                 username: name
             })
-    }, []);
+    }, [userDocumentRef]);
 
     return {
+        userDocumentRef,
         setUserDocument,
         documents
     }

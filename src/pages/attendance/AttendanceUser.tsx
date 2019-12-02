@@ -7,7 +7,6 @@ import {AttendanceFormContainer} from "../../containers/attendance/AttendanceFor
 import {AttendanceDetailListContainer} from "../../containers/attendance/AttendanceDetailListContainer";
 
 export const AttendanceUser = () => {
-    console.log('AttendanceUser render');
     const {user} = useUserSelector();
     const {documents, observeAttendance} = useAttendanceDocuments();
     useEffect(() => {
