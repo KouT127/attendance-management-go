@@ -1,12 +1,12 @@
 import React from "react";
-import {IUserState} from "../../redux/states/UserState";
+import {UserState} from "../../redux/states/UserState";
 import {AttendanceKind, Attendance} from "../../domains/attendance/attendance";
 import * as firebase from "firebase";
 import * as moment from "moment";
 import {AttendanceDetailItem} from "../../components/attendance/AttendanceDetailItem";
 
 type Props = {
-    user: IUserState
+    user: UserState
     attendances: firebase.firestore.QueryDocumentSnapshot[]
 }
 
@@ -29,7 +29,7 @@ export const AttendanceDetailListContainer = (props: Props) => {
                     return (
                         <AttendanceDetailItem
                             key={'attendance-user-list-item' + index}
-                            name={props.user.name || 'name'}
+                            name={props.user.username || 'username'}
                             attendanceKind={new AttendanceKind(attendance.type)}
                             submittedAt={formattedTime}
                         />

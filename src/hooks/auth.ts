@@ -36,7 +36,7 @@ export const useAuth = () => {
                 initialLoaded: true,
                 userState: {
                     id: user.uid,
-                    name: userDocument.username,
+                    username: userDocument.username,
                     email: userDocument.email,
                     imageUrl: userDocument.imageUrl,
                     shouldEdit: userDocument.shouldEdit,

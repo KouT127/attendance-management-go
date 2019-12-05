@@ -14,7 +14,7 @@ export const AttendanceUserInformationHeader = () => {
                 </figure>
                 <section className='attendance-user-information-body'>
                     <h3 className='attendance-user-information-body-name'>
-                        {user.name}
+                        {user.username}
                     </h3>
                     <p className='attendance-user-information-body-identifier'>
                         ID: <span>{user.id}</span>

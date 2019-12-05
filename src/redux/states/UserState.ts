@@ -1,17 +1,17 @@
 import {Action} from "redux";
 
 
-export interface IUserState {
+export interface UserState {
     id: string
-    name: string | null
+    username: string | null
     email: string
     imageUrl: string | null
     shouldEdit: boolean
 }
 
-export const initialState: IUserState = {
+export const initialState: UserState = {
     id: '',
-    name: '',
+    username: '',
     email: '',
     imageUrl: '',
     shouldEdit: true
@@ -22,7 +22,7 @@ export const initialState: IUserState = {
 //Reducerの定義
 export type UserPayload = {
     initialLoaded: boolean
-    userState: IUserState
+    userState: UserState
 };
 
 export interface LoadedUserAction extends Action {
@@ -38,7 +38,7 @@ const loadedUser = (payload: UserPayload): LoadedUserAction => {
 };
 
 
-export const userStateReducer = (state: IUserState = initialState, action: LoadedUserAction) => {
+export const userStateReducer = (state: UserState = initialState, action: LoadedUserAction) => {
     switch (action.type) {
         case "LOADED_USER": {
             const user = action.payload.userState;
