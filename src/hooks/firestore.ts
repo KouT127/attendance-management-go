@@ -3,13 +3,14 @@ import {firebaseApp} from "../lib/firebase";
 import {useUserSelector} from "./auth";
 
 export const useAttendanceDocuments = () => {
+    const {user} = useUserSelector();
     const [documents, setDocuments] = useState<firebase.firestore.QueryDocumentSnapshot[]>([]);
 
     const observeAttendance = useCallback(async () => {
         firebaseApp
             .firestore()
             .collection('users')
-            .doc('a324al-sdflasdf')
+            .doc(user.id)
             .collection('attendances')
             .orderBy('createdAt', 'desc')
             .limit(5)

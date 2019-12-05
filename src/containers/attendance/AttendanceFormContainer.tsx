@@ -3,6 +3,8 @@ import {AttendanceKindEnum, Attendance} from "../../domains/attendance/attendanc
 import {db} from "../../lib/firebase";
 import * as firebase from "firebase";
 import {AttendanceForm} from "../../components/attendance/AttendanceForm";
+import {useUserSelector} from "../../hooks/auth";
+import useForm from "react-hook-form";
 
 type Props = {
     documents: firebase.firestore.QueryDocumentSnapshot[]
@@ -10,6 +12,9 @@ type Props = {
 
 export const AttendanceFormContainer = (props: Props) => {
     const [title, setTitle] = useState('');
+    const { handleSubmit, register, errors, reset } = useForm();
+
+    const {user} = useUserSelector();
     const [attendance, setAttendance] = useState<Attendance>({
         type: AttendanceKindEnum.GO_TO_WORK,
         content: '',
@@ -28,31 +33,24 @@ export const AttendanceFormContainer = (props: Props) => {
         })
     }, [props.documents]);
 
-    const handleChangeTextareaText = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const target = event.target;
-        setAttendance({
-            ...attendance,
-            [target.name]: target.value
-        });
-    }, []);
-
 
     const handleClickButton = useCallback(() => {
         db.collection('users')
-            .doc('a324al-sdflasdf')
+            .doc(user.id)
             .collection('attendances')
             .add({
                 ...attendance,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-            })
+            });
+        reset();
     }, []);
 
     return (
         AttendanceForm({
             buttonTitle: title,
-            onClickButton: handleClickButton,
-            onChangeTextArea: handleChangeTextareaText
+            register: register,
+            onClickButton: handleSubmit(handleClickButton),
         })
     )
 };
