@@ -32,8 +32,8 @@ export type Props = {
 }
 
 const App: React.FC = () => {
-    const {observeAuth} = useAuth();
-    observeAuth();
+    const {subscribeAuth} = useAuth();
+    subscribeAuth();
     return (<Routes/>)
 };
 

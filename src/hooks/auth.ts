@@ -25,7 +25,7 @@ export const useAuth = () => {
         return new User(data.username, data.email, data.imageUrl, false);
     };
 
-    const observeAuth = useCallback(() => {
+    const subscribeAuth = useCallback(() => {
         firebaseApp.auth().onAuthStateChanged(async (user) => {
             if (!user || !user.uid || !user.email) {
                 dispatch(actionCreator.applicationActionCreator.loadedApplication());
@@ -48,7 +48,7 @@ export const useAuth = () => {
     }, []);
 
     return {
-        observeAuth
+        subscribeAuth
     }
 };
 
