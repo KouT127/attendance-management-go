@@ -2,6 +2,7 @@ import React from "react";
 import {RoundedButton} from "../common/RoundedButton";
 import {AttendanceTimerContainer} from "../../containers/attendance/AttendanceTimerContainer";
 import {OnSubmit} from "react-hook-form/dist/types";
+import {RoundedSubmitButton} from "../common/RoundedSubmitButton";
 
 type Props = {
     buttonTitle: string
@@ -22,10 +23,7 @@ export const AttendanceForm = (props: Props) => {
                         max_length: 100,
                     })}
                 />
-                <input
-                    type="submit"
-                    value={props.buttonTitle}
-                />
+                <RoundedSubmitButton className={'timer-section__button-section'} title={props.buttonTitle}/>
             </form>
         </section>
     )
