@@ -15,7 +15,7 @@ create table attendances
 (
     id         int unsigned auto_increment comment '勤怠ID',
     user_id    varchar(100) comment 'ユーザーID',
-    type       tinyint unsigned not null comment '勤怠区分',
+    kind       tinyint unsigned not null comment '勤怠区分',
     remark     varchar(1000)    null comment '備考',
     created_at timestamp        null comment '作成日',
     updated_at timestamp        null comment '更新日',

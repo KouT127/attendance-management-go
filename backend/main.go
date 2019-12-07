@@ -10,6 +10,5 @@ func main() {
 	config.Init(config.Development)
 	c := config.NewConfig()
 	database.Init(c)
-
 	routes.Init()
 }
