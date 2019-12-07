@@ -1,24 +1,15 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	"net/http"
+	"github.com/KouT127/Attendance-management/backend/config"
+	"github.com/KouT127/Attendance-management/backend/database"
+	"github.com/KouT127/Attendance-management/backend/routes"
 )
 
 func main() {
-	r := gin.Default()
-	r.Static("/static/css", "frontend/build/static/css")
-	r.Static("/static/js", "frontend/build/static/js")
+	config.Init(config.Development)
+	c := config.NewConfig()
+	database.Init(c)
 
-	r.LoadHTMLFiles("frontend/build/index.html")
-	r.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", gin.H{})
-	})
-
-	r.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "ok",
-		})
-	})
-	_ = r.Run(":8080")
+	routes.Init()
 }
