@@ -18,7 +18,7 @@ type Config struct {
 	}
 
 	Application struct {
-		IsDebug bool
+		IsDebug    bool
 	}
 }
 

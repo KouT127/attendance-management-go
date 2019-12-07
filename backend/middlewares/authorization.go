@@ -15,12 +15,14 @@ const AuthorizedUserIdKey = "authorized_user_id"
 
 func AuthRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if config := config.NewConfig(); config.Application.IsDebug {
+		conf := config.NewConfig()
+		if conf == nil {
 			u := fmt.Sprintf("error firebase unauthorized")
 			c.AbortWithStatusJSON(http.StatusUnauthorized, u)
 			return
 		}
-		opt := option.WithCredentialsFile("./backend/config/development/google-service.json")
+		filename := fmt.Sprintf("%s/google-service.json", "./backend/config/development")
+		opt := option.WithCredentialsFile(filename)
 		app, err := firebase.NewApp(context.Background(), nil, opt)
 		if err != nil {
 			u := fmt.Sprintf("error invalid credential file")
