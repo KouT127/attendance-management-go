@@ -11,10 +11,10 @@ export type CreateFormData = {
 
 export const CreateUser = () => {
     const {handleSubmit, register, errors} = useForm<CreateFormData>();
-    const {setUserDocument} = useUserDocuments();
+    const {setUserData} = useUserDocuments();
     const history = useHistory();
     const onSubmit = handleSubmit(async ({username}) => {
-        await setUserDocument(username);
+        await setUserData(username);
         history.push('/home')
     });
     return (

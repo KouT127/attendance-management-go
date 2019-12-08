@@ -1,6 +1,9 @@
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useState} from "react";
 import {firebaseApp} from "../lib/firebase";
 import {useUserSelector} from "./auth";
+import axios from "axios";
+import {useDispatch} from "react-redux";
+import {actionCreator} from "../store";
 
 export const useAttendanceDocuments = () => {
     const {user} = useUserSelector();
@@ -29,30 +32,25 @@ export const useAttendanceDocuments = () => {
 
 export const useUserDocuments = () => {
     const {user} = useUserSelector();
-    const [documents, setDocuments] = useState<firebase.firestore.QueryDocumentSnapshot[]>([]);
-    const [userDocumentRef, setUserDocumentRef] = useState<firebase.firestore.DocumentReference | undefined>();
+    const dispatch = useDispatch();
 
-    useEffect(() => {
-        const reference = firebaseApp
-            .firestore()
-            .collection('users')
-            .doc(user.id);
-        setUserDocumentRef(reference)
+    const setUserData = useCallback(async (name: string) => {
+        const currentUser = firebaseApp.auth().currentUser;
+        if (!currentUser) {
+            return
+        }
+        const token = await currentUser.getIdToken();
+        console.log(name, user.email);
+        const response = await axios.put(
+            `http://localhost:8080/v1/users/${currentUser.uid}`,
+
+            {name: name, email: user.email, imageUrl: user.imageUrl,},
+            {headers: {'authorization': token}});
+        const userData = response.data.user;
+        dispatch(actionCreator.userActionCreator.loadedUser({initialLoaded: true, userState: {...userData,}}))
     }, []);
 
-    const setUserDocument = useCallback(async (name: string) => {
-        if (!userDocumentRef) {
-            return;
-        }
-        await userDocumentRef
-            .update({
-                username: name
-            })
-    }, [userDocumentRef]);
-
     return {
-        userDocumentRef,
-        setUserDocument,
-        documents
+        setUserData
     }
 };

@@ -1,7 +1,9 @@
 package routes
 
 import (
+	"github.com/KouT127/Attendance-management/backend/controllers"
 	"github.com/KouT127/Attendance-management/backend/middlewares"
+	"github.com/gin-contrib/cors"
 	. "github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -18,15 +20,13 @@ func defaultRouter(r *Engine) {
 func v1UsersRouter(v1 *RouterGroup) {
 	handlers := []HandlerFunc{
 		middlewares.AuthRequired(),
-		middlewares.FetchAuthorizedUser(),
+		//middlewares.FetchAuthorizedUser(),
 	}
-
+	uc := controllers.UserController{}
 	users := v1.Group("/users", handlers...)
-	users.GET("", func(ctx *Context) {
-		ctx.JSON(200, H{
-			"message": "hello",
-		})
-	})
+	users.GET("", uc.UserListController)
+	users.GET("/mine", uc.UserMineController)
+	users.PUT("/:id", uc.UserUpdateController)
 }
 
 func v1Router(r *Engine) {
@@ -38,10 +38,15 @@ func Init() {
 	r := New()
 	r.Use(Logger())
 	r.Use(Recovery())
+	config := cors.DefaultConfig()
+	config.AllowMethods = []string{"OPTION", "GET", "POST", "PUT", "DELETE"}
+	config.AllowOrigins = []string{"*"}
+	config.AllowHeaders = []string{"*"}
+	r.Use(cors.New(config))
 
 	r.StaticFS("/static", http.Dir("frontend/build/static"))
 
 	v1Router(r)
 	defaultRouter(r)
-	panic(r.Run(":9000"))
+	panic(r.Run(":8080"))
 }

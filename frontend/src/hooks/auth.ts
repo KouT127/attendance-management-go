@@ -4,25 +4,20 @@ import {firebaseApp} from "../lib/firebase";
 import {UserPayload} from "../redux/states/UserState";
 import {useCallback} from "react";
 import {User} from "../domains/user/user";
+import axios from 'axios';
 
 const userSelector = (state: AppState) => state.user;
 
 export const useAuth = () => {
     const dispatch = useDispatch();
 
-    const getOrCreateUserDocument = async (user_id: string): Promise<User> => {
-        const docReference = firebaseApp
-            .firestore()
-            .collection('users')
-            .doc(user_id);
-        const documentSnapshot = await docReference.get();
-        const data = documentSnapshot.data();
-        if (!data) {
-            const user = User.initializeUser();
-            await docReference.set(user.toJson());
-            return user
+    const getUser = async (token: string, user_id: string): Promise<User> => {
+        const response = await axios.get('http://localhost:8080/v1/users/mine', {headers: {'authorization': token}});
+        const user = response.data.user;
+        if (!user.email) {
+            return User.initializeUser(user.id);
         }
-        return new User(data.username, data.email, data.imageUrl, false);
+        return new User(user.id, user.name, user.email, user.imageUrl, false);
     };
 
     const subscribeAuth = useCallback(() => {
@@ -31,15 +26,16 @@ export const useAuth = () => {
                 dispatch(actionCreator.applicationActionCreator.loadedApplication());
                 return;
             }
-            const userDocument = await getOrCreateUserDocument(user.uid);
+            const token = await user.getIdToken();
+            const authorizedUser = await getUser(token, user.uid);
             const payload: UserPayload = {
                 initialLoaded: true,
                 userState: {
                     id: user.uid,
-                    username: userDocument.username,
-                    email: userDocument.email,
-                    imageUrl: userDocument.imageUrl,
-                    shouldEdit: userDocument.shouldEdit,
+                    username: authorizedUser.username,
+                    email: authorizedUser.email,
+                    imageUrl: authorizedUser.imageUrl,
+                    shouldEdit: authorizedUser.shouldEdit,
                 }
             };
             dispatch(actionCreator.userActionCreator.loadedUser(payload));
