@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"github.com/KouT127/Attendance-management/backend/controllers"
+	. "github.com/KouT127/Attendance-management/backend/controllers"
 	"github.com/KouT127/Attendance-management/backend/middlewares"
 	"github.com/gin-contrib/cors"
 	. "github.com/gin-gonic/gin"
@@ -17,12 +17,23 @@ func defaultRouter(r *Engine) {
 	r.NoRoute(renderIndex)
 }
 
+func v1AttendancesRouter(v1 *RouterGroup) {
+	handlers := []HandlerFunc{
+		middlewares.AuthRequired(),
+		//middlewares.FetchAuthorizedUser(),
+	}
+	ac := AttendanceController{}
+	users := v1.Group("/attendances", handlers...)
+	users.GET("", ac.AttendanceListController)
+	users.POST("", ac.AttendanceCreateController)
+}
+
 func v1UsersRouter(v1 *RouterGroup) {
 	handlers := []HandlerFunc{
 		middlewares.AuthRequired(),
 		//middlewares.FetchAuthorizedUser(),
 	}
-	uc := controllers.UserController{}
+	uc := UserController{}
 	users := v1.Group("/users", handlers...)
 	users.GET("", uc.UserListController)
 	users.GET("/mine", uc.UserMineController)
@@ -32,6 +43,7 @@ func v1UsersRouter(v1 *RouterGroup) {
 func v1Router(r *Engine) {
 	v1Group := r.Group("/v1")
 	v1UsersRouter(v1Group)
+	v1AttendancesRouter(v1Group)
 }
 
 func Init() {
