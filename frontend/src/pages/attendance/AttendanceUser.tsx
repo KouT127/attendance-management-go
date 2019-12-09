@@ -8,19 +8,19 @@ import {AttendanceDetailListContainer} from "../../containers/attendance/Attenda
 
 export const AttendanceUser = () => {
     const {user} = useUserSelector();
-    const {documents, observeAttendance} = useAttendanceDocuments();
+    const {attendances, fetchAttendance} = useAttendanceDocuments();
     useEffect(() => {
-        observeAttendance();
+        fetchAttendance();
     }, []);
     return (
         <div className='attendance'>
             <AttendanceUserInformationHeader/>
             <AttendanceFormContainer
-                documents={documents}
+                attendances={attendances}
             />
             <AttendanceDetailListContainer
                 user={user}
-                attendances={documents}/>
+                attendances={attendances}/>
         </div>
     );
 };

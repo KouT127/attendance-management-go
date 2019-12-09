@@ -1,24 +1,27 @@
 import React from "react";
 import {UserState} from "../../redux/states/UserState";
-import {AttendanceKind, Attendance} from "../../domains/attendance/attendance";
-import * as firebase from "firebase";
+import {Attendance, AttendanceKind} from "../../domains/attendance/attendance";
 import * as moment from "moment";
 import {AttendanceDetailItem} from "../../components/attendance/AttendanceDetailItem";
 
 type Props = {
     user: UserState
-    attendances: firebase.firestore.QueryDocumentSnapshot[]
+    attendances: Array<Attendance>
 }
 
 export const AttendanceDetailListContainer = (props: Props) => {
+    if (!props.attendances){
+        return <div>Loading...</div>
+    }
     return (
         <ol className='attendance-list'>
             {
                 props.attendances.map((doc, index) => {
-                    const data = doc.data();
+                    const data = doc;
                     const attendance: Attendance = {
-                        type: data.type,
-                        content: data.content,
+                        userId: data.userId,
+                        kind: data.kind,
+                        remark: data.remark,
                         createdAt: data.createdAt,
                         updatedAt: data.updatedAt,
                     };
@@ -30,7 +33,7 @@ export const AttendanceDetailListContainer = (props: Props) => {
                         <AttendanceDetailItem
                             key={'attendance-user-list-item' + index}
                             name={props.user.username || 'username'}
-                            attendanceKind={new AttendanceKind(attendance.type)}
+                            attendanceKind={new AttendanceKind(attendance.kind)}
                             submittedAt={formattedTime}
                         />
                     )

@@ -1,48 +1,54 @@
 import React, {useCallback, useEffect, useState} from "react";
-import {AttendanceKindEnum, Attendance} from "../../domains/attendance/attendance";
-import {db} from "../../lib/firebase";
-import * as firebase from "firebase";
+import {Attendance, AttendanceKindEnum} from "../../domains/attendance/attendance";
+import {firebaseApp} from "../../lib/firebase";
 import {AttendanceForm} from "../../components/attendance/AttendanceForm";
 import {useUserSelector} from "../../hooks/auth";
 import useForm from "react-hook-form";
+import axios from "axios";
 
 type Props = {
-    documents: firebase.firestore.QueryDocumentSnapshot[]
+    attendances: Array<Attendance>
 }
 
 export const AttendanceFormContainer = (props: Props) => {
     const [title, setTitle] = useState('');
-    const { handleSubmit, register, errors, reset } = useForm();
+    const {handleSubmit, register, errors, reset} = useForm();
 
     const {user} = useUserSelector();
     const [attendance, setAttendance] = useState<Attendance>({
-        type: AttendanceKindEnum.GO_TO_WORK,
-        content: '',
+        userId: user.id,
+        kind: AttendanceKindEnum.GO_TO_WORK,
+        remark: '',
         createdAt: undefined,
         updatedAt: undefined,
     });
 
     useEffect(() => {
-        const latestAttendance = props.documents.length > 0 ? props.documents[0] : undefined;
-        const latestKindType: AttendanceKindEnum = latestAttendance && latestAttendance.data().type;
+        const latestAttendance = props.attendances.length > 0 ? props.attendances[0] : undefined;
+        const latestKindType: AttendanceKindEnum = latestAttendance && latestAttendance.kind || AttendanceKindEnum.GO_TO_WORK;
         const kindType = latestKindType === AttendanceKindEnum.GO_TO_WORK ? AttendanceKindEnum.LEAVE_WORK : AttendanceKindEnum.GO_TO_WORK
         const buttonTitle = kindType === AttendanceKindEnum.GO_TO_WORK ? '出勤する' : '退勤する';
         setTitle(buttonTitle);
         setAttendance({
-            type: kindType,
+            ...attendance,
+            kind: kindType
         })
-    }, [props.documents]);
+    }, [props.attendances]);
 
 
-    const handleClickButton = useCallback(() => {
-        db.collection('users')
-            .doc(user.id)
-            .collection('attendances')
-            .add({
-                ...attendance,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-            });
+    const handleClickButton = useCallback(async () => {
+        const currentUser = firebaseApp.auth().currentUser;
+        if (!currentUser) {
+            return
+        }
+        const token = await currentUser.getIdToken();
+        const response = await axios.post(
+            `http://localhost:8080/v1/attendance`,
+            {
+                ...attendance
+            },
+            {headers: {'authorization': token}});
+
         reset();
     }, []);
 

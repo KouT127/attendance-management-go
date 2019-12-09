@@ -4,29 +4,30 @@ import {useUserSelector} from "./auth";
 import axios from "axios";
 import {useDispatch} from "react-redux";
 import {actionCreator} from "../store";
+import {Attendance} from "../domains/attendance/attendance";
 
 export const useAttendanceDocuments = () => {
     const {user} = useUserSelector();
-    const [documents, setDocuments] = useState<firebase.firestore.QueryDocumentSnapshot[]>([]);
+    const [attendances, setAttendances] = useState<Array<Attendance>>([]);
 
-    const observeAttendance = useCallback(async () => {
-        firebaseApp
-            .firestore()
-            .collection('users')
-            .doc(user.id)
-            .collection('attendances')
-            .orderBy('createdAt', 'desc')
-            .limit(5)
-            .onSnapshot((snapshot) => {
-                const documents = snapshot.docs;
-                setDocuments(documents)
-            });
-
+    const fetchAttendance = useCallback(async () => {
+        const currentUser = firebaseApp.auth().currentUser;
+        if (!currentUser) {
+            return
+        }
+        const token = await currentUser.getIdToken();
+        const response = await axios.get('http://localhost:8080/v1/attendances', {headers: {'authorization': token}});
+        const data = response.data.attendances;
+        const attendances = data.map((value: any) => {
+            const attendance: Attendance = {...value};
+            return attendance
+        });
+        setAttendances(attendances);
     }, []);
 
     return {
-        observeAttendance,
-        documents
+        fetchAttendance,
+        attendances,
     }
 };
 
@@ -40,10 +41,8 @@ export const useUserDocuments = () => {
             return
         }
         const token = await currentUser.getIdToken();
-        console.log(name, user.email);
         const response = await axios.put(
             `http://localhost:8080/v1/users/${currentUser.uid}`,
-
             {name: name, email: user.email, imageUrl: user.imageUrl,},
             {headers: {'authorization': token}});
         const userData = response.data.user;

@@ -1,8 +1,8 @@
 package domains
 
 type Attendance struct {
-	Id     uint
-	UserId string
-	Kind   uint8
-	Remark string
+	Id     uint `json:"id"`
+	UserId string `json:"userId"`
+	Kind   uint8 `json:"kind"`
+	Remark string `json:"remark"`
 }
