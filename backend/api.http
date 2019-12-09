@@ -1,0 +1,19 @@
+@baseUrl = http://localhost:8080
+@token = 
+
+###
+GET {{baseUrl}}/v1/attendances HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+
+###
+POST {{baseUrl}}/v1/attendances HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "kind": 1,
+    "remark": "content"
+}
+

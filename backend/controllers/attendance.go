@@ -20,37 +20,32 @@ func (uc AttendanceController) AttendanceListController(c *Context) {
 
 	value, exists := c.Get(middlewares.AuthorizedUserIdKey)
 	if !exists {
-		c.JSON(http.StatusBadRequest, H{
+		c.JSON(http.StatusNotFound, H{
 			"message": "user not found",
 		})
 		return
 	}
 	err := mapstructure.Decode(value, &userId)
 	if err != nil {
-		c.JSON(http.StatusNotFound, H{})
+		c.JSON(http.StatusNotFound, H{
+			"message": "user not found",
+		})
 		return
 	}
 
 	engine := database.NewDB()
-	results, err := engine.
+	err = engine.
 		Table("attendances").
-		Select("attendances.*").
-		Where("attendances.user_id = ?", userId).
-		QueryString()
-
+		Iterate(&Attendance{UserId: userId}, func(idx int, bean interface{}) error {
+			attendance := bean.(*Attendance)
+			attendances = append(attendances, attendance)
+			return nil
+		})
 	if err != nil {
-		c.JSON(http.StatusBadRequest, H{})
+		c.JSON(http.StatusBadRequest, H{
+			"message": err,
+		})
 		return
-	}
-
-	for _, result := range results {
-		var attendance Attendance
-		err := mapstructure.Decode(result, attendance)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, H{})
-			return
-		}
-		attendances = append(attendances, &attendance)
 	}
 
 	c.JSON(http.StatusOK, H{

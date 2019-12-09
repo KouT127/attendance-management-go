@@ -23,9 +23,9 @@ func v1AttendancesRouter(v1 *RouterGroup) {
 		//middlewares.FetchAuthorizedUser(),
 	}
 	ac := AttendanceController{}
-	users := v1.Group("/attendances", handlers...)
-	users.GET("", ac.AttendanceListController)
-	users.POST("", ac.AttendanceCreateController)
+	attendances := v1.Group("/attendances", handlers...)
+	attendances.GET("", ac.AttendanceListController)
+	attendances.POST("", ac.AttendanceCreateController)
 }
 
 func v1UsersRouter(v1 *RouterGroup) {

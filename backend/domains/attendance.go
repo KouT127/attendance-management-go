@@ -1,7 +1,7 @@
 package domains
 
 type Attendance struct {
-	Id     int64
+	Id     uint
 	UserId string
 	Kind   uint8
 	Remark string
