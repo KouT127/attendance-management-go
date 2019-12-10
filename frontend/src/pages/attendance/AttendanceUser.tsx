@@ -1,7 +1,7 @@
 import React, {useEffect} from "react";
 import "./AttendanceUser.sass";
 import {AttendanceUserInformationHeader} from "../../components/attendance/AttendanceUserInformationHeader";
-import {useAttendance} from "../../hooks/xhr";
+import {AttendanceContext, useAttendance} from "../../hooks/xhr";
 import {AttendanceFormContainer} from "../../containers/attendance/AttendanceFormContainer";
 import {AttendanceDetailListContainer} from "../../containers/attendance/AttendanceDetailListContainer";
 
@@ -11,13 +11,12 @@ export const AttendanceUser = () => {
         fetchAttendance();
     }, []);
     return (
-        <div className='attendance'>
-            <AttendanceUserInformationHeader/>
-            <AttendanceFormContainer
-                attendances={attendances}
-            />
-            <AttendanceDetailListContainer
-                attendances={attendances}/>
-        </div>
+        <AttendanceContext.Provider value={{attendances: attendances}}>
+            <div className='attendance'>
+                <AttendanceUserInformationHeader/>
+                <AttendanceFormContainer/>
+                <AttendanceDetailListContainer/>
+            </div>
+        </AttendanceContext.Provider>
     );
 };

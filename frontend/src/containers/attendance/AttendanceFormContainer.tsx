@@ -1,18 +1,16 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useContext, useEffect, useState} from "react";
 import {Attendance, AttendanceKindEnum} from "../../domains/attendance/Attendance";
 import {firebaseApp} from "../../lib/firebase";
 import {AttendanceForm} from "../../components/attendance/AttendanceForm";
 import {useUserSelector} from "../../hooks/auth";
 import useForm from "react-hook-form";
 import axios from "axios";
+import {AttendanceContext} from "../../hooks/xhr";
 
-type Props = {
-  attendances: Array<Attendance>;
-};
-
-export const AttendanceFormContainer = (props: Props) => {
+export const AttendanceFormContainer = () => {
   const [title, setTitle] = useState("");
   const { handleSubmit, register, errors, reset } = useForm();
+  const { attendances } = useContext(AttendanceContext);
 
   const { user } = useUserSelector();
   const [attendance, setAttendance] = useState<Attendance>({
@@ -25,7 +23,7 @@ export const AttendanceFormContainer = (props: Props) => {
 
   useEffect(() => {
     const latestAttendance =
-      props.attendances.length > 0 ? props.attendances[0] : undefined;
+      attendances.length > 0 ? attendances[0] : undefined;
     const latestKindType: AttendanceKindEnum =
       (latestAttendance && latestAttendance.kind) ||
       AttendanceKindEnum.GO_TO_WORK;
@@ -40,7 +38,7 @@ export const AttendanceFormContainer = (props: Props) => {
       ...attendance,
       kind: kindType
     });
-  }, [props.attendances]);
+  }, [attendances]);
 
   const handleClickButton = useCallback(async () => {
     const currentUser = firebaseApp.auth().currentUser;

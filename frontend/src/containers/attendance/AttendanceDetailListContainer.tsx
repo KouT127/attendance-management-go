@@ -1,21 +1,19 @@
-import React from "react";
+import React, {useContext} from "react";
 import {Attendance, AttendanceKind} from "../../domains/attendance/Attendance";
 import {AttendanceDetailItem} from "../../components/attendance/AttendanceDetailItem";
 import {useUserSelector} from "../../hooks/auth";
+import {AttendanceContext} from "../../hooks/xhr";
 
-type Props = {
-    attendances: Array<Attendance>
-}
-
-export const AttendanceDetailListContainer = (props: Props) => {
+export const AttendanceDetailListContainer = () => {
     const {user} = useUserSelector();
-    if (!props.attendances) {
+    const {attendances} = useContext(AttendanceContext);
+    if (!attendances) {
         return <div>Loading...</div>
     }
     return (
         <ol className='attendance-list'>
             {
-                props.attendances.map((doc, index) => {
+                attendances.map((doc, index) => {
                     const data = doc;
                     const attendance: Attendance = {
                         userId: data.userId,
