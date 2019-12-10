@@ -1,4 +1,4 @@
-import {Document} from "../common/document";
+import {BaseModel} from "../common/BaseModel";
 
 export enum AttendanceKindEnum {
     GO_TO_WORK = 10,
@@ -25,7 +25,8 @@ export class AttendanceKind {
 }
 
 
-export interface Attendance extends Document {
-    type: AttendanceKindEnum
-    content?: string
+export interface Attendance extends BaseModel {
+    userId: string
+    kind: AttendanceKindEnum
+    remark?: string
 }

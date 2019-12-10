@@ -4,16 +4,19 @@ import (
 	"github.com/KouT127/Attendance-management/backend/database"
 	. "github.com/KouT127/Attendance-management/backend/domains"
 	"github.com/KouT127/Attendance-management/backend/middlewares"
+	. "github.com/KouT127/Attendance-management/backend/responses"
 	. "github.com/KouT127/Attendance-management/backend/validators"
 	. "github.com/gin-gonic/gin"
 	"github.com/mitchellh/mapstructure"
 	"net/http"
+	"time"
 )
 
 type AttendanceController struct{}
 
 func (uc AttendanceController) AttendanceListController(c *Context) {
 	var (
+		responses   []*AttendanceResponse
 		attendances []*Attendance
 		userId      string
 	)
@@ -41,6 +44,7 @@ func (uc AttendanceController) AttendanceListController(c *Context) {
 			attendances = append(attendances, attendance)
 			return nil
 		})
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, H{
 			"message": err,
@@ -48,8 +52,14 @@ func (uc AttendanceController) AttendanceListController(c *Context) {
 		return
 	}
 
+	for _, attendance := range attendances {
+		res := &AttendanceResponse{}
+		res.SetAttendance(attendance)
+		responses = append(responses, res)
+	}
+
 	c.JSON(http.StatusOK, H{
-		"attendances": attendances,
+		"attendances": responses,
 	})
 }
 
@@ -78,17 +88,21 @@ func (uc AttendanceController) AttendanceCreateController(c *Context) {
 	}
 
 	attendance = Attendance{
-		UserId: userId,
-		Kind:   input.Kind,
-		Remark: input.Remark,
+		UserId:    userId,
+		Kind:      input.Kind,
+		Remark:    input.Remark,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 
 	if _, err := engine.Table("attendances").Insert(&attendance); err != nil {
 		c.JSON(http.StatusBadRequest, H{})
 		return
 	}
+	res := AttendanceResponse{}
+	res.SetAttendance(&attendance)
 
 	c.JSON(http.StatusOK, H{
-		"attendance": attendance,
+		"attendance": res,
 	})
 }

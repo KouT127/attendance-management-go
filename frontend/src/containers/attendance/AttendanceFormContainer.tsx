@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from "react";
-import {Attendance, AttendanceKindEnum} from "../../domains/attendance/attendance";
+import {Attendance, AttendanceKindEnum} from "../../domains/attendance/Attendance";
 import {firebaseApp} from "../../lib/firebase";
 import {AttendanceForm} from "../../components/attendance/AttendanceForm";
 import {useUserSelector} from "../../hooks/auth";

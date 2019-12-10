@@ -1,6 +1,6 @@
 import React from "react";
 import "./AttendanceDetailItem.sass"
-import {AttendanceKind} from "../../domains/attendance/attendance";
+import {AttendanceKind} from "../../domains/attendance/Attendance";
 
 interface Props {
     name: string

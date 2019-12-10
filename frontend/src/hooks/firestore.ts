@@ -4,7 +4,7 @@ import {useUserSelector} from "./auth";
 import axios from "axios";
 import {useDispatch} from "react-redux";
 import {actionCreator} from "../store";
-import {Attendance} from "../domains/attendance/attendance";
+import {Attendance} from "../domains/attendance/Attendance";
 
 export const useAttendanceDocuments = () => {
     const {user} = useUserSelector();
