@@ -20,6 +20,14 @@ export const useAuth = () => {
         return new User(user.id, user.name, user.email, user.imageUrl, false);
     };
 
+    const getToken = useCallback(async () => {
+        const currentUser = firebaseApp.auth().currentUser;
+        if (!currentUser) {
+            return ''
+        }
+        return await currentUser.getIdToken(true);
+    }, []);
+
     const subscribeAuth = useCallback(() => {
         firebaseApp.auth().onAuthStateChanged(async (user) => {
             if (!user || !user.uid || !user.email) {
@@ -44,7 +52,8 @@ export const useAuth = () => {
     }, []);
 
     return {
-        subscribeAuth
+        subscribeAuth,
+        getToken,
     }
 };
 
