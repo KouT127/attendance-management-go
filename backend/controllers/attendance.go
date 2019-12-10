@@ -39,6 +39,7 @@ func (uc AttendanceController) AttendanceListController(c *Context) {
 	engine := database.NewDB()
 	err = engine.
 		Table("attendances").
+		OrderBy("-id").
 		Iterate(&Attendance{UserId: userId}, func(idx int, bean interface{}) error {
 			attendance := bean.(*Attendance)
 			attendances = append(attendances, attendance)
@@ -74,6 +75,7 @@ func (uc AttendanceController) AttendanceCreateController(c *Context) {
 		c.JSON(http.StatusBadRequest, H{})
 		return
 	}
+
 	value, exists := c.Get(middlewares.AuthorizedUserIdKey)
 	if !exists {
 		c.JSON(http.StatusBadRequest, H{
@@ -81,6 +83,7 @@ func (uc AttendanceController) AttendanceCreateController(c *Context) {
 		})
 		return
 	}
+
 	err := mapstructure.Decode(value, &userId)
 	if err != nil {
 		c.JSON(http.StatusNotFound, H{})
@@ -99,6 +102,7 @@ func (uc AttendanceController) AttendanceCreateController(c *Context) {
 		c.JSON(http.StatusBadRequest, H{})
 		return
 	}
+
 	res := AttendanceResponse{}
 	res.SetAttendance(&attendance)
 

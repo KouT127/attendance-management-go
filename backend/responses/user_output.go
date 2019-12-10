@@ -16,7 +16,7 @@ func (r *AttendanceResponse) SetAttendance(a *Attendance) *AttendanceResponse {
 	r.UserId = a.UserId
 	r.Kind = a.Kind
 	r.Remark = a.Remark
-	r.CreatedAt = a.CreatedAt.Format("2006-01-02")
-	r.UpdatedAt = a.UpdatedAt.Format("2006-01-02")
+	r.CreatedAt = a.CreatedAt.Format("2006-01-02-15:04:05")
+	r.UpdatedAt = a.UpdatedAt.Format("2006-01-02-15:04:05")
 	return r
 }
