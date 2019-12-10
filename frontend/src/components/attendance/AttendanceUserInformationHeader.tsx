@@ -1,6 +1,5 @@
 import React from "react";
 import "./AttendanceUserInformationHeader.sass"
-import {useUserDocuments} from "../../hooks/firestore";
 import {useUserSelector} from "../../hooks/auth";
 
 export const AttendanceUserInformationHeader = () => {

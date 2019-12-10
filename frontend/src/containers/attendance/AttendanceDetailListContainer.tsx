@@ -1,14 +1,14 @@
 import React from "react";
-import {UserState} from "../../redux/states/UserState";
 import {Attendance, AttendanceKind} from "../../domains/attendance/Attendance";
 import {AttendanceDetailItem} from "../../components/attendance/AttendanceDetailItem";
+import {useUserSelector} from "../../hooks/auth";
 
 type Props = {
-    user: UserState
     attendances: Array<Attendance>
 }
 
 export const AttendanceDetailListContainer = (props: Props) => {
+    const {user} = useUserSelector();
     if (!props.attendances) {
         return <div>Loading...</div>
     }
@@ -27,7 +27,7 @@ export const AttendanceDetailListContainer = (props: Props) => {
                     return (
                         <AttendanceDetailItem
                             key={'attendance-user-list-item' + index}
-                            name={props.user.username || 'username'}
+                            name={user.username || 'No Name'}
                             attendanceKind={new AttendanceKind(attendance.kind)}
                             submittedAt={attendance.createdAt || ''}
                         />

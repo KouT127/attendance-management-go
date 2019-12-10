@@ -13,11 +13,15 @@ export const useAttendance = () => {
   const fetchAttendance = useCallback(async () => {
     const token = await getToken();
     const response = await axios.get("http://localhost:8080/v1/attendances", {
-      headers: { authorization: token }
+      headers: {
+        authorization: token
+      }
     });
     const data = response.data.attendances;
     const attendances = data.map((value: any) => {
-      const attendance: Attendance = { ...value };
+      const attendance: Attendance = {
+        ...value
+      };
       return attendance;
     });
     setAttendances(attendances);
@@ -29,7 +33,7 @@ export const useAttendance = () => {
   };
 };
 
-export const useUserDocuments = () => {
+export const useUserDetail = () => {
   const { user } = useUserSelector();
   const dispatch = useDispatch();
 
@@ -41,14 +45,24 @@ export const useUserDocuments = () => {
     const token = await currentUser.getIdToken();
     const response = await axios.put(
       `http://localhost:8080/v1/users/${currentUser.uid}`,
-      { name: name, email: user.email, imageUrl: user.imageUrl },
-      { headers: { authorization: token } }
+      {
+        name: name,
+        email: user.email,
+        imageUrl: user.imageUrl
+      },
+      {
+        headers: {
+          authorization: token
+        }
+      }
     );
     const userData = response.data.user;
     dispatch(
       actionCreator.userActionCreator.loadedUser({
         initialLoaded: true,
-        userState: { ...userData }
+        userState: {
+          ...userData
+        }
       })
     );
   }, []);
