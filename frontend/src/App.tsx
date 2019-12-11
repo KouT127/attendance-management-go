@@ -1,25 +1,36 @@
 import React, {Component, Suspense, useEffect} from "react";
 import {BrowserRouter as Router, Redirect, Route, Switch} from "react-router-dom";
-
-import {AttendanceScan} from "./pages/attendance/AttendanceScan";
 import {useAuth, useUserSelector} from "./hooks/auth";
 import {Header} from "./components/common/Header";
 import {useApplication} from "./hooks/application";
 import {PulseLoader} from "react-spinners";
-import {NotFound} from "./pages/common/NotFound";
-import {Splash} from "./pages/common/Splash";
-import {CreateUser} from "./pages/auth/CreateUser";
 
+const Splash = React.lazy(() => import('./pages/common/Splash')
+    .then(importedModule => ({
+        default: importedModule.Splash
+    }))
+);
 const SignIn = React.lazy(() => import('./pages/auth/SignIn')
     .then(importedModule => ({
         default: importedModule.SignIn
     }))
 );
 
-
 const AttendanceUser = React.lazy(() => import("./pages/attendance/AttendanceUser")
     .then(importedModule => ({
         default: importedModule.AttendanceUser
+    }))
+);
+
+const CreateUser = React.lazy(() => import("./pages/auth/CreateUser")
+    .then(importedModule => ({
+        default: importedModule.CreateUser
+    }))
+);
+
+const NotFound = React.lazy(() => import('./pages/common/NotFound')
+    .then(importedModule => ({
+        default: importedModule.NotFound
     }))
 );
 
@@ -48,13 +59,13 @@ const Auth: React.FC<HeaderProps> = (props) => {
     return props.children
 };
 
-interface IRouteProps {
+interface RouteProps {
     exact?: boolean;
     path: string;
     component: React.ComponentType<any>;
 }
 
-const ProtectedRoute = ({component: Component, ...otherProps}: IRouteProps) => {
+const ProtectedRoute = ({component: Component, ...otherProps}: RouteProps) => {
     return (
         <Route render={() => {
             return (
@@ -65,6 +76,7 @@ const ProtectedRoute = ({component: Component, ...otherProps}: IRouteProps) => {
         }}/>
     );
 };
+
 export const Loading = (props: HeaderProps) => {
     const {initialLoaded} = useApplication();
     const {isAuthenticated} = useUserSelector();
@@ -101,8 +113,7 @@ const Routes = () => {
                                 <Route exact path="/" component={Splash}/>
                                 <Route exact path="/signin" component={SignIn}/>
                                 <Route exact path="/users/new" component={CreateUser}/>
-                                <ProtectedRoute component={AttendanceUser} path="/home"/>
-                                <ProtectedRoute component={AttendanceScan} path="/scan"/>
+                                <ProtectedRoute path="/home" component={AttendanceUser}/>
                                 <Route path={'*'} component={NotFound}/>
                             </Switch>
                         </Loading>
