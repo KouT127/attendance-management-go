@@ -5,7 +5,7 @@ import {AttendanceForm} from "../../components/attendance/AttendanceForm";
 import {useUserSelector} from "../../hooks/auth";
 import useForm from "react-hook-form";
 import axios from "axios";
-import {AttendanceContext} from "../../hooks/xhr";
+import {AttendanceContext} from "../../hooks/attendance";
 
 export const AttendanceFormContainer = () => {
   const [title, setTitle] = useState("");

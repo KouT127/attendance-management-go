@@ -1,9 +1,10 @@
 import React, {useEffect} from "react";
 import "./AttendanceUser.sass";
 import {AttendanceUserInformationHeader} from "../../components/attendance/AttendanceUserInformationHeader";
-import {AttendanceContext, useAttendance} from "../../hooks/xhr";
+
 import {AttendanceFormContainer} from "../../containers/attendance/AttendanceFormContainer";
 import {AttendanceDetailListContainer} from "../../containers/attendance/AttendanceDetailListContainer";
+import {AttendanceContext, useAttendance} from "../../hooks/attendance";
 
 export const AttendanceUser = () => {
     const {attendances, fetchAttendance} = useAttendance();

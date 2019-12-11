@@ -1,9 +1,10 @@
 import React from "react"
 import './CreateUser.sass'
-import {useUserDetail} from "../../hooks/xhr";
+
 import useForm from "react-hook-form";
 import {useHistory} from 'react-router-dom'
 import {CreateUserForm} from "../../containers/user/CreateUserForm";
+import {useUserDetail} from "../../hooks/user";
 
 export type CreateFormData = {
     username: string

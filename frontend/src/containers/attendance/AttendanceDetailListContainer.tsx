@@ -2,7 +2,7 @@ import React, {useContext} from "react";
 import {Attendance, AttendanceKind} from "../../domains/attendance/Attendance";
 import {AttendanceDetailItem} from "../../components/attendance/AttendanceDetailItem";
 import {useUserSelector} from "../../hooks/auth";
-import {AttendanceContext} from "../../hooks/xhr";
+import {AttendanceContext} from "../../hooks/attendance";
 
 export const AttendanceDetailListContainer = () => {
     const {user} = useUserSelector();
