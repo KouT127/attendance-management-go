@@ -1,17 +1,14 @@
-import React, {useCallback, useContext, useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {Attendance, AttendanceKindEnum} from "../../domains/attendance/Attendance";
-import {firebaseApp} from "../../lib/firebase";
 import {AttendanceForm} from "../../components/attendance/AttendanceForm";
 import {useUserSelector} from "../../hooks/auth";
 import useForm from "react-hook-form";
-import axios from "axios";
-import {AttendanceContext} from "../../hooks/attendance";
+import {useAttendanceStore} from "../../hooks/attendance";
 
 export const AttendanceFormContainer = () => {
-  const [title, setTitle] = useState("");
+  const [buttonTitle, setButtonTitle] = useState("");
   const { handleSubmit, register, errors, reset } = useForm();
-  const { attendances } = useContext(AttendanceContext);
-
+  const { createAttendance, latestKindType } = useAttendanceStore();
   const { user } = useUserSelector();
   const [attendance, setAttendance] = useState<Attendance>({
     userId: user.id,
@@ -22,44 +19,20 @@ export const AttendanceFormContainer = () => {
   });
 
   useEffect(() => {
-    const latestAttendance =
-      attendances.length > 0 ? attendances[0] : undefined;
-    const latestKindType: AttendanceKindEnum =
-      (latestAttendance && latestAttendance.kind) ||
-      AttendanceKindEnum.GO_TO_WORK;
-    const kindType =
-      latestKindType === AttendanceKindEnum.GO_TO_WORK
-        ? AttendanceKindEnum.LEAVE_WORK
-        : AttendanceKindEnum.GO_TO_WORK;
     const buttonTitle =
-      kindType === AttendanceKindEnum.GO_TO_WORK ? "出勤する" : "退勤する";
-    setTitle(buttonTitle);
-    setAttendance({
-      ...attendance,
-      kind: kindType
-    });
-  }, [attendances]);
+      latestKindType === AttendanceKindEnum.GO_TO_WORK
+        ? "出勤する"
+        : "退勤する";
+    setButtonTitle(buttonTitle);
+  }, [latestKindType]);
 
   const handleClickButton = useCallback(async () => {
-    const currentUser = firebaseApp.auth().currentUser;
-    if (!currentUser) {
-      return;
-    }
-    const token = await currentUser.getIdToken();
-    const response = await axios.post(
-      `http://localhost:8080/v1/attendances`,
-      {
-        ...attendance
-      },
-      {
-        headers: { authorization: token }
-      }
-    );
+    await createAttendance(attendance);
     reset();
   }, []);
 
   return AttendanceForm({
-    buttonTitle: title,
+    buttonTitle: buttonTitle,
     register: register,
     onClickButton: handleSubmit(handleClickButton)
   });

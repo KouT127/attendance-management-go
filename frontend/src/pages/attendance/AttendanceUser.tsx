@@ -1,23 +1,19 @@
-import React, {useEffect} from "react";
+import React from "react";
 import "./AttendanceUser.sass";
 import {AttendanceUserInformationHeader} from "../../components/attendance/AttendanceUserInformationHeader";
 
 import {AttendanceFormContainer} from "../../containers/attendance/AttendanceFormContainer";
 import {AttendanceDetailListContainer} from "../../containers/attendance/AttendanceDetailListContainer";
-import {AttendanceContext, useAttendance} from "../../hooks/attendance";
+import {AttendanceProvider} from "../../hooks/attendance";
 
 export const AttendanceUser = () => {
-    const {attendances, fetchAttendance} = useAttendance();
-    useEffect(() => {
-        fetchAttendance();
-    }, []);
-    return (
-        <AttendanceContext.Provider value={{attendances: attendances}}>
-            <div className='attendance'>
-                <AttendanceUserInformationHeader/>
-                <AttendanceFormContainer/>
-                <AttendanceDetailListContainer/>
-            </div>
-        </AttendanceContext.Provider>
-    );
+  return (
+    <AttendanceProvider>
+      <div className="attendance">
+        <AttendanceUserInformationHeader />
+        <AttendanceFormContainer />
+        <AttendanceDetailListContainer />
+      </div>
+    </AttendanceProvider>
+  );
 };
