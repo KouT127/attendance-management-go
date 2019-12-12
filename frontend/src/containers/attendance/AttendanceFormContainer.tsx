@@ -24,12 +24,23 @@ export const AttendanceFormContainer = () => {
         ? "出勤する"
         : "退勤する";
     setButtonTitle(buttonTitle);
+    setAttendance({
+      ...attendance,
+      kind: latestKindType
+    });
   }, [latestKindType]);
 
-  const handleClickButton = useCallback(async () => {
-    await createAttendance(attendance);
-    reset();
-  }, []);
+  const handleClickButton = useCallback(
+    async (value: any) => {
+      setAttendance({
+        ...attendance,
+        remark: value.remark || ""
+      });
+      await createAttendance(attendance);
+      reset();
+    },
+    [attendance]
+  );
 
   return AttendanceForm({
     buttonTitle: buttonTitle,

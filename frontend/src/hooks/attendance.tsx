@@ -39,22 +39,26 @@ export const AttendanceProvider = (props: Props) => {
       latest.kind === AttendanceKindEnum.GO_TO_WORK
         ? AttendanceKindEnum.LEAVE_WORK
         : AttendanceKindEnum.GO_TO_WORK;
-
     setLatestKindType(kindType);
   }, [attendances]);
 
-  const createAttendance = useCallback(async (attendance: Attendance) => {
-    const token = await getToken();
-    await axios.post(
-      `http://localhost:8080/v1/attendances`,
-      {
-        ...attendance
-      },
-      {
-        headers: { authorization: token }
-      }
-    );
-  }, []);
+  const createAttendance = useCallback(
+    async (attendance: Attendance) => {
+      const token = await getToken();
+      const response = await axios.post(
+        `http://localhost:8080/v1/attendances`,
+        {
+          ...attendance
+        },
+        {
+          headers: { authorization: token }
+        }
+      );
+      const newAttendances = [response.data.attendance, ...attendances];
+      setAttendances(newAttendances);
+    },
+    [attendances]
+  );
 
   const fetchAttendance = useCallback(async () => {
     const token = await getToken();
@@ -63,7 +67,7 @@ export const AttendanceProvider = (props: Props) => {
         authorization: token
       }
     });
-    const data = response.data.attendances;
+    const data = response.data.attendances || [];
     const attendances = data.map((value: any) => {
       const attendance: Attendance = {
         ...value

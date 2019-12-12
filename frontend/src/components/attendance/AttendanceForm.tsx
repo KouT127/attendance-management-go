@@ -1,7 +1,5 @@
 import React from "react";
-import {RoundedButton} from "../common/RoundedButton";
 import {AttendanceTimerContainer} from "../../containers/attendance/AttendanceTimerContainer";
-import {OnSubmit} from "react-hook-form/dist/types";
 import {RoundedSubmitButton} from "../common/RoundedSubmitButton";
 
 type Props = {
@@ -16,10 +14,9 @@ export const AttendanceForm = (props: Props) => {
             <form onSubmit={props.onClickButton}>
                 <AttendanceTimerContainer/>
                 <textarea
-                    name='content'
+                    name='remark'
                     className='timer-section__textarea'
                     ref={props.register({
-                        required: 'Required',
                         max_length: 100,
                     })}
                 />
