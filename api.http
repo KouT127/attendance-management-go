@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:8080
-@token = 
+@token = YOUR_AUTH_TOKEN
 
 ###
 GET {{baseUrl}}/v1/attendances HTTP/1.1
