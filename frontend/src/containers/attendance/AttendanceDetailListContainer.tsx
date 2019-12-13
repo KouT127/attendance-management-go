@@ -1,18 +1,25 @@
 import React, {useEffect} from "react";
 import {Attendance, AttendanceKind} from "../../domains/attendance/Attendance";
 import {AttendanceDetailItem} from "../../components/attendance/AttendanceDetailItem";
-import {useUserSelector} from "../../hooks/auth";
+import {useAuth, useUserSelector} from "../../hooks/auth";
 import {useAttendanceStore} from "../../hooks/attendance";
 
 export const AttendanceDetailListContainer = () => {
   const { user } = useUserSelector();
+  const { getToken } = useAuth();
   const { attendances, fetchAttendance } = useAttendanceStore();
   useEffect(() => {
-    fetchAttendance();
+    const fetch = async () => {
+      const token = await getToken();
+      fetchAttendance(token);
+    };
+    fetch();
   }, []);
+
   if (!attendances) {
     return <div>Loading...</div>;
   }
+
   return (
     <ol className="attendance-list">
       {attendances.map((doc, index) => {

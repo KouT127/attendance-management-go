@@ -1,6 +1,5 @@
 import React, {createContext, useCallback, useContext, useEffect, useState} from "react";
 import {Attendance, AttendanceKindEnum} from "../domains/attendance/Attendance";
-import {useAuth} from "./auth";
 import axios from "axios";
 
 interface Props {
@@ -10,8 +9,8 @@ interface Props {
 interface AttendanceProviderProps {
   attendances: Array<Attendance>;
   latestKindType: AttendanceKindEnum;
-  createAttendance: (attendance: Attendance) => Promise<void>;
-  fetchAttendance: () => Promise<void>;
+  createAttendance: (token: string, attendance: Attendance) => Promise<void>;
+  fetchAttendance: (token: string) => Promise<void>;
 }
 
 export const useAttendanceStore = () => useContext(AttendanceContext);
@@ -19,13 +18,12 @@ export const useAttendanceStore = () => useContext(AttendanceContext);
 export const AttendanceContext = createContext<AttendanceProviderProps>({
   attendances: [],
   latestKindType: AttendanceKindEnum.GO_TO_WORK,
-  createAttendance: (attendance: Attendance) => new Promise<void>(() => {}),
-  fetchAttendance: () => new Promise<void>(() => {})
+  createAttendance: (token, attendance) => new Promise<void>(() => {}),
+  fetchAttendance: token => new Promise<void>(() => {})
 });
 
 export const AttendanceProvider = (props: Props) => {
   const [attendances, setAttendances] = useState<Array<Attendance>>([]);
-  const { getToken } = useAuth();
   const [latestKindType, setLatestKindType] = useState<AttendanceKindEnum>(
     AttendanceKindEnum.GO_TO_WORK
   );
@@ -43,15 +41,16 @@ export const AttendanceProvider = (props: Props) => {
   }, [attendances]);
 
   const createAttendance = useCallback(
-    async (attendance: Attendance) => {
-      const token = await getToken();
+    async (token: string, attendance: Attendance) => {
       const response = await axios.post(
         `http://localhost:8080/v1/attendances`,
         {
           ...attendance
         },
         {
-          headers: { authorization: token }
+          headers: {
+            authorization: token
+          }
         }
       );
       const newAttendances = [response.data.attendance, ...attendances];
@@ -60,22 +59,24 @@ export const AttendanceProvider = (props: Props) => {
     [attendances]
   );
 
-  const fetchAttendance = useCallback(async () => {
-    const token = await getToken();
-    const response = await axios.get("http://localhost:8080/v1/attendances", {
-      headers: {
-        authorization: token
-      }
-    });
-    const data = response.data.attendances || [];
-    const attendances = data.map((value: any) => {
-      const attendance: Attendance = {
-        ...value
-      };
-      return attendance;
-    });
-    setAttendances(attendances);
-  }, []);
+  const fetchAttendance = useCallback(
+    async (token: string) => {
+      const response = await axios.get("http://localhost:8080/v1/attendances", {
+        headers: {
+          authorization: token
+        }
+      });
+      const data = response.data.attendances || [];
+      const attendances = data.map((value: any) => {
+        const attendance: Attendance = {
+          ...value
+        };
+        return attendance;
+      });
+      setAttendances(attendances);
+    },
+    [attendances]
+  );
 
   const value = {
     attendances,

@@ -103,7 +103,7 @@ const Routes = () => {
         <>
             <Header title='Time'/>
             <main className={'contents'}>
-                <Suspense fallback={<div>Loading</div>}>
+                <Suspense fallback={<div/>}>
                     <Router>
                         <Loading>
                             <Switch>
