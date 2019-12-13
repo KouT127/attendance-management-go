@@ -4,12 +4,9 @@ import {useAuth, useUserSelector} from "./hooks/auth";
 import {Header} from "./components/common/Header";
 import {useApplication} from "./hooks/application";
 import {PulseLoader} from "react-spinners";
+import {Splash} from "./pages/common/Splash";
 
-const Splash = React.lazy(() => import('./pages/common/Splash')
-    .then(importedModule => ({
-        default: importedModule.Splash
-    }))
-);
+
 const SignIn = React.lazy(() => import('./pages/auth/SignIn')
     .then(importedModule => ({
         default: importedModule.SignIn
