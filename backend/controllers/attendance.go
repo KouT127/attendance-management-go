@@ -20,7 +20,13 @@ func (uc AttendanceController) AttendanceListController(c *Context) {
 		attendances []*Attendance
 		userId      string
 	)
-
+	p := NewPagination(0, 5)
+	if err := c.Bind(p); err != nil {
+		c.JSON(http.StatusBadRequest, H{
+			"message": err,
+		})
+		return
+	}
 	value, exists := c.Get(middlewares.AuthorizedUserIdKey)
 	if !exists {
 		c.JSON(http.StatusNotFound, H{
@@ -35,10 +41,21 @@ func (uc AttendanceController) AttendanceListController(c *Context) {
 		})
 		return
 	}
-
+	page := p.CalculatePage()
 	engine := database.NewDB()
+
+	maxCnt, err := engine.
+		Table("attendances").
+		Count(&Attendance{})
+	if err != nil {
+		c.JSON(http.StatusBadRequest, H{
+			"message": err,
+		})
+		return
+	}
 	err = engine.
 		Table("attendances").
+		Limit(int(p.Limit), int(page)).
 		OrderBy("-id").
 		Iterate(&Attendance{UserId: userId}, func(idx int, bean interface{}) error {
 			attendance := bean.(*Attendance)
@@ -60,6 +77,7 @@ func (uc AttendanceController) AttendanceListController(c *Context) {
 	}
 
 	c.JSON(http.StatusOK, H{
+		"hasNext":     p.HasNext(maxCnt),
 		"attendances": responses,
 	})
 }
