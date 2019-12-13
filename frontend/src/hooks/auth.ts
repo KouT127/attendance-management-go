@@ -42,7 +42,7 @@ export const useAuth = () => {
         initialLoaded: true,
         userState: {
           id: user.uid,
-          username: authorizedUser.username,
+          name: authorizedUser.name,
           email: authorizedUser.email,
           imageUrl: authorizedUser.imageUrl,
           shouldEdit: authorizedUser.shouldEdit

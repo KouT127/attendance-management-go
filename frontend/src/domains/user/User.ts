@@ -1,14 +1,14 @@
 export class User extends Document {
     id: string;
-    username: string;
+    name: string;
     email: string;
     imageUrl: string;
     shouldEdit: boolean;
 
-    constructor(id: string, username: string, email: string, imageUrl: string, shouldEdit = true) {
+    constructor(id: string, name: string, email: string, imageUrl: string, shouldEdit = true) {
         super();
         this.id = id;
-        this.username = username;
+        this.name = name;
         this.email = email;
         this.imageUrl = imageUrl;
         this.shouldEdit = shouldEdit;
@@ -20,7 +20,7 @@ export class User extends Document {
 
     toJson() {
         return {
-            user_name: this.username,
+            user_name: this.name,
             email: this.email,
             imageUrl: this.imageUrl,
         }

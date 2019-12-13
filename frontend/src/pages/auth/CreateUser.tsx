@@ -7,15 +7,15 @@ import {CreateUserForm} from "../../containers/user/CreateUserForm";
 import {useUserDetail} from "../../hooks/user";
 
 export type CreateFormData = {
-    username: string
+    name: string
 }
 
 export const CreateUser = () => {
     const {handleSubmit, register, errors} = useForm<CreateFormData>();
     const {setUserData} = useUserDetail();
     const history = useHistory();
-    const onSubmit = handleSubmit(async ({username}) => {
-        await setUserData(username);
+    const onSubmit = handleSubmit(async ({name}) => {
+        await setUserData(name);
         history.push('/home')
     });
     return (

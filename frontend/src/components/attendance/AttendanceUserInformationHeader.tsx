@@ -4,6 +4,7 @@ import {useUserSelector} from "../../hooks/auth";
 
 export const AttendanceUserInformationHeader = () => {
     const {user} = useUserSelector();
+    console.log(user)
     return (
         <div className='attendance-user'>
             <div className='attendance-user-information'>
@@ -13,7 +14,7 @@ export const AttendanceUserInformationHeader = () => {
                 </figure>
                 <section className='attendance-user-information-body'>
                     <h3 className='attendance-user-information-body-name'>
-                        {user.username}
+                        {user.name}
                     </h3>
                     <p className='attendance-user-information-body-identifier'>
                         ID: <span>{user.id}</span>

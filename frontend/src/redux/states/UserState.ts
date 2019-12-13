@@ -3,7 +3,7 @@ import {Action} from "redux";
 
 export interface UserState {
     id: string
-    username: string | null
+    name: string | null
     email: string
     imageUrl: string | null
     shouldEdit: boolean
@@ -11,7 +11,7 @@ export interface UserState {
 
 export const initialState: UserState = {
     id: '',
-    username: '',
+    name: '',
     email: '',
     imageUrl: '',
     shouldEdit: true

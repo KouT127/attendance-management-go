@@ -34,7 +34,7 @@ export const AttendanceDetailListContainer = () => {
         return (
           <AttendanceDetailItem
             key={"attendance-user-list-item" + index}
-            name={user.username || "No Name"}
+            name={user.name || "No Name"}
             attendanceKind={new AttendanceKind(attendance.kind)}
             submittedAt={attendance.createdAt || ""}
           />
