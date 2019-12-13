@@ -53,8 +53,9 @@ export const AttendanceProvider = (props: Props) => {
           }
         }
       );
+
       const newAttendances = [response.data.attendance, ...attendances];
-      setAttendances(newAttendances);
+      setAttendances(newAttendances.slice(0, 5));
     },
     [attendances]
   );
