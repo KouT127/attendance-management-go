@@ -1,4 +1,4 @@
-import React, {createContext, useCallback, useContext, useEffect, useState} from "react";
+import React, {createContext, Dispatch, SetStateAction, useContext, useEffect, useRef, useState} from "react";
 import {Attendance, AttendanceKindEnum} from "../domains/attendance/Attendance";
 import axios from "axios";
 
@@ -9,7 +9,7 @@ interface Props {
 interface AttendanceProviderProps {
   attendances: Array<Attendance>;
   latestKindType: AttendanceKindEnum;
-  createAttendance: (token: string, attendance: Attendance) => Promise<void>;
+  setCreateEvent: Dispatch<SetStateAction<CreateParams | undefined>>;
   fetchAttendance: (token: string) => Promise<void>;
 }
 
@@ -18,11 +18,18 @@ export const useAttendanceStore = () => useContext(AttendanceContext);
 export const AttendanceContext = createContext<AttendanceProviderProps>({
   attendances: [],
   latestKindType: AttendanceKindEnum.GO_TO_WORK,
-  createAttendance: (token, attendance) => new Promise<void>(() => {}),
+  setCreateEvent: value => {},
   fetchAttendance: token => new Promise<void>(() => {})
 });
 
+interface CreateParams {
+  token: string;
+  attendance: Attendance;
+}
+
 export const AttendanceProvider = (props: Props) => {
+  const isLoading = useRef(false);
+  const [createEvent, setCreateEvent] = useState<CreateParams | undefined>();
   const [attendances, setAttendances] = useState<Array<Attendance>>([]);
   const [latestKindType, setLatestKindType] = useState<AttendanceKindEnum>(
     AttendanceKindEnum.GO_TO_WORK
@@ -40,49 +47,54 @@ export const AttendanceProvider = (props: Props) => {
     setLatestKindType(kindType);
   }, [attendances]);
 
-  const createAttendance = useCallback(
-    async (token: string, attendance: Attendance) => {
-      const response = await axios.post(
-        `http://localhost:8080/v1/attendances`,
-        {
-          ...attendance
-        },
-        {
-          headers: {
-            authorization: token
-          }
-        }
-      );
+  useEffect(() => {
+    if (!createEvent || isLoading.current) {
+      return;
+    }
+    createAttendance(createEvent.token, createEvent.attendance);
+  }, [createEvent, isLoading]);
 
-      const newAttendances = [response.data.attendance, ...attendances];
-      setAttendances(newAttendances.slice(0, 5));
-    },
-    [attendances]
-  );
-
-  const fetchAttendance = useCallback(
-    async (token: string) => {
-      const response = await axios.get("http://localhost:8080/v1/attendances", {
+  const createAttendance = async (token: string, attendance: Attendance) => {
+    isLoading.current = true;
+    const response = await axios.post(
+      `http://localhost:8080/v1/attendances`,
+      {
+        ...attendance
+      },
+      {
         headers: {
           authorization: token
         }
-      });
-      const data = response.data.attendances || [];
-      const attendances = data.map((value: any) => {
-        const attendance: Attendance = {
-          ...value
-        };
-        return attendance;
-      });
-      setAttendances(attendances);
-    },
-    [attendances]
-  );
+      }
+    );
+
+    const newAttendances = [response.data.attendance, ...attendances];
+    setAttendances(newAttendances.slice(0, 5));
+    setTimeout(() => {
+      isLoading.current = false;
+    }, 2000);
+  };
+
+  const fetchAttendance = async (token: string) => {
+    const response = await axios.get("http://localhost:8080/v1/attendances", {
+      headers: {
+        authorization: token
+      }
+    });
+    const data = response.data.attendances || [];
+    const attendances = data.map((value: any) => {
+      const attendance: Attendance = {
+        ...value
+      };
+      return attendance;
+    });
+    setAttendances(attendances);
+  };
 
   const value = {
     attendances,
     latestKindType,
-    createAttendance,
+    setCreateEvent,
     fetchAttendance
   };
 
