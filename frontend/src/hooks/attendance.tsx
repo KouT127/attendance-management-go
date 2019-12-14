@@ -24,7 +24,9 @@ export const AttendanceContext = createContext<AttendanceProviderProps>({
 
 interface CreateParams {
   token: string;
-  attendance: Attendance;
+  userId: string;
+  remark: string;
+  kind: AttendanceKindEnum;
 }
 
 export const AttendanceProvider = (props: Props) => {
@@ -51,11 +53,17 @@ export const AttendanceProvider = (props: Props) => {
     if (!createEvent || isLoading.current) {
       return;
     }
-    createAttendance(createEvent.token, createEvent.attendance);
+    createAttendance(createEvent);
   }, [createEvent, isLoading]);
 
-  const createAttendance = async (token: string, attendance: Attendance) => {
+  const createAttendance = async (params: CreateParams) => {
     isLoading.current = true;
+    const attendance: Attendance = {
+      userId: params.userId,
+      kind: params.kind,
+      remark: params.remark
+    };
+
     const response = await axios.post(
       `http://localhost:8080/v1/attendances`,
       {
@@ -63,7 +71,7 @@ export const AttendanceProvider = (props: Props) => {
       },
       {
         headers: {
-          authorization: token
+          authorization: params.token
         }
       }
     );
