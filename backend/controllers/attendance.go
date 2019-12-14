@@ -112,6 +112,7 @@ func (uc AttendanceController) AttendanceCreateController(c *Context) {
 		UserId:    userId,
 		Kind:      input.Kind,
 		Remark:    input.Remark,
+		PushedAt: time.Now(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}

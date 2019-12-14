@@ -7,6 +7,7 @@ type Attendance struct {
 	UserId    string
 	Kind      uint8
 	Remark    string
+	PushedAt time.Time
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
