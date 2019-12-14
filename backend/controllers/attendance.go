@@ -4,29 +4,41 @@ import (
 	"github.com/KouT127/Attendance-management/backend/database"
 	. "github.com/KouT127/Attendance-management/backend/domains"
 	"github.com/KouT127/Attendance-management/backend/middlewares"
+	. "github.com/KouT127/Attendance-management/backend/repositories"
 	. "github.com/KouT127/Attendance-management/backend/responses"
 	. "github.com/KouT127/Attendance-management/backend/validators"
 	. "github.com/gin-gonic/gin"
-	"github.com/mitchellh/mapstructure"
 	"net/http"
 	"time"
 )
 
-type AttendanceController struct{}
+func NewAttendanceController(repo AttendanceRepository) *attendanceController {
+	return &attendanceController{repository: repo}
+}
 
-func (uc AttendanceController) AttendanceListController(c *Context) {
+type AttendanceController interface {
+	AttendanceListController(c *Context)
+	AttendanceCreateController(c *Context)
+}
+
+type attendanceController struct {
+	repository AttendanceRepository
+}
+
+func (ac attendanceController) AttendanceListController(c *Context) {
 	var (
-		responses   []*AttendanceResponse
-		attendances []*Attendance
-		userId      string
+		responses []*AttendanceResponse
 	)
+
 	p := NewPagination(0, 5)
+
 	if err := c.Bind(p); err != nil {
 		c.JSON(http.StatusBadRequest, H{
 			"message": err,
 		})
 		return
 	}
+
 	value, exists := c.Get(middlewares.AuthorizedUserIdKey)
 	if !exists {
 		c.JSON(http.StatusNotFound, H{
@@ -34,35 +46,23 @@ func (uc AttendanceController) AttendanceListController(c *Context) {
 		})
 		return
 	}
-	err := mapstructure.Decode(value, &userId)
-	if err != nil {
-		c.JSON(http.StatusNotFound, H{
-			"message": "user not found",
-		})
-		return
-	}
-	page := p.CalculatePage()
-	engine := database.NewDB()
 
-	maxCnt, err := engine.
-		Table("attendances").
-		Count(&Attendance{})
+	userId := value.(string)
+
+	a := &Attendance{
+		UserId: userId,
+	}
+
+	maxCnt, err := ac.repository.FetchAttendancesCount(a)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, H{
 			"message": err,
 		})
 		return
 	}
-	err = engine.
-		Table("attendances").
-		Limit(int(p.Limit), int(page)).
-		OrderBy("-id").
-		Iterate(&Attendance{UserId: userId}, func(idx int, bean interface{}) error {
-			attendance := bean.(*Attendance)
-			attendances = append(attendances, attendance)
-			return nil
-		})
 
+	attendances := make([]*Attendance, 0)
+	attendances, err = ac.repository.FetchAttendances(a, p)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, H{
 			"message": err,
@@ -82,9 +82,8 @@ func (uc AttendanceController) AttendanceListController(c *Context) {
 	})
 }
 
-func (uc AttendanceController) AttendanceCreateController(c *Context) {
+func (ac attendanceController) AttendanceCreateController(c *Context) {
 	var (
-		userId     string
 		attendance Attendance
 		input      AttendanceInput
 	)
@@ -102,17 +101,13 @@ func (uc AttendanceController) AttendanceCreateController(c *Context) {
 		return
 	}
 
-	err := mapstructure.Decode(value, &userId)
-	if err != nil {
-		c.JSON(http.StatusNotFound, H{})
-		return
-	}
+	userId := value.(string)
 
 	attendance = Attendance{
 		UserId:    userId,
 		Kind:      input.Kind,
 		Remark:    input.Remark,
-		PushedAt: time.Now(),
+		PushedAt:  time.Now(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}

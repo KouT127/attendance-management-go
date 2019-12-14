@@ -2,7 +2,9 @@ package routes
 
 import (
 	. "github.com/KouT127/Attendance-management/backend/controllers"
+	"github.com/KouT127/Attendance-management/backend/database"
 	"github.com/KouT127/Attendance-management/backend/middlewares"
+	. "github.com/KouT127/Attendance-management/backend/repositories"
 	"github.com/gin-contrib/cors"
 	. "github.com/gin-gonic/gin"
 	"net/http"
@@ -20,9 +22,10 @@ func defaultRouter(r *Engine) {
 func v1AttendancesRouter(v1 *RouterGroup) {
 	handlers := []HandlerFunc{
 		middlewares.AuthRequired(),
-		//middlewares.FetchAuthorizedUser(),
 	}
-	ac := AttendanceController{}
+	engine := database.NewDB()
+	r := NewAttendanceRepository(*engine)
+	ac := NewAttendanceController(r)
 	attendances := v1.Group("/attendances", handlers...)
 	attendances.GET("", ac.AttendanceListController)
 	attendances.POST("", ac.AttendanceCreateController)
@@ -31,9 +34,10 @@ func v1AttendancesRouter(v1 *RouterGroup) {
 func v1UsersRouter(v1 *RouterGroup) {
 	handlers := []HandlerFunc{
 		middlewares.AuthRequired(),
-		//middlewares.FetchAuthorizedUser(),
 	}
-	uc := UserController{}
+	engine := database.NewDB()
+	r := NewUserRepository(*engine)
+	uc := NewUserController(r)
 	users := v1.Group("/users", handlers...)
 	users.GET("", uc.UserListController)
 	users.GET("/mine", uc.UserMineController)

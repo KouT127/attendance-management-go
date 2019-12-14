@@ -1,39 +1,37 @@
 package controllers
 
 import (
-	"github.com/KouT127/Attendance-management/backend/database"
 	. "github.com/KouT127/Attendance-management/backend/domains"
 	"github.com/KouT127/Attendance-management/backend/middlewares"
+	. "github.com/KouT127/Attendance-management/backend/repositories"
 	. "github.com/KouT127/Attendance-management/backend/validators"
 	. "github.com/gin-gonic/gin"
-	"github.com/mitchellh/mapstructure"
 	"net/http"
 )
 
-type UserController struct{}
+func NewUserController(repo UserRepository) *userController {
+	return &userController{
+		repository: repo,
+	}
+}
 
-func (uc UserController) UserListController(c *Context) {
-	var users []*User
-	engine := database.NewDB()
+type UserController interface {
+	UserListController(c *Context)
+	UserMineController(c *Context)
+	UserUpdateController(c *Context)
+}
 
-	results, err := engine.
-		Table("users").
-		Select("users.*").
-		QueryString()
+type userController struct {
+	repository UserRepository
+}
+
+func (uc userController) UserListController(c *Context) {
+	u := &User{}
+	users, err := uc.repository.FetchUsers(u)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, H{})
 		return
-	}
-
-	for _, result := range results {
-		var user User
-		err := mapstructure.Decode(result, user)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, H{})
-			return
-		}
-		users = append(users, &user)
 	}
 
 	c.JSON(http.StatusOK, H{
@@ -41,11 +39,73 @@ func (uc UserController) UserListController(c *Context) {
 	})
 }
 
-func (uc UserController) UserMineController(c *Context) {
+func getOrCreateUser(r UserRepository, userId string) (*User, error) {
+	u := &User{}
+	has, err := r.FetchUser(userId, u)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if !has {
+		u.Id = userId
+		_, err := r.CreateUser(u)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return u, nil
+}
+
+func (uc userController) UserMineController(c *Context) {
+	value, exists := c.Get(middlewares.AuthorizedUserIdKey)
+	if !exists {
+		c.JSON(http.StatusBadRequest, H{
+			"message": "user not found",
+		})
+		return
+	}
+	userId := value.(string)
+	u, err := getOrCreateUser(uc.repository, userId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, H{})
+		return
+	}
+
+	c.JSON(http.StatusOK, H{
+		"user": u,
+	})
+}
+
+func (uc userController) UserCreateController(c *Context) {
+	id := c.Request.Header.Get("id")
+
+	u := &User{
+		Id: id,
+	}
+
+	_, err := uc.repository.CreateUser(u)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, H{})
+		return
+	}
+
+	c.JSON(http.StatusOK, H{
+		"user": u,
+	})
+}
+
+func (uc userController) UserUpdateController(c *Context) {
 	var (
-		user   *User
-		userId string
+		input UserInput
 	)
+
+	err := c.Bind(&input)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, H{})
+		return
+	}
 
 	value, exists := c.Get(middlewares.AuthorizedUserIdKey)
 	if !exists {
@@ -54,109 +114,24 @@ func (uc UserController) UserMineController(c *Context) {
 		})
 		return
 	}
-	err := mapstructure.Decode(value, &userId)
-	if err != nil {
-		c.JSON(http.StatusNotFound, H{})
-		return
-	}
-	user, err = getOrCreateUser(userId)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, H{})
-		return
-	}
 
-	c.JSON(http.StatusOK, H{
-		"user": user,
-	})
-}
+	userId := value.(string)
 
-func getOrCreateUser(userId string) (*User, error) {
-	engine := database.NewDB()
-	user := User{
-		Id: userId,
-	}
-
-	has, err := engine.
-		Table("users").
-		Where("id = ?", userId).
-		Get(&user)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if !has {
-		_, err := engine.Table("users").Insert(&user)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return &user, nil
-}
-
-func (uc UserController) UserCreateController(c *Context) {
-	engine := database.NewDB()
-	id := c.Request.Header.Get("id")
-	user := User{
-		id,
-		"",
-		"",
-		"",
-	}
-
-	_, err := engine.Table("users").Insert(&user)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, H{})
-		return
-	}
-
-	c.JSON(http.StatusOK, H{
-		"user": user,
-	})
-}
-
-func (uc UserController) UserUpdateController(c *Context) {
-	var (
-		user  User
-		input UserInput
-	)
-
-	id := c.Param("id")
-	err := c.Bind(&input)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, H{})
-		return
-	}
-
-	//err = input.Validate()
-	//if err != nil {
-	//	c.JSON(http.StatusBadRequest, H{
-	//		"message": err,
-	//	})
-	//	return
-	//}
-
-	engine := database.NewDB()
-	has, err := engine.
-		Table("users").
-		Select("users.*").
-		Where("id = ?", id).
-		Get(&user)
-
+	u := &User{}
+	has, err := uc.repository.FetchUser(userId, u)
 	if err != nil || !has {
 		c.JSON(http.StatusNotFound, H{})
 		return
 	}
 
-	user.Name = input.Name
-	_, err = engine.Table("users").Update(&input)
+	u.Name = input.Name
+	_, err = uc.repository.UpdateUser(u)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, H{})
 		return
 	}
 
 	c.JSON(http.StatusOK, H{
-		"user": user,
+		"user": u,
 	})
 }

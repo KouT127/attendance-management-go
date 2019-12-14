@@ -22,7 +22,7 @@ func main() {
 	}
 
 	rootCmd.AddCommand(cmd.NewCreateDummyUserCommand(opts))
-	rootCmd.AddCommand(cmd.NewDeleteDummyUserCommand())
+	rootCmd.AddCommand(cmd.NewDeleteDummyUserCommand(opts))
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
