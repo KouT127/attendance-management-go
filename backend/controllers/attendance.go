@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"github.com/KouT127/Attendance-management/backend/database"
 	. "github.com/KouT127/Attendance-management/backend/domains"
 	"github.com/KouT127/Attendance-management/backend/middlewares"
 	. "github.com/KouT127/Attendance-management/backend/repositories"
@@ -84,10 +83,8 @@ func (ac attendanceController) AttendanceListController(c *Context) {
 
 func (ac attendanceController) AttendanceCreateController(c *Context) {
 	var (
-		attendance Attendance
-		input      AttendanceInput
+		input AttendanceInput
 	)
-	engine := database.NewDB()
 	if err := c.Bind(&input); err != nil {
 		c.JSON(http.StatusBadRequest, H{})
 		return
@@ -103,7 +100,7 @@ func (ac attendanceController) AttendanceCreateController(c *Context) {
 
 	userId := value.(string)
 
-	attendance = Attendance{
+	a := Attendance{
 		UserId:    userId,
 		Kind:      input.Kind,
 		Remark:    input.Remark,
@@ -112,15 +109,19 @@ func (ac attendanceController) AttendanceCreateController(c *Context) {
 		UpdatedAt: time.Now(),
 	}
 
-	if _, err := engine.Table("attendances").Insert(&attendance); err != nil {
+	if _, err := ac.repository.CreateAttendance(&a); err != nil {
 		c.JSON(http.StatusBadRequest, H{})
 		return
 	}
 
 	res := AttendanceResponse{}
-	res.SetAttendance(&attendance)
+	res.SetAttendance(&a)
 
 	c.JSON(http.StatusOK, H{
 		"attendance": res,
 	})
+}
+
+func (ac attendanceController) AttendanceMonthlyController(c *Context) {
+
 }
