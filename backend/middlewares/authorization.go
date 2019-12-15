@@ -21,7 +21,7 @@ func AuthRequired() gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, u)
 			return
 		}
-		filename := fmt.Sprintf("%s/google-service.json", "./backend/config/development")
+		filename := fmt.Sprintf("%s/firebase-service.json", "./backend/config/development")
 		opt := option.WithCredentialsFile(filename)
 		app, err := firebase.NewApp(context.Background(), nil, opt)
 		if err != nil {
