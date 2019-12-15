@@ -28,5 +28,5 @@ export const firebaseConfig = {
 
 ダウンロードして来たサービスアカウント情報をfirebase-service.jsonとしてリネームする。
 ```bash
-touch backend/config/development/config/firebase-service.json
+mv　YOUR_FILE backend/config/development/config/firebase-service.json
 ```
