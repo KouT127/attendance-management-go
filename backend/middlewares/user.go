@@ -3,7 +3,7 @@ package middlewares
 import (
 	"fmt"
 	"github.com/KouT127/Attendance-management/backend/database"
-	. "github.com/KouT127/Attendance-management/backend/domains"
+	. "github.com/KouT127/Attendance-management/backend/models"
 	"github.com/gin-gonic/gin"
 	"github.com/mitchellh/mapstructure"
 	"net/http"

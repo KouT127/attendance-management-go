@@ -1,6 +1,6 @@
 package responses
 
-import . "github.com/KouT127/Attendance-management/backend/domains"
+import . "github.com/KouT127/Attendance-management/backend/models"
 
 type AttendanceResponse struct {
 	Id        uint   `json:"id"`

@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	. "github.com/KouT127/Attendance-management/backend/domains"
+	. "github.com/KouT127/Attendance-management/backend/models"
 	"github.com/KouT127/Attendance-management/backend/middlewares"
 	. "github.com/KouT127/Attendance-management/backend/repositories"
 	. "github.com/KouT127/Attendance-management/backend/validators"
