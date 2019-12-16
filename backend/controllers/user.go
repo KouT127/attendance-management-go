@@ -125,7 +125,7 @@ func (uc userController) UserUpdateController(c *Context) {
 	}
 
 	u.Name = input.Name
-	_, err = uc.repository.UpdateUser(u)
+	_, err = uc.repository.UpdateUser(u, &User{Id: u.Id})
 	if err != nil {
 		c.JSON(http.StatusBadRequest, H{})
 		return

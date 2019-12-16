@@ -19,7 +19,7 @@ type UserRepository interface {
 	FetchUser(userId string, u *User) (bool, error)
 	FetchUsers(u *User) ([]*User, error)
 	CreateUser(u *User) (int64, error)
-	UpdateUser(u *User) (int64, error)
+	UpdateUser(u *User, q *User) (int64, error)
 }
 
 type userRepository struct {
@@ -51,8 +51,8 @@ func (ur userRepository) CreateUser(u *User) (int64, error) {
 		Insert(u)
 }
 
-func (ur userRepository) UpdateUser(u *User) (int64, error) {
+func (ur userRepository) UpdateUser(u *User, q *User) (int64, error) {
 	return ur.engine.
 		Table(UserTable).
-		Update(u)
+		Update(u, q)
 }
