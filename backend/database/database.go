@@ -11,7 +11,7 @@ var (
 	err    error
 )
 
-func Init(c *config.Config) {
+func Init(c *configs.Config) {
 	USER := c.Database.User
 	PASS := c.Database.Pass
 	PROTOCOL := "tcp(" + c.Database.Host + ":" + c.Database.Port + ")"

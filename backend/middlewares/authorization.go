@@ -15,7 +15,7 @@ const AuthorizedUserIdKey = "authorized_user_id"
 
 func AuthRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		conf := config.NewConfig()
+		conf := configs.NewConfig()
 		if conf == nil {
 			u := fmt.Sprintf("error firebase unauthorized")
 			c.AbortWithStatusJSON(http.StatusUnauthorized, u)

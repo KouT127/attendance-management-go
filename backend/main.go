@@ -7,8 +7,8 @@ import (
 )
 
 func main() {
-	config.Init(config.Development)
-	c := config.NewConfig()
+	configs.Init(configs.Development)
+	c := configs.NewConfig()
 	database.Init(c)
 	routes.Init()
 }

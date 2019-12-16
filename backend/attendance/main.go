@@ -13,8 +13,8 @@ func main() {
 	rootCmd := &cobra.Command{
 		Short: "Example",
 	}
-	config.Init(config.Development)
-	c := config.NewConfig()
+	configs.Init(configs.Development)
+	c := configs.NewConfig()
 	database.Init(c)
 	db := database.NewDB()
 	opts := &cmd.Options{
