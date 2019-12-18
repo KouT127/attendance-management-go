@@ -3,11 +3,14 @@ package models
 import "time"
 
 type Attendance struct {
-	Id        uint
-	UserId    string
-	Kind      uint8
-	Remark    string
+	Base
+	UserId       string
+	ClockedInId  uint
+	ClockedOutId uint
+}
+
+type AttendanceTime struct {
+	Base
+	Remark   string
 	PushedAt time.Time
-	CreatedAt time.Time
-	UpdatedAt time.Time
 }
