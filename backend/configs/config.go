@@ -32,12 +32,8 @@ const (
 
 func (e environment) path() string {
 	switch e {
-	case Staging:
-		return "./backend/config/staging"
-	case Production:
-		return "./backend/config/production"
 	default:
-		return "./backend/config/development"
+		return "./backend/configs"
 	}
 }
 

@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	. "github.com/KouT127/Attendance-management/backend/models"
-	"github.com/KouT127/Attendance-management/backend/middlewares"
-	. "github.com/KouT127/Attendance-management/backend/repositories"
-	. "github.com/KouT127/Attendance-management/backend/responses"
-	. "github.com/KouT127/Attendance-management/backend/validators"
+	"github.com/KouT127/attendance-management/backend/middlewares"
+	. "github.com/KouT127/attendance-management/backend/models"
+	. "github.com/KouT127/attendance-management/backend/repositories"
+	. "github.com/KouT127/attendance-management/backend/responses"
+	. "github.com/KouT127/attendance-management/backend/validators"
 	. "github.com/gin-gonic/gin"
 	"net/http"
 	"time"
@@ -102,11 +102,15 @@ func (ac attendanceController) AttendanceCreateController(c *Context) {
 
 	a := Attendance{
 		UserId:    userId,
-		Kind:      input.Kind,
 		Remark:    input.Remark,
-		PushedAt:  time.Now(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
+	}
+
+	if input.Kind == 10 {
+		a.ClockedInAt = time.Now()
+	} else {
+		a.ClockedOutAt = time.Now()
 	}
 
 	if _, err := ac.repository.CreateAttendance(&a); err != nil {
@@ -122,6 +126,43 @@ func (ac attendanceController) AttendanceCreateController(c *Context) {
 	})
 }
 
+type DailyAttendance struct {
+	Day          string
+	ClockedInAt  time.Time
+	ClockedOutAt time.Time
+}
+
 func (ac attendanceController) AttendanceMonthlyController(c *Context) {
+	//p := NewPagination(0, 100)
+
+	//if err := c.Bind(p); err != nil {
+	//	c.JSON(http.StatusBadRequest, H{
+	//		"message": err,
+	//	})
+	//	return
+	//}
+	//
+	//value, exists := c.Get(middlewares.AuthorizedUserIdKey)
+	//if !exists {
+	//	c.JSON(http.StatusNotFound, H{
+	//		"message": "user not found",
+	//	})
+	//	return
+	//}
+	//
+	//userId := value.(string)
+	//
+	//q := &Attendance{
+	//	UserId: userId,
+	//}
+	//
+	//attendances := make([]*Attendance, 0)
+	//attendances, err := ac.repository.FetchAttendances(q, p)
+	//if err != nil {
+	//	c.JSON(http.StatusBadRequest, H{
+	//		"message": err,
+	//	})
+	//	return
+	//}
 
 }

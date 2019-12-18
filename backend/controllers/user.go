@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	. "github.com/KouT127/Attendance-management/backend/models"
-	"github.com/KouT127/Attendance-management/backend/middlewares"
-	. "github.com/KouT127/Attendance-management/backend/repositories"
-	. "github.com/KouT127/Attendance-management/backend/validators"
+	"github.com/KouT127/attendance-management/backend/middlewares"
+	. "github.com/KouT127/attendance-management/backend/models"
+	. "github.com/KouT127/attendance-management/backend/repositories"
+	. "github.com/KouT127/attendance-management/backend/validators"
 	. "github.com/gin-gonic/gin"
 	"net/http"
 )

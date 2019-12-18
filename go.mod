@@ -1,4 +1,4 @@
-module github.com/KouT127/Attendance-management
+module github.com/KouT127/attendance-management
 
 go 1.13
 

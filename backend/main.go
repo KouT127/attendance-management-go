@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/KouT127/Attendance-management/backend/config"
-	"github.com/KouT127/Attendance-management/backend/database"
-	"github.com/KouT127/Attendance-management/backend/routes"
+	"github.com/KouT127/attendance-management/backend/configs"
+	"github.com/KouT127/attendance-management/backend/database"
+	"github.com/KouT127/attendance-management/backend/routes"
 )
 
 func main() {

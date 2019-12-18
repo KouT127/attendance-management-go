@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	. "github.com/KouT127/Attendance-management/backend/models"
+	. "github.com/KouT127/attendance-management/backend/models"
 	. "github.com/go-xorm/xorm"
 )
 
