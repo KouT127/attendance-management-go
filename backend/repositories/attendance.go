@@ -15,15 +15,23 @@ const (
 type attendance struct {
 	Id        uint
 	UserId    string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	CreatedAt time.Time `xorm:"created_at"`
+	UpdatedAt time.Time `xorm:"updated_at"`
 }
 
 type clockedInTime struct {
-	Id uint
+	Id        uint
+	PushedAt  time.Time
+	Remark    string
+	CreatedAt time.Time `xorm:"created_at"`
+	UpdatedAt time.Time `xorm:"updated_at"`
 }
 type clockedOutTime struct {
-	Id uint
+	Id        uint
+	PushedAt  time.Time
+	Remark    string
+	CreatedAt time.Time `xorm:"created_at"`
+	UpdatedAt time.Time `xorm:"updated_at"`
 }
 
 type attendanceDetail struct {
@@ -67,17 +75,26 @@ func (r attendanceRepository) FetchAttendances(a *models.Attendance, p *Paginati
 		OrderBy("-attendances.id").
 		Iterate(&attendanceDetail{}, func(idx int, bean interface{}) error {
 			d := bean.(*attendanceDetail)
-			attendance := d.attendance
+			a := d.attendance
 			cit := d.clockedInTime
 			cot := d.clockedOutTime
-			print("in ", cit.Id,"out ", cot.Id)
-			a := models.Attendance{
-				Id:        attendance.Id,
-				UserId:    attendance.UserId,
-				CreatedAt: attendance.CreatedAt,
-				UpdatedAt: attendance.UpdatedAt,
+			attendance := models.Attendance{
+				Id:     a.Id,
+				UserId: a.UserId,
+				ClockedIn: models.AttendanceTime{Id:
+				cit.Id, PushedAt:
+				cit.PushedAt,
+					Remark: cit.Remark,
+				},
+				ClockedOut: models.AttendanceTime{
+					Id:       cot.Id,
+					PushedAt: cot.PushedAt,
+					Remark:   cot.Remark,
+				},
+				CreatedAt: a.CreatedAt,
+				UpdatedAt: a.UpdatedAt,
 			}
-			attendances = append(attendances, &a)
+			attendances = append(attendances, &attendance)
 			return nil
 		})
 	return attendances, err

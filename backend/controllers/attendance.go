@@ -119,9 +119,9 @@ func (ac attendanceController) AttendanceCreateController(c *Context) {
 		return
 	}
 	if input.Kind == 10 {
-		a.ClockedInId = t
+		a.ClockedIn = t
 	} else {
-		a.ClockedOutId = t
+		a.ClockedOut = t
 	}
 
 	if _, err := ac.repository.CreateAttendance(&a); err != nil {
