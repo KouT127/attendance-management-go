@@ -2,8 +2,8 @@ package middlewares
 
 import (
 	"fmt"
-	"github.com/KouT127/attendance-management/backend/database"
-	. "github.com/KouT127/attendance-management/backend/models"
+	"github.com/KouT127/attendance-management/backend/models"
+
 	"github.com/gin-gonic/gin"
 	"github.com/mitchellh/mapstructure"
 	"net/http"
@@ -40,24 +40,24 @@ func FetchAuthorizedUser() gin.HandlerFunc {
 	}
 }
 
-func fetchUser(userId string) (*User, error) {
-	engine := database.NewDB()
-	var user User
+func fetchUser(userId string) (*models.User, error) {
+	//engine := database.NewDB()
+	var user models.User
 
-	results, err := engine.
-		Table("users").
-		Select("users.id, users.name").
-		Where("id = ?", userId).
-		QueryString()
 
-	if err != nil || len(results) == 0 {
-		return nil, err
-	}
-
-	err = mapstructure.Decode(results[0], &user)
-
-	if err != nil {
-		return nil, err
-	}
+	//if err != nil || len(results) == 0 {
+	//	return nil, err
+	//}
+	//
+	//err = mapstructure.Decode(results[0], &user)
+	//
+	//if err != nil {
+	//	return nil	//results, err := engine.
+	//	//	Table("users").
+	//	//	Select("users.id, users.name").
+	//	//	Where("id = ?", userId).
+	//	//	QueryString()
+	//	, err
+	//}
 	return &user, nil
 }

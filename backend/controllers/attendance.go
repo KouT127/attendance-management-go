@@ -102,15 +102,26 @@ func (ac attendanceController) AttendanceCreateController(c *Context) {
 
 	a := Attendance{
 		UserId:    userId,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+	t := AttendanceTime{
 		Remark:    input.Remark,
+		PushedAt:  time.Now(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
 
+	if _, err := ac.repository.CreateAttendanceTime(&t); err != nil {
+		c.JSON(http.StatusBadRequest, H{
+			"message": "user not found",
+		})
+		return
+	}
 	if input.Kind == 10 {
-		a.ClockedInAt = time.Now()
+		a.ClockedInId = t
 	} else {
-		a.ClockedOutAt = time.Now()
+		a.ClockedOutId = t
 	}
 
 	if _, err := ac.repository.CreateAttendance(&a); err != nil {
