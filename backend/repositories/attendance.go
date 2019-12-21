@@ -19,6 +19,27 @@ type attendance struct {
 	UpdatedAt time.Time `xorm:"updated_at"`
 }
 
+func (a attendance) toAttendanceTime(cit clockedInTime, cot clockedOutTime) models.Attendance {
+	return models.Attendance{
+		Id:         a.Id,
+		UserId:     a.UserId,
+		ClockedIn:  cit.toAttendanceTime(),
+		ClockedOut: cot.toAttendanceTime(),
+		CreatedAt:  a.CreatedAt,
+		UpdatedAt:  a.UpdatedAt,
+	}
+}
+
+func (t clockedInTime) toAttendanceTime() models.AttendanceTime {
+	return models.AttendanceTime{
+		Id:        t.Id,
+		Remark:    t.Remark,
+		PushedAt:  t.PushedAt,
+		CreatedAt: t.CreatedAt,
+		UpdatedAt: t.UpdatedAt,
+	}
+}
+
 type clockedInTime struct {
 	Id        uint
 	PushedAt  time.Time
@@ -26,6 +47,17 @@ type clockedInTime struct {
 	CreatedAt time.Time `xorm:"created_at"`
 	UpdatedAt time.Time `xorm:"updated_at"`
 }
+
+func (t clockedOutTime) toAttendanceTime() models.AttendanceTime {
+	return models.AttendanceTime{
+		Id:        t.Id,
+		Remark:    t.Remark,
+		PushedAt:  t.PushedAt,
+		CreatedAt: t.CreatedAt,
+		UpdatedAt: t.UpdatedAt,
+	}
+}
+
 type clockedOutTime struct {
 	Id        uint
 	PushedAt  time.Time
@@ -75,26 +107,8 @@ func (r attendanceRepository) FetchAttendances(a *models.Attendance, p *Paginati
 		OrderBy("-attendances.id").
 		Iterate(&attendanceDetail{}, func(idx int, bean interface{}) error {
 			d := bean.(*attendanceDetail)
-			a := d.attendance
-			cit := d.clockedInTime
-			cot := d.clockedOutTime
-			attendance := models.Attendance{
-				Id:     a.Id,
-				UserId: a.UserId,
-				ClockedIn: models.AttendanceTime{Id:
-				cit.Id, PushedAt:
-				cit.PushedAt,
-					Remark: cit.Remark,
-				},
-				ClockedOut: models.AttendanceTime{
-					Id:       cot.Id,
-					PushedAt: cot.PushedAt,
-					Remark:   cot.Remark,
-				},
-				CreatedAt: a.CreatedAt,
-				UpdatedAt: a.UpdatedAt,
-			}
-			attendances = append(attendances, &attendance)
+			a := d.attendance.toAttendanceTime(d.clockedInTime, d.clockedOutTime)
+			attendances = append(attendances, &a)
 			return nil
 		})
 	return attendances, err
