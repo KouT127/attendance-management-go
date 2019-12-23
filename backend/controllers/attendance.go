@@ -86,7 +86,7 @@ func (ac attendanceController) AttendanceCreateController(c *Context) {
 		input AttendanceInput
 	)
 	if err := c.Bind(&input); err != nil {
-		c.JSON(http.StatusBadRequest, H{})
+		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 
@@ -97,14 +97,6 @@ func (ac attendanceController) AttendanceCreateController(c *Context) {
 		})
 		return
 	}
-
-	userId := value.(string)
-
-	a := Attendance{
-		UserId:    userId,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-	}
 	t := AttendanceTime{
 		Remark:    input.Remark,
 		PushedAt:  time.Now(),
@@ -112,25 +104,46 @@ func (ac attendanceController) AttendanceCreateController(c *Context) {
 		UpdatedAt: time.Now(),
 	}
 
-	if _, err := ac.repository.CreateAttendanceTime(&t); err != nil {
+	userId := value.(string)
+
+	query := Attendance{
+		UserId: userId,
+	}
+
+	attendance, err := ac.repository.FetchLatestAttendance(&query)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, H{
-			"message": "user not found",
+			"message": err,
 		})
 		return
 	}
-	if input.Kind == 10 {
-		a.ClockedIn = t
-	} else {
-		a.ClockedOut = t
+
+	if _, err := ac.repository.CreateAttendanceTime(&t); err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
 	}
 
-	if _, err := ac.repository.CreateAttendance(&a); err != nil {
-		c.JSON(http.StatusBadRequest, H{})
+	if attendance == nil {
+		attendance = &Attendance{
+			UserId:    userId,
+			ClockedIn: t,
+		}
+	} else {
+		attendance = &Attendance{
+			Id:         attendance.Id,
+			UserId:     attendance.UserId,
+			ClockedIn:  attendance.ClockedIn,
+			ClockedOut: t,
+		}
+	}
+
+	if _, err := ac.repository.CreateAttendance(attendance); err != nil {
+		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 
 	res := AttendanceResponse{}
-	res.SetAttendance(&a)
+	res.SetAttendance(attendance)
 
 	c.JSON(http.StatusOK, H{
 		"attendance": res,
