@@ -96,11 +96,10 @@ func (r attendanceRepository) FetchAttendancesCount(a *models.Attendance) (int64
 
 func (r attendanceRepository) FetchAttendances(a *models.Attendance, p *Pagination) ([]*models.Attendance, error) {
 	attendances := make([]*models.Attendance, 0)
-
 	page := p.CalculatePage()
 	err := r.engine.
 		Select("attendances.*, clockedInTime.*, clockedOutTime.*").
-		Table("attendances").
+		Table(AttendanceTable).
 		Join("left", "attendances_time clockedInTime", "attendances.clocked_in_id = clockedInTime.id").
 		Join("left", "attendances_time clockedOutTime", "attendances.clocked_out_id = clockedOutTime.id").
 		Limit(int(p.Limit), int(page)).
@@ -115,7 +114,7 @@ func (r attendanceRepository) FetchAttendances(a *models.Attendance, p *Paginati
 }
 
 func (r attendanceRepository) CreateAttendance(a *models.Attendance) (int64, error) {
-	return r.engine.Table("attendances").Insert(a)
+	return r.engine.Table(AttendanceTable).Insert(a)
 }
 
 func (r attendanceRepository) CreateAttendanceTime(t *models.AttendanceTime) (int64, error) {
