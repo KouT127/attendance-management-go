@@ -12,7 +12,7 @@ type Attendance struct {
 }
 
 type AttendanceTime struct {
-	Id        uint
+	Id        int64
 	Remark    string
 	PushedAt  time.Time
 	CreatedAt time.Time

@@ -118,7 +118,7 @@ func (ac attendanceController) AttendanceCreateController(c *Context) {
 		return
 	}
 
-	if _, err := ac.repository.CreateAttendanceTime(&t); err != nil {
+	if err := ac.repository.CreateAttendanceTime(&t); err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}

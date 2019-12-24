@@ -16,8 +16,8 @@ const (
 type attendance struct {
 	Id           uint
 	UserId       string
-	ClockedInId  *uint
-	ClockedOutId *uint
+	ClockedInId  *int64
+	ClockedOutId *int64
 	CreatedAt    time.Time `xorm:"created_at"`
 	UpdatedAt    time.Time `xorm:"updated_at"`
 }
@@ -44,7 +44,7 @@ func (t clockedInTime) toAttendanceTime() models.AttendanceTime {
 }
 
 type clockedInTime struct {
-	Id        uint
+	Id        int64
 	PushedAt  time.Time
 	Remark    string
 	CreatedAt time.Time `xorm:"created_at"`
@@ -62,7 +62,7 @@ func (t clockedOutTime) toAttendanceTime() models.AttendanceTime {
 }
 
 type clockedOutTime struct {
-	Id        uint
+	Id        int64
 	PushedAt  time.Time
 	Remark    string
 	CreatedAt time.Time `xorm:"created_at"`
@@ -113,7 +113,7 @@ type AttendanceRepository interface {
 	FetchLatestAttendance(a *models.Attendance) (*models.Attendance, error)
 	FetchAttendances(a *models.Attendance, p *Pagination) ([]*models.Attendance, error)
 	CreateAttendance(a *models.Attendance) (int64, error)
-	CreateAttendanceTime(t *models.AttendanceTime) (int64, error)
+	CreateAttendanceTime(t *models.AttendanceTime) error
 }
 
 type attendanceRepository struct {
@@ -166,11 +166,11 @@ func (r attendanceRepository) FetchAttendances(a *models.Attendance, p *Paginati
 
 func (r attendanceRepository) CreateAttendance(a *models.Attendance) (int64, error) {
 	attendance := attendance{
-		UserId:    a.UserId,
+		UserId:       a.UserId,
 		ClockedOutId: nil,
-		ClockedInId: nil,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		ClockedInId:  nil,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
 	}
 	if a.ClockedIn.Id != 0 {
 		attendance.ClockedInId = &a.ClockedIn.Id
@@ -181,6 +181,9 @@ func (r attendanceRepository) CreateAttendance(a *models.Attendance) (int64, err
 	return r.engine.Table(AttendanceTable).Insert(attendance)
 }
 
-func (r attendanceRepository) CreateAttendanceTime(t *models.AttendanceTime) (int64, error) {
-	return r.engine.Table(AttendanceTimeTable).Insert(t)
+func (r attendanceRepository) CreateAttendanceTime(t *models.AttendanceTime) error {
+	if _, err := r.engine.Table(AttendanceTimeTable).InsertOne(t); err != nil {
+		return err
+	}
+	return nil
 }
