@@ -25,9 +25,7 @@ type attendanceController struct {
 }
 
 func (ac attendanceController) AttendanceListController(c *Context) {
-	var (
-		responses []*AttendanceResponse
-	)
+	responses := make([]*AttendanceResponse, 0)
 
 	p := NewPagination(0, 5)
 
@@ -75,10 +73,18 @@ func (ac attendanceController) AttendanceListController(c *Context) {
 		responses = append(responses, res)
 	}
 
-	c.JSON(http.StatusOK, H{
-		"hasNext":     p.HasNext(maxCnt),
-		"attendances": responses,
-	})
+	res := new(response)
+	res.HasNext = p.HasNext(maxCnt)
+	res.IsSuccessful = true
+	res.Attendances = responses
+
+	c.JSON(http.StatusOK, res)
+}
+
+type response struct {
+	IsSuccessful bool `json:"isSuccessful"`
+	HasNext      bool `json:"hasNext"`
+	Attendances  []*AttendanceResponse `json:"attendances"`
 }
 
 func (ac attendanceController) AttendanceCreateController(c *Context) {
@@ -148,12 +154,6 @@ func (ac attendanceController) AttendanceCreateController(c *Context) {
 	c.JSON(http.StatusOK, H{
 		"attendance": res,
 	})
-}
-
-type DailyAttendance struct {
-	Day          string
-	ClockedInAt  time.Time
-	ClockedOutAt time.Time
 }
 
 func (ac attendanceController) AttendanceMonthlyController(c *Context) {
