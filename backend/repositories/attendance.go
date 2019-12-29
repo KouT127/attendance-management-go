@@ -22,28 +22,18 @@ type attendance struct {
 	UpdatedAt    time.Time `xorm:"updated_at"`
 }
 
-func (a attendance) toAttendanceTime(cit clockedInTime, cot clockedOutTime) models.Attendance {
+func (a attendance) toAttendanceTime(cit attendanceTime, cot attendanceTime) models.Attendance {
 	return models.Attendance{
 		Id:         a.Id,
 		UserId:     a.UserId,
-		ClockedIn:  cit.toAttendanceTime(),
-		ClockedOut: cot.toAttendanceTime(),
+		ClockedIn:  cit.build(),
+		ClockedOut: cot.build(),
 		CreatedAt:  a.CreatedAt,
 		UpdatedAt:  a.UpdatedAt,
 	}
 }
 
-func (t clockedInTime) toAttendanceTime() models.AttendanceTime {
-	return models.AttendanceTime{
-		Id:        t.Id,
-		Remark:    t.Remark,
-		PushedAt:  t.PushedAt,
-		CreatedAt: t.CreatedAt,
-		UpdatedAt: t.UpdatedAt,
-	}
-}
-
-type clockedInTime struct {
+type attendanceTime struct {
 	Id        int64
 	PushedAt  time.Time
 	Remark    string
@@ -51,7 +41,7 @@ type clockedInTime struct {
 	UpdatedAt time.Time `xorm:"updated_at"`
 }
 
-func (t clockedOutTime) toAttendanceTime() models.AttendanceTime {
+func (t attendanceTime) build() models.AttendanceTime {
 	return models.AttendanceTime{
 		Id:        t.Id,
 		Remark:    t.Remark,
@@ -59,43 +49,23 @@ func (t clockedOutTime) toAttendanceTime() models.AttendanceTime {
 		CreatedAt: t.CreatedAt,
 		UpdatedAt: t.UpdatedAt,
 	}
-}
-
-type clockedOutTime struct {
-	Id        int64
-	PushedAt  time.Time
-	Remark    string
-	CreatedAt time.Time `xorm:"created_at"`
-	UpdatedAt time.Time `xorm:"updated_at"`
 }
 
 type attendanceDetail struct {
 	attendance     `xorm:"extends"`
-	clockedInTime  `xorm:"extends"`
-	clockedOutTime `xorm:"extends"`
+	ClockedInTime  attendanceTime `xorm:"extends"`
+	ClockedOutTime attendanceTime `xorm:"extends"`
 }
 
-func (d attendanceDetail) toAttendance() *models.Attendance {
+func (d attendanceDetail) build() *models.Attendance {
 	a := d.attendance
-	i := d.clockedInTime
-	o := d.clockedOutTime
+	i := d.ClockedInTime
+	o := d.ClockedOutTime
 	attendance := &models.Attendance{
-		Id:     a.Id,
-		UserId: a.UserId,
-		ClockedIn: models.AttendanceTime{
-			Id:        i.Id,
-			Remark:    i.Remark,
-			PushedAt:  i.PushedAt,
-			CreatedAt: i.CreatedAt,
-			UpdatedAt: i.UpdatedAt,
-		},
-		ClockedOut: models.AttendanceTime{
-			Id:        o.Id,
-			Remark:    o.Remark,
-			PushedAt:  o.PushedAt,
-			CreatedAt: o.CreatedAt,
-			UpdatedAt: o.UpdatedAt,
-		},
+		Id:        a.Id,
+		UserId:    a.UserId,
+		ClockedIn: i.build(),
+		ClockedOut: o.build(),
 		CreatedAt: a.CreatedAt,
 		UpdatedAt: a.UpdatedAt,
 	}
@@ -141,7 +111,7 @@ func (r attendanceRepository) FetchLatestAttendance(a *models.Attendance) (*mode
 	if !has {
 		return nil, errors.New("attendance not exists")
 	}
-	return attendance.toAttendance(), nil
+	return attendance.build(), nil
 
 }
 
@@ -157,7 +127,7 @@ func (r attendanceRepository) FetchAttendances(a *models.Attendance, p *Paginati
 		OrderBy("-attendances.id").
 		Iterate(&attendanceDetail{}, func(idx int, bean interface{}) error {
 			d := bean.(*attendanceDetail)
-			a := d.attendance.toAttendanceTime(d.clockedInTime, d.clockedOutTime)
+			a := d.attendance.toAttendanceTime(d.ClockedOutTime, d.ClockedOutTime)
 			attendances = append(attendances, &a)
 			return nil
 		})
