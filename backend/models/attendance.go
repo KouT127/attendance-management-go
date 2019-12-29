@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Attendance struct {
-	Id         uint
+	Id         int64
 	UserId     string
 	ClockedIn  AttendanceTime
 	ClockedOut AttendanceTime

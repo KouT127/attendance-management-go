@@ -14,7 +14,7 @@ const (
 )
 
 type attendance struct {
-	Id           uint
+	Id           int64
 	UserId       string
 	ClockedInId  *int64
 	ClockedOutId *int64
@@ -83,6 +83,7 @@ type AttendanceRepository interface {
 	FetchLatestAttendance(a *models.Attendance) (*models.Attendance, error)
 	FetchAttendances(a *models.Attendance, p *Pagination) ([]*models.Attendance, error)
 	CreateAttendance(a *models.Attendance) (int64, error)
+	UpdateAttendance(a *models.Attendance) (int64, error)
 	CreateAttendanceTime(t *models.AttendanceTime) error
 }
 
@@ -145,10 +146,17 @@ func (r attendanceRepository) CreateAttendance(a *models.Attendance) (int64, err
 	if a.ClockedIn.Id != 0 {
 		attendance.ClockedInId = &a.ClockedIn.Id
 	}
+	return r.engine.Table(AttendanceTable).Insert(attendance)
+}
+
+func (r attendanceRepository) UpdateAttendance(a *models.Attendance) (int64, error) {
+	attendance := attendance{
+		ClockedOutId: &a.ClockedOut.Id,
+	}
 	if a.ClockedOut.Id != 0 {
 		attendance.ClockedOutId = &a.ClockedOut.Id
 	}
-	return r.engine.Table(AttendanceTable).Insert(attendance)
+	return r.engine.Table(AttendanceTable).ID(a.Id).Cols("clocked_out_id").Update(&attendance)
 }
 
 func (r attendanceRepository) CreateAttendanceTime(t *models.AttendanceTime) error {

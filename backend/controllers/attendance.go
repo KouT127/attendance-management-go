@@ -69,7 +69,7 @@ func (ac attendanceController) AttendanceListController(c *Context) {
 
 	for _, attendance := range attendances {
 		res := &AttendanceResponse{}
-		res.SetAttendance(attendance)
+		res.Build(attendance)
 		responses = append(responses, res)
 	}
 
@@ -82,8 +82,8 @@ func (ac attendanceController) AttendanceListController(c *Context) {
 }
 
 type response struct {
-	IsSuccessful bool `json:"isSuccessful"`
-	HasNext      bool `json:"hasNext"`
+	IsSuccessful bool                  `json:"isSuccessful"`
+	HasNext      bool                  `json:"hasNext"`
 	Attendances  []*AttendanceResponse `json:"attendances"`
 }
 
@@ -134,6 +134,10 @@ func (ac attendanceController) AttendanceCreateController(c *Context) {
 			UserId:    userId,
 			ClockedIn: t,
 		}
+		if _, err := ac.repository.CreateAttendance(attendance); err != nil {
+			c.JSON(http.StatusBadRequest, err)
+			return
+		}
 	} else {
 		attendance = &Attendance{
 			Id:         attendance.Id,
@@ -141,15 +145,14 @@ func (ac attendanceController) AttendanceCreateController(c *Context) {
 			ClockedIn:  attendance.ClockedIn,
 			ClockedOut: t,
 		}
-	}
-
-	if _, err := ac.repository.CreateAttendance(attendance); err != nil {
-		c.JSON(http.StatusBadRequest, err)
-		return
+		if _, err := ac.repository.UpdateAttendance(attendance); err != nil {
+			c.JSON(http.StatusBadRequest, err)
+			return
+		}
 	}
 
 	res := AttendanceResponse{}
-	res.SetAttendance(attendance)
+	res.Build(attendance)
 
 	c.JSON(http.StatusOK, H{
 		"attendance": res,

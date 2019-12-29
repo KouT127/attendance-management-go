@@ -3,7 +3,7 @@ package responses
 import . "github.com/KouT127/attendance-management/backend/models"
 
 type AttendanceResponse struct {
-	Id             uint           `json:"id"`
+	Id             int64          `json:"id"`
 	UserId         string         `json:"userId"`
 	ClockedInTime  AttendanceTime `json:"clockedInTime"`
 	ClockedOutTime AttendanceTime `json:"clockedOutTime"`
@@ -15,7 +15,7 @@ type AttendanceTimeResponse struct {
 	Remark   string `json:"remark"`
 }
 
-func (r *AttendanceResponse) SetAttendance(a *Attendance) *AttendanceResponse {
+func (r *AttendanceResponse) Build(a *Attendance) *AttendanceResponse {
 	r.Id = a.Id
 	r.UserId = a.UserId
 	r.CreatedAt = a.CreatedAt.Format("2006-01-02-15:04:05")
