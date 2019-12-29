@@ -62,12 +62,12 @@ func (d attendanceDetail) build() *models.Attendance {
 	i := d.ClockedInTime
 	o := d.ClockedOutTime
 	attendance := &models.Attendance{
-		Id:        a.Id,
-		UserId:    a.UserId,
-		ClockedIn: i.build(),
+		Id:         a.Id,
+		UserId:     a.UserId,
+		ClockedIn:  i.build(),
 		ClockedOut: o.build(),
-		CreatedAt: a.CreatedAt,
-		UpdatedAt: a.UpdatedAt,
+		CreatedAt:  a.CreatedAt,
+		UpdatedAt:  a.UpdatedAt,
 	}
 	return attendance
 }

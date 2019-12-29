@@ -1,0 +1,32 @@
+settings:
+  legacy:
+    force: false
+    interval: 0s
+server:
+  status: true
+  open: false
+  port: 5002
+  host: localhost
+schema:
+  - name: attendance-management
+    path: ./
+    commands:
+      install:
+        status: true
+        method: go build -o bin/attendance-management ./backend/main.go
+      run:
+        status: true
+        method: bin/attendance-management
+    args:
+      - --endpoint=app:8080
+    watcher:
+      extensions:
+        - go
+      paths:
+        - /
+      ignore:
+        paths:
+          - ./frontend/node_modules
+          - .git
+          - .realize
+          - vendor

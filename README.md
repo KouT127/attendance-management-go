@@ -5,6 +5,23 @@
 create database attendance_management;
 ```
 
+## Go Setup
+globalでrealizeを使えるようにする
+```
+cd 
+mkdir go-tools
+cd go-tools
+go mod init go-tools
+
+go get -u gopkg.in/urfave/cli.v2@master
+go get -u github.com/oxequa/realize
+```
+
+## hot reload
+```
+make run
+```
+
 ## Add Firebase Config
 TSファイルを作成する。
 ```bash
