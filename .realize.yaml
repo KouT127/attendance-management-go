@@ -26,7 +26,7 @@ schema:
         - /
       ignore:
         paths:
-          - ./frontend/node_modules
+          - ./frontend
           - .git
           - .realize
           - vendor
