@@ -4,6 +4,9 @@ import (
 	"github.com/KouT127/attendance-management/backend/configs"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
+	"os"
+	"time"
+	"xorm.io/core"
 )
 
 var (
@@ -23,7 +26,16 @@ func Init(c *configs.Config) {
 	if err != nil {
 		panic(err)
 	}
-	engine.Logger()
+	logger := xorm.NewSimpleLogger(os.Stdout)
+	logger.ShowSQL(true)
+	logger.SetLevel(core.LOG_INFO)
+	loc, err := time.LoadLocation("UTC")
+	if err != nil {
+		panic(err)
+	}
+	engine.SetTZLocation(loc)
+	engine.SetTZDatabase(loc)
+	engine.SetLogger(logger)
 }
 
 func NewDB() *xorm.Engine {

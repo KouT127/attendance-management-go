@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"errors"
 	"github.com/KouT127/attendance-management/backend/models"
 	. "github.com/KouT127/attendance-management/backend/validators"
 	"github.com/go-xorm/xorm"
@@ -39,6 +38,16 @@ type attendanceTime struct {
 	Remark    string
 	CreatedAt time.Time `xorm:"created_at"`
 	UpdatedAt time.Time `xorm:"updated_at"`
+}
+
+func NewTime(at *models.AttendanceTime) *attendanceTime {
+	t := new(attendanceTime)
+	t.Id = at.Id
+	t.Remark = at.Remark
+	t.CreatedAt = at.CreatedAt
+	t.UpdatedAt = at.UpdatedAt
+	t.PushedAt = at.PushedAt
+	return t
 }
 
 func (t attendanceTime) build() models.AttendanceTime {
@@ -98,22 +107,28 @@ func (r attendanceRepository) FetchAttendancesCount(a *models.Attendance) (int64
 
 func (r attendanceRepository) FetchLatestAttendance(a *models.Attendance) (*models.Attendance, error) {
 	attendance := &attendanceDetail{}
+	now := time.Now()
+	start := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
+	end := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 59, time.Local)
+
 	has, err := r.engine.Select("attendances.*, clockedInTime.*, clockedOutTime.*").
 		Table(AttendanceTable).
 		Join("left", "attendances_time clockedInTime", "attendances.clocked_in_id = clockedInTime.id").
 		Join("left", "attendances_time clockedOutTime", "attendances.clocked_out_id = clockedOutTime.id").
 		Where("attendances.user_id = ?", a.UserId).
+		Where("attendances.created_at Between ? and ? ", start, end).
 		Limit(1).
 		OrderBy("-attendances.id").
 		Get(attendance)
+
 	if err != nil {
 		return nil, err
 	}
 	if !has {
-		return nil, errors.New("attendance not exists")
+		return nil, nil
 	}
-	return attendance.build(), nil
 
+	return attendance.build(), nil
 }
 
 func (r attendanceRepository) FetchAttendances(a *models.Attendance, p *Pagination) ([]*models.Attendance, error) {
@@ -140,8 +155,8 @@ func (r attendanceRepository) CreateAttendance(a *models.Attendance) (int64, err
 		UserId:       a.UserId,
 		ClockedOutId: nil,
 		ClockedInId:  nil,
-		CreatedAt:    time.Now(),
-		UpdatedAt:    time.Now(),
+		CreatedAt:    time.Now().UTC(),
+		UpdatedAt:    time.Now().UTC(),
 	}
 	if a.ClockedIn.Id != 0 {
 		attendance.ClockedInId = &a.ClockedIn.Id
@@ -152,16 +167,19 @@ func (r attendanceRepository) CreateAttendance(a *models.Attendance) (int64, err
 func (r attendanceRepository) UpdateAttendance(a *models.Attendance) (int64, error) {
 	attendance := attendance{
 		ClockedOutId: &a.ClockedOut.Id,
+		UpdatedAt:    time.Now(),
 	}
 	if a.ClockedOut.Id != 0 {
 		attendance.ClockedOutId = &a.ClockedOut.Id
 	}
-	return r.engine.Table(AttendanceTable).ID(a.Id).Cols("clocked_out_id").Update(&attendance)
+	return r.engine.Table(AttendanceTable).ID(a.Id).Cols("clocked_out_id", "updated_at").Update(&attendance)
 }
 
 func (r attendanceRepository) CreateAttendanceTime(t *models.AttendanceTime) error {
-	if _, err := r.engine.Table(AttendanceTimeTable).InsertOne(t); err != nil {
+	at := NewTime(t)
+	if _, err := r.engine.Table(AttendanceTimeTable).Insert(at); err != nil {
 		return err
 	}
+	t.Id = at.Id
 	return nil
 }

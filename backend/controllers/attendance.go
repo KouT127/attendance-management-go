@@ -105,9 +105,9 @@ func (ac attendanceController) AttendanceCreateController(c *Context) {
 	}
 	t := AttendanceTime{
 		Remark:    input.Remark,
-		PushedAt:  time.Now(),
+		PushedAt:  time.Now().UTC(),
 		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		UpdatedAt: time.Now().UTC(),
 	}
 
 	userId := value.(string)
