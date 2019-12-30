@@ -1,6 +1,9 @@
 package responses
 
-import . "github.com/KouT127/attendance-management/backend/models"
+import (
+	. "github.com/KouT127/attendance-management/backend/models"
+	"github.com/KouT127/attendance-management/backend/utils/timezone"
+)
 
 type AttendanceResponse struct {
 	Id             int64          `json:"id"`
@@ -16,9 +19,10 @@ type AttendanceTimeResponse struct {
 }
 
 func (r *AttendanceResponse) Build(a *Attendance) *AttendanceResponse {
+	loc := timezone.NewJSTLocation()
 	r.Id = a.Id
 	r.UserId = a.UserId
-	r.CreatedAt = a.CreatedAt.Format("2006-01-02-15:04:05")
-	r.UpdatedAt = a.UpdatedAt.Format("2006-01-02-15:04:05")
+	r.CreatedAt = a.CreatedAt.In(loc).Format("2006-01-02-15:04:05")
+	r.UpdatedAt = a.UpdatedAt.In(loc).Format("2006-01-02-15:04:05")
 	return r
 }
