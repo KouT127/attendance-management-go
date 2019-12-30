@@ -1,9 +1,16 @@
-package responses
+package serializers
 
 import (
 	. "github.com/KouT127/attendance-management/backend/models"
 	"github.com/KouT127/attendance-management/backend/utils/timezone"
 )
+
+type AttendanceTimeResponse struct {
+	PushedAt  string `json:"pushedAt"`
+	Remark    string `json:"remark"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+}
 
 type AttendanceResponse struct {
 	Id             int64          `json:"id"`
@@ -13,9 +20,10 @@ type AttendanceResponse struct {
 	CreatedAt      string         `json:"createdAt"`
 	UpdatedAt      string         `json:"updatedAt"`
 }
-type AttendanceTimeResponse struct {
-	PushedAt string `json:"pushedAt"`
-	Remark   string `json:"remark"`
+
+type AttendancesResponse struct {
+	CommonResponse
+	Attendances []*AttendanceResponse `json:"attendances"`
 }
 
 func (r *AttendanceResponse) Build(a *Attendance) *AttendanceResponse {

@@ -1,10 +1,11 @@
 package controllers
 
 import (
+	"errors"
 	"github.com/KouT127/attendance-management/backend/middlewares"
 	. "github.com/KouT127/attendance-management/backend/models"
 	. "github.com/KouT127/attendance-management/backend/repositories"
-	. "github.com/KouT127/attendance-management/backend/responses"
+	. "github.com/KouT127/attendance-management/backend/serializers"
 	. "github.com/KouT127/attendance-management/backend/validators"
 	. "github.com/gin-gonic/gin"
 	"net/http"
@@ -38,32 +39,26 @@ func (ac attendanceController) AttendanceListController(c *Context) {
 
 	value, exists := c.Get(middlewares.AuthorizedUserIdKey)
 	if !exists {
-		c.JSON(http.StatusNotFound, H{
-			"message": "user not found",
-		})
+		err := errors.New("invalid user id")
+		c.JSON(http.StatusNotFound, NewError("user_id", err))
 		return
 	}
 
 	userId := value.(string)
-
 	a := &Attendance{
 		UserId: userId,
 	}
 
 	maxCnt, err := ac.repository.FetchAttendancesCount(a)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, H{
-			"message": err,
-		})
+		c.JSON(http.StatusBadRequest, NewError("attendances", err))
 		return
 	}
 
 	attendances := make([]*Attendance, 0)
 	attendances, err = ac.repository.FetchAttendances(a, p)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, H{
-			"message": err,
-		})
+		c.JSON(http.StatusBadRequest, NewError("attendances", err))
 		return
 	}
 
@@ -73,18 +68,12 @@ func (ac attendanceController) AttendanceListController(c *Context) {
 		responses = append(responses, res)
 	}
 
-	res := new(response)
+	res := new(AttendancesResponse)
 	res.HasNext = p.HasNext(maxCnt)
 	res.IsSuccessful = true
 	res.Attendances = responses
 
 	c.JSON(http.StatusOK, res)
-}
-
-type response struct {
-	IsSuccessful bool                  `json:"isSuccessful"`
-	HasNext      bool                  `json:"hasNext"`
-	Attendances  []*AttendanceResponse `json:"attendances"`
 }
 
 func (ac attendanceController) AttendanceCreateController(c *Context) {
