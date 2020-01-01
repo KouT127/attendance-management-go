@@ -5,6 +5,7 @@ import (
 	"github.com/KouT127/attendance-management/backend/database"
 	"github.com/KouT127/attendance-management/backend/middlewares"
 	. "github.com/KouT127/attendance-management/backend/repositories"
+	. "github.com/KouT127/attendance-management/backend/usecases"
 	"github.com/gin-contrib/cors"
 	. "github.com/gin-gonic/gin"
 	"net/http"
@@ -25,7 +26,8 @@ func v1AttendancesRouter(v1 *RouterGroup) {
 	}
 	engine := database.NewDB()
 	r := NewAttendanceRepository(*engine)
-	ac := NewAttendanceController(r)
+	u := NewAttendanceUseCase(r)
+	ac := NewAttendanceController(u)
 	attendances := v1.Group("/attendances", handlers...)
 	attendances.GET("", ac.AttendanceListController)
 	attendances.POST("", ac.AttendanceCreateController)

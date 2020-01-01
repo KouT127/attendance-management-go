@@ -4,16 +4,18 @@ import (
 	"errors"
 	"github.com/KouT127/attendance-management/backend/middlewares"
 	. "github.com/KouT127/attendance-management/backend/models"
-	. "github.com/KouT127/attendance-management/backend/repositories"
 	. "github.com/KouT127/attendance-management/backend/serializers"
+	. "github.com/KouT127/attendance-management/backend/usecases"
 	. "github.com/KouT127/attendance-management/backend/validators"
 	. "github.com/gin-gonic/gin"
 	"net/http"
 	"time"
 )
 
-func NewAttendanceController(repo AttendanceRepository) *attendanceController {
-	return &attendanceController{repository: repo}
+func NewAttendanceController(usecase AttendanceInteractor) *attendanceController {
+	return &attendanceController{
+		usecase: usecase,
+	}
 }
 
 type AttendanceController interface {
@@ -22,12 +24,10 @@ type AttendanceController interface {
 }
 
 type attendanceController struct {
-	repository AttendanceRepository
+	usecase AttendanceInteractor
 }
 
 func (ac attendanceController) AttendanceListController(c *Context) {
-	responses := make([]*AttendanceResponse, 0)
-
 	p := NewPagination(0, 5)
 
 	if err := c.Bind(p); err != nil {
@@ -49,29 +49,10 @@ func (ac attendanceController) AttendanceListController(c *Context) {
 		UserId: userId,
 	}
 
-	maxCnt, err := ac.repository.FetchAttendancesCount(a)
+	res, err := ac.usecase.ViewAttendances(p, a)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, NewError("attendances", err))
-		return
 	}
-
-	attendances := make([]*Attendance, 0)
-	attendances, err = ac.repository.FetchAttendances(a, p)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, NewError("attendances", err))
-		return
-	}
-
-	for _, attendance := range attendances {
-		res := &AttendanceResponse{}
-		res.Build(attendance)
-		responses = append(responses, res)
-	}
-
-	res := new(AttendancesResponse)
-	res.HasNext = p.HasNext(maxCnt)
-	res.IsSuccessful = true
-	res.Attendances = responses
 
 	c.JSON(http.StatusOK, res)
 }
@@ -92,54 +73,21 @@ func (ac attendanceController) AttendanceCreateController(c *Context) {
 		c.JSON(http.StatusBadRequest, NewError("user", err))
 		return
 	}
-	t := AttendanceTime{
-		Remark:    input.Remark,
-		PushedAt:  time.Now(),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-	}
+	t := new(AttendanceTime)
+	t.Remark = input.Remark
+	t.PushedAt = time.Now()
+	t.CreatedAt = time.Now()
+	t.UpdatedAt = time.Now()
 
 	userId := value.(string)
+	query := new(Attendance)
+	query.UserId = userId
 
-	query := Attendance{
-		UserId: userId,
-	}
-
-	attendance, err := ac.repository.FetchLatestAttendance(&query)
+	res, err := ac.usecase.CreateAttendance(query, t)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, NewError("attendance", err))
 		return
 	}
-
-	if err := ac.repository.CreateAttendanceTime(&t); err != nil {
-		c.JSON(http.StatusBadRequest, NewError("attendance", err))
-		return
-	}
-
-	if attendance == nil {
-		attendance = &Attendance{
-			UserId:    userId,
-			ClockedIn: t,
-		}
-		if _, err := ac.repository.CreateAttendance(attendance); err != nil {
-			c.JSON(http.StatusBadRequest, NewError("attendance", err))
-			return
-		}
-	} else {
-		attendance = &Attendance{
-			Id:         attendance.Id,
-			UserId:     attendance.UserId,
-			ClockedIn:  attendance.ClockedIn,
-			ClockedOut: t,
-		}
-		if _, err := ac.repository.UpdateAttendance(attendance); err != nil {
-			c.JSON(http.StatusBadRequest, NewError("attendance", err))
-			return
-		}
-	}
-
-	res := AttendanceResponse{}
-	res.Build(attendance)
 
 	c.JSON(http.StatusOK, H{
 		"attendance": res,
@@ -178,5 +126,4 @@ func (ac attendanceController) AttendanceMonthlyController(c *Context) {
 	//	})
 	//	return
 	//}
-
 }
