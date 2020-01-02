@@ -24,11 +24,10 @@ func v1AttendancesRouter(v1 *RouterGroup) {
 	handlers := []HandlerFunc{
 		middlewares.AuthRequired(),
 	}
-	engine := database.NewDB()
-	r := NewAttendanceRepository(*engine)
+	r := NewAttendanceRepository()
 	u := NewAttendanceInteractor(r)
 	c := NewAttendanceController(u)
-	
+
 	attendances := v1.Group("/attendances", handlers...)
 	attendances.GET("", c.AttendanceListController)
 	attendances.POST("", c.AttendanceCreateController)
