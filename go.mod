@@ -12,4 +12,5 @@ require (
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/spf13/viper v1.6.1
 	google.golang.org/api v0.15.0
+	xorm.io/core v0.7.2-0.20190928055935-90aeac8d08eb
 )

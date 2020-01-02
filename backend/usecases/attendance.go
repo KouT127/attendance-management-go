@@ -7,7 +7,7 @@ import (
 	. "github.com/KouT127/attendance-management/backend/validators"
 )
 
-func NewAttendanceUseCase(repo AttendanceRepository) *attendanceInteractor {
+func NewAttendanceInteractor(repo AttendanceRepository) *attendanceInteractor {
 	return &attendanceInteractor{
 		repository: repo,
 	}

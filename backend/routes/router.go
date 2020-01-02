@@ -26,11 +26,12 @@ func v1AttendancesRouter(v1 *RouterGroup) {
 	}
 	engine := database.NewDB()
 	r := NewAttendanceRepository(*engine)
-	u := NewAttendanceUseCase(r)
-	ac := NewAttendanceController(u)
+	u := NewAttendanceInteractor(r)
+	c := NewAttendanceController(u)
+	
 	attendances := v1.Group("/attendances", handlers...)
-	attendances.GET("", ac.AttendanceListController)
-	attendances.POST("", ac.AttendanceCreateController)
+	attendances.GET("", c.AttendanceListController)
+	attendances.POST("", c.AttendanceCreateController)
 }
 
 func v1UsersRouter(v1 *RouterGroup) {
@@ -39,11 +40,12 @@ func v1UsersRouter(v1 *RouterGroup) {
 	}
 	engine := database.NewDB()
 	r := NewUserRepository(*engine)
-	uc := NewUserController(r)
+	i := NewUserInteractor(r)
+	c := NewUserController(i)
+
 	users := v1.Group("/users", handlers...)
-	users.GET("", uc.UserListController)
-	users.GET("/mine", uc.UserMineController)
-	users.PUT("/:id", uc.UserUpdateController)
+	users.GET("/mine", c.UserMineController)
+	users.PUT("/:id", c.UserUpdateController)
 }
 
 func v1Router(r *Engine) {
