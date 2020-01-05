@@ -31,6 +31,7 @@ func v1AttendancesRouter(v1 *RouterGroup) {
 	attendances := v1.Group("/attendances", handlers...)
 	attendances.GET("", c.AttendanceListController)
 	attendances.POST("", c.AttendanceCreateController)
+	attendances.GET("monthly", c.AttendanceMonthlyController)
 }
 
 func v1UsersRouter(v1 *RouterGroup) {

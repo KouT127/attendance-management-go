@@ -57,6 +57,33 @@ func (ac attendanceController) AttendanceListController(c *Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+func (ac attendanceController) AttendanceMonthlyController(c *Context) {
+	p := NewPagination(0, 31)
+	s := NewSearchParams()
+
+	if err := c.Bind(s); err != nil {
+		c.JSON(http.StatusBadRequest, NewError("search", err))
+		return
+	}
+
+	userId, err := GetIdByKey(c, middlewares.AuthorizedUserIdKey)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, NewError("user", err))
+		return
+	}
+
+	q := &Attendance{
+		UserId: userId,
+	}
+
+	res, err := ac.usecase.ViewAttendancesMonthly(p, q)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, NewError("attendances", err))
+	}
+
+	c.JSON(http.StatusOK, res)
+}
+
 func (ac attendanceController) AttendanceCreateController(c *Context) {
 	var (
 		input AttendanceInput
@@ -94,36 +121,11 @@ func (ac attendanceController) AttendanceCreateController(c *Context) {
 	})
 }
 
-func (ac attendanceController) AttendanceMonthlyController(c *Context) {
-	//p := NewPagination(0, 100)
-
-	//if err := c.Bind(p); err != nil {
-	//	c.JSON(http.StatusBadRequest, H{
-	//		"message": err,
-	//	})
-	//	return
-	//}
-	//
-	//value, exists := c.Get(middlewares.AuthorizedUserIdKey)
-	//if !exists {
-	//	c.JSON(http.StatusNotFound, H{
-	//		"message": "user not found",
-	//	})
-	//	return
-	//}
-	//
-	//userId := value.(string)
-	//
-	//q := &Attendance{
-	//	UserId: userId,
-	//}
-	//
-	//attendances := make([]*Attendance, 0)
-	//attendances, err := ac.repository.FetchAttendances(q, p)
-	//if err != nil {
-	//	c.JSON(http.StatusBadRequest, H{
-	//		"message": err,
-	//	})
-	//	return
-	//}
+func GetIdByKey(ctx *Context, key string) (string, error) {
+	value, exists := ctx.Get(key)
+	if !exists {
+		return "", errors.New("user not found")
+	}
+	id := value.(string)
+	return id, nil
 }

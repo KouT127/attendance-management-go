@@ -16,6 +16,7 @@ func NewAttendanceInteractor(ar AttendanceRepository) *attendanceInteractor {
 
 type AttendanceInteractor interface {
 	ViewAttendances(pagination *Pagination, attendance *Attendance) (*AttendancesResponse, error)
+	ViewAttendancesMonthly(pagination *Pagination, attendance *Attendance) (*AttendancesResponse, error)
 	CreateAttendance(query *Attendance, time *AttendanceTime) (*AttendanceResponse, error)
 }
 
@@ -51,6 +52,28 @@ func (i *attendanceInteractor) ViewAttendances(pagination *Pagination, attendanc
 	return res, nil
 }
 
+func (i *attendanceInteractor) ViewAttendancesMonthly(pagination *Pagination, attendance *Attendance) (*AttendancesResponse, error) {
+	eng := database.NewDB()
+
+	attendances, err := i.ar.FetchAttendances(eng, attendance, pagination)
+	if err != nil {
+		return nil, err
+	}
+
+	responses := make([]*AttendanceResponse, 0)
+
+	for _, attendance := range attendances {
+		res := new(AttendanceResponse)
+		res.Build(attendance)
+		responses = append(responses, res)
+	}
+
+	res := new(AttendancesResponse)
+	res.IsSuccessful = true
+	res.Attendances = responses
+	return res, nil
+}
+
 func (i *attendanceInteractor) CreateAttendance(query *Attendance, time *AttendanceTime) (*AttendanceResponse, error) {
 	sess := i.ar.NewSession(database.NewDB())
 	defer i.ar.Close(sess)
@@ -70,7 +93,7 @@ func (i *attendanceInteractor) CreateAttendance(query *Attendance, time *Attenda
 	if attendance == nil {
 		attendance = &Attendance{
 			UserId:    query.UserId,
-			ClockedIn: *time,
+			ClockedIn: time,
 		}
 		if _, err := i.ar.CreateAttendance(sess, attendance); err != nil {
 			return nil, err
@@ -80,7 +103,7 @@ func (i *attendanceInteractor) CreateAttendance(query *Attendance, time *Attenda
 			Id:         attendance.Id,
 			UserId:     attendance.UserId,
 			ClockedIn:  attendance.ClockedIn,
-			ClockedOut: *time,
+			ClockedOut: time,
 		}
 		if _, err := i.ar.UpdateAttendance(sess, attendance); err != nil {
 			return nil, err

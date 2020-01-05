@@ -5,8 +5,8 @@ import "time"
 type Attendance struct {
 	Id         int64
 	UserId     string
-	ClockedIn  AttendanceTime
-	ClockedOut AttendanceTime
+	ClockedIn  *AttendanceTime
+	ClockedOut *AttendanceTime
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 }

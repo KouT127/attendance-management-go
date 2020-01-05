@@ -1,8 +1,8 @@
 package validators
 
 type Pagination struct {
-	Page  int64
-	Limit int64
+	Page  int64 `form:"page"`
+	Limit int64 `form:"limit"`
 }
 
 func NewPagination(page int64, limit int64) *Pagination {
@@ -18,4 +18,12 @@ func (p Pagination) CalculatePage() int64 {
 func (p Pagination) HasNext(max int64) bool {
 	cnt := p.Page * p.Limit
 	return max > cnt
+}
+
+type SearchParams struct {
+	Month int64 `form:"month"`
+}
+
+func NewSearchParams() *SearchParams {
+	return new(SearchParams)
 }

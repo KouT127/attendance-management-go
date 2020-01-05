@@ -21,7 +21,7 @@ type attendance struct {
 	UpdatedAt    time.Time `xorm:"updated_at"`
 }
 
-func (a attendance) toAttendanceTime(cit attendanceTime, cot attendanceTime) models.Attendance {
+func (a attendance) build(cit *attendanceTime, cot *attendanceTime) models.Attendance {
 	return models.Attendance{
 		Id:         a.Id,
 		UserId:     a.UserId,
@@ -33,7 +33,7 @@ func (a attendance) toAttendanceTime(cit attendanceTime, cot attendanceTime) mod
 }
 
 type attendanceTime struct {
-	Id        int64
+	Id        *int64
 	PushedAt  time.Time
 	Remark    string
 	CreatedAt time.Time `xorm:"created_at"`
@@ -42,7 +42,7 @@ type attendanceTime struct {
 
 func NewTime(at *models.AttendanceTime) *attendanceTime {
 	t := new(attendanceTime)
-	t.Id = at.Id
+	t.Id = &at.Id
 	t.Remark = at.Remark
 	t.CreatedAt = at.CreatedAt
 	t.UpdatedAt = at.UpdatedAt
@@ -50,9 +50,9 @@ func NewTime(at *models.AttendanceTime) *attendanceTime {
 	return t
 }
 
-func (t attendanceTime) build() models.AttendanceTime {
-	return models.AttendanceTime{
-		Id:        t.Id,
+func (t attendanceTime) build() *models.AttendanceTime {
+	return &models.AttendanceTime{
+		Id:        *t.Id,
 		Remark:    t.Remark,
 		PushedAt:  t.PushedAt,
 		CreatedAt: t.CreatedAt,
@@ -62,19 +62,28 @@ func (t attendanceTime) build() models.AttendanceTime {
 
 type attendanceDetail struct {
 	attendance     `xorm:"extends"`
-	ClockedInTime  attendanceTime `xorm:"extends"`
-	ClockedOutTime attendanceTime `xorm:"extends"`
+	ClockedInTime  *attendanceTime `xorm:"extends"`
+	ClockedOutTime *attendanceTime `xorm:"extends"`
 }
 
 func (d attendanceDetail) build() *models.Attendance {
+	var (
+		in  *models.AttendanceTime
+		out *models.AttendanceTime
+	)
 	a := d.attendance
-	i := d.ClockedInTime
-	o := d.ClockedOutTime
+	if d.ClockedInTime.Id != nil {
+		in = d.ClockedInTime.build()
+	}
+	if d.ClockedOutTime.Id != nil {
+		out = d.ClockedOutTime.build()
+	}
+
 	attendance := &models.Attendance{
 		Id:         a.Id,
 		UserId:     a.UserId,
-		ClockedIn:  i.build(),
-		ClockedOut: o.build(),
+		ClockedIn:  in,
+		ClockedOut: out,
 		CreatedAt:  a.CreatedAt,
 		UpdatedAt:  a.UpdatedAt,
 	}
@@ -142,8 +151,8 @@ func (r attendanceRepository) FetchAttendances(eng *xorm.Engine, a *models.Atten
 		OrderBy("-attendances.id").
 		Iterate(&attendanceDetail{}, func(idx int, bean interface{}) error {
 			d := bean.(*attendanceDetail)
-			a := d.attendance.toAttendanceTime(d.ClockedOutTime, d.ClockedOutTime)
-			attendances = append(attendances, &a)
+			a := d.build()
+			attendances = append(attendances, a)
 			return nil
 		})
 	return attendances, err
@@ -179,6 +188,6 @@ func (r attendanceRepository) CreateAttendanceTime(sess *xorm.Session, t *models
 	if _, err := sess.Table(AttendanceTimeTable).Insert(at); err != nil {
 		return err
 	}
-	t.Id = at.Id
+	t.Id = *at.Id
 	return nil
 }
