@@ -21,7 +21,12 @@ type AttendanceResponse struct {
 	UpdatedAt      string          `json:"updatedAt"`
 }
 
-type AttendancesResponse struct {
+type AttendanceSerializer struct {
+	CommonResponse
+	Attendance AttendanceResponse `json:"attendance"`
+}
+
+type AttendancesSerializer struct {
 	CommonResponse
 	Attendances []*AttendanceResponse `json:"attendances"`
 }
@@ -35,4 +40,17 @@ func (r *AttendanceResponse) Build(a *Attendance) *AttendanceResponse {
 	r.CreatedAt = a.CreatedAt.In(loc).Format("2006-01-02-15:04:05")
 	r.UpdatedAt = a.UpdatedAt.In(loc).Format("2006-01-02-15:04:05")
 	return r
+}
+
+func (s *AttendanceSerializer) Serialize(isSuccessful bool, hasNext bool, attendance *Attendance) {
+	s.IsSuccessful = true
+	s.HasNext = hasNext
+	res := new(AttendanceResponse)
+	s.Attendance = *res.Build(attendance)
+}
+
+func (s *AttendancesSerializer) Serialize(isSuccessful bool, hasNext bool, responses []*AttendanceResponse) {
+	s.IsSuccessful = true
+	s.HasNext = hasNext
+	s.Attendances = responses
 }

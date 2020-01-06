@@ -15,16 +15,16 @@ func NewAttendanceInteractor(ar AttendanceRepository) *attendanceInteractor {
 }
 
 type AttendanceInteractor interface {
-	ViewAttendances(pagination *Pagination, attendance *Attendance) (*AttendancesResponse, error)
-	ViewAttendancesMonthly(pagination *Pagination, attendance *Attendance) (*AttendancesResponse, error)
-	CreateAttendance(query *Attendance, time *AttendanceTime) (*AttendanceResponse, error)
+	ViewAttendances(pagination *Pagination, attendance *Attendance) (*AttendancesSerializer, error)
+	ViewAttendancesMonthly(pagination *Pagination, attendance *Attendance) (*AttendancesSerializer, error)
+	CreateAttendance(query *Attendance, time *AttendanceTime) (*AttendanceSerializer, error)
 }
 
 type attendanceInteractor struct {
 	ar AttendanceRepository
 }
 
-func (i *attendanceInteractor) ViewAttendances(pagination *Pagination, attendance *Attendance) (*AttendancesResponse, error) {
+func (i *attendanceInteractor) ViewAttendances(pagination *Pagination, attendance *Attendance) (*AttendancesSerializer, error) {
 	eng := database.NewDB()
 	maxCnt, err := i.ar.FetchAttendancesCount(eng, attendance)
 	if err != nil {
@@ -45,14 +45,14 @@ func (i *attendanceInteractor) ViewAttendances(pagination *Pagination, attendanc
 		responses = append(responses, res)
 	}
 
-	res := new(AttendancesResponse)
+	res := new(AttendancesSerializer)
 	res.HasNext = pagination.HasNext(maxCnt)
 	res.IsSuccessful = true
 	res.Attendances = responses
 	return res, nil
 }
 
-func (i *attendanceInteractor) ViewAttendancesMonthly(pagination *Pagination, attendance *Attendance) (*AttendancesResponse, error) {
+func (i *attendanceInteractor) ViewAttendancesMonthly(pagination *Pagination, attendance *Attendance) (*AttendancesSerializer, error) {
 	eng := database.NewDB()
 
 	attendances, err := i.ar.FetchAttendances(eng, attendance, pagination)
@@ -68,13 +68,13 @@ func (i *attendanceInteractor) ViewAttendancesMonthly(pagination *Pagination, at
 		responses = append(responses, res)
 	}
 
-	res := new(AttendancesResponse)
+	res := new(AttendancesSerializer)
 	res.IsSuccessful = true
 	res.Attendances = responses
 	return res, nil
 }
 
-func (i *attendanceInteractor) CreateAttendance(query *Attendance, time *AttendanceTime) (*AttendanceResponse, error) {
+func (i *attendanceInteractor) CreateAttendance(query *Attendance, time *AttendanceTime) (*AttendanceSerializer, error) {
 	sess := i.ar.NewSession(database.NewDB())
 	defer i.ar.Close(sess)
 	if err := i.ar.Begin(sess); err != nil {
@@ -110,11 +110,11 @@ func (i *attendanceInteractor) CreateAttendance(query *Attendance, time *Attenda
 		}
 	}
 
-	res := new(AttendanceResponse)
-	res.Build(attendance)
+	serializer := new(AttendanceSerializer)
+	serializer.Serialize(true, false, attendance)
 
 	if err := i.ar.Commit(sess); err != nil {
 		return nil, err
 	}
-	return res, nil
+	return serializer, nil
 }

@@ -116,9 +116,7 @@ func (ac attendanceController) AttendanceCreateController(c *Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, H{
-		"attendance": res,
-	})
+	c.JSON(http.StatusOK, res)
 }
 
 func GetIdByKey(ctx *Context, key string) (string, error) {
