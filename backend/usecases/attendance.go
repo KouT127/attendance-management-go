@@ -5,7 +5,6 @@ import (
 	. "github.com/KouT127/attendance-management/backend/models"
 	. "github.com/KouT127/attendance-management/backend/repositories"
 	. "github.com/KouT127/attendance-management/backend/serializers"
-	. "github.com/KouT127/attendance-management/backend/validators"
 )
 
 func NewAttendanceInteractor(ar AttendanceRepository) *attendanceInteractor {
@@ -15,16 +14,16 @@ func NewAttendanceInteractor(ar AttendanceRepository) *attendanceInteractor {
 }
 
 type AttendanceInteractor interface {
-	ViewAttendances(pagination *Pagination, attendance *Attendance) (*AttendancesSerializer, error)
-	ViewAttendancesMonthly(pagination *Pagination, attendance *Attendance) (*AttendancesSerializer, error)
-	CreateAttendance(query *Attendance, time *AttendanceTime) (*AttendanceSerializer, error)
+	ViewAttendances(pagination *PaginatorInput, attendance *Attendance) (*AttendancesSerializer, error)
+	ViewAttendancesMonthly(pagination *PaginatorInput, attendance *Attendance) (*AttendancesSerializer, error)
+	CreateAttendance(input *AttendanceInput, query *Attendance) (*AttendanceSerializer, error)
 }
 
 type attendanceInteractor struct {
 	ar AttendanceRepository
 }
 
-func (i *attendanceInteractor) ViewAttendances(pagination *Pagination, attendance *Attendance) (*AttendancesSerializer, error) {
+func (i *attendanceInteractor) ViewAttendances(pagination *PaginatorInput, attendance *Attendance) (*AttendancesSerializer, error) {
 	eng := database.NewDB()
 	maxCnt, err := i.ar.FetchAttendancesCount(eng, attendance)
 	if err != nil {
@@ -32,7 +31,7 @@ func (i *attendanceInteractor) ViewAttendances(pagination *Pagination, attendanc
 	}
 
 	attendances := make([]*Attendance, 0)
-	attendances, err = i.ar.FetchAttendances(eng, attendance, pagination)
+	attendances, err = i.ar.FetchAttendances(eng, attendance, pagination.BuildPaginator())
 	if err != nil {
 		return nil, err
 	}
@@ -52,10 +51,10 @@ func (i *attendanceInteractor) ViewAttendances(pagination *Pagination, attendanc
 	return res, nil
 }
 
-func (i *attendanceInteractor) ViewAttendancesMonthly(pagination *Pagination, attendance *Attendance) (*AttendancesSerializer, error) {
+func (i *attendanceInteractor) ViewAttendancesMonthly(pagination *PaginatorInput, attendance *Attendance) (*AttendancesSerializer, error) {
 	eng := database.NewDB()
 
-	attendances, err := i.ar.FetchAttendances(eng, attendance, pagination)
+	attendances, err := i.ar.FetchAttendances(eng, attendance, pagination.BuildPaginator())
 	if err != nil {
 		return nil, err
 	}
@@ -74,12 +73,17 @@ func (i *attendanceInteractor) ViewAttendancesMonthly(pagination *Pagination, at
 	return res, nil
 }
 
-func (i *attendanceInteractor) CreateAttendance(query *Attendance, time *AttendanceTime) (*AttendanceSerializer, error) {
+func (i *attendanceInteractor) CreateAttendance(input *AttendanceInput, query *Attendance) (*AttendanceSerializer, error) {
 	sess := i.ar.NewSession(database.NewDB())
 	defer i.ar.Close(sess)
 	if err := i.ar.Begin(sess); err != nil {
 		return nil, err
 	}
+
+	if err := input.Validate(); err != nil {
+		return nil, err
+	}
+	time := input.BuildAttendanceTime()
 
 	attendance, err := i.ar.FetchLatestAttendance(sess, query)
 	if err != nil {

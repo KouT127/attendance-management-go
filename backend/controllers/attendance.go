@@ -1,15 +1,12 @@
 package controllers
 
 import (
-	"errors"
 	"github.com/KouT127/attendance-management/backend/middlewares"
 	. "github.com/KouT127/attendance-management/backend/models"
 	. "github.com/KouT127/attendance-management/backend/serializers"
 	. "github.com/KouT127/attendance-management/backend/usecases"
-	. "github.com/KouT127/attendance-management/backend/validators"
 	. "github.com/gin-gonic/gin"
 	"net/http"
-	"time"
 )
 
 func NewAttendanceController(usecase AttendanceInteractor) *attendanceController {
@@ -21,6 +18,7 @@ func NewAttendanceController(usecase AttendanceInteractor) *attendanceController
 type AttendanceController interface {
 	AttendanceListController(c *Context)
 	AttendanceCreateController(c *Context)
+	AttendanceMonthlyController(c *Context)
 }
 
 type attendanceController struct {
@@ -28,7 +26,7 @@ type attendanceController struct {
 }
 
 func (ac attendanceController) AttendanceListController(c *Context) {
-	p := NewPagination(0, 5)
+	p := NewPaginatorInput(0, 5)
 
 	if err := c.Bind(p); err != nil {
 		c.JSON(http.StatusBadRequest, H{
@@ -56,7 +54,7 @@ func (ac attendanceController) AttendanceListController(c *Context) {
 }
 
 func (ac attendanceController) AttendanceMonthlyController(c *Context) {
-	p := NewPagination(0, 31)
+	p := NewPaginatorInput(0, 31)
 	s := NewSearchParams()
 
 	if err := c.Bind(s); err != nil {
@@ -86,9 +84,9 @@ func (ac attendanceController) AttendanceCreateController(c *Context) {
 	var (
 		input AttendanceInput
 	)
+
 	if err := c.Bind(&input); err != nil {
-		// TODO: Validation Error Method
-		c.JSON(http.StatusBadRequest, err)
+		c.JSON(http.StatusBadRequest, NewError("user", err))
 		return
 	}
 
@@ -98,29 +96,14 @@ func (ac attendanceController) AttendanceCreateController(c *Context) {
 		return
 	}
 
-	t := new(AttendanceTime)
-	t.Remark = input.Remark
-	t.PushedAt = time.Now()
-	t.CreatedAt = time.Now()
-	t.UpdatedAt = time.Now()
-	
 	query := new(Attendance)
 	query.UserId = userId
 
-	res, err := ac.usecase.CreateAttendance(query, t)
+	res, err := ac.usecase.CreateAttendance(&input, query)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, NewError("attendance", err))
 		return
 	}
 
 	c.JSON(http.StatusOK, res)
-}
-
-func GetIdByKey(ctx *Context, key string) (string, error) {
-	value, exists := ctx.Get(key)
-	if !exists {
-		return "", errors.New("user not found")
-	}
-	id := value.(string)
-	return id, nil
 }

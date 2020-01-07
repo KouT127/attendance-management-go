@@ -1,4 +1,4 @@
-package validators
+package usecases
 
 import (
 	validation "github.com/go-ozzo/ozzo-validation/v3"

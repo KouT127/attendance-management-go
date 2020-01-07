@@ -5,7 +5,6 @@ import (
 	"github.com/KouT127/attendance-management/backend/middlewares"
 	. "github.com/KouT127/attendance-management/backend/serializers"
 	. "github.com/KouT127/attendance-management/backend/usecases"
-	. "github.com/KouT127/attendance-management/backend/validators"
 	. "github.com/gin-gonic/gin"
 	"net/http"
 )

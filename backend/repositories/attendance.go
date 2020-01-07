@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"github.com/KouT127/attendance-management/backend/models"
-	. "github.com/KouT127/attendance-management/backend/validators"
 	"github.com/go-xorm/xorm"
 	"time"
 )
@@ -96,7 +95,7 @@ func NewAttendanceRepository() *attendanceRepository {
 
 type AttendanceRepository interface {
 	FetchAttendancesCount(eng *xorm.Engine, a *models.Attendance) (int64, error)
-	FetchAttendances(eng *xorm.Engine, a *models.Attendance, p *Pagination) ([]*models.Attendance, error)
+	FetchAttendances(eng *xorm.Engine, a *models.Attendance, p *Paginator) ([]*models.Attendance, error)
 	FetchLatestAttendance(sess *xorm.Session, a *models.Attendance) (*models.Attendance, error)
 	CreateAttendance(sess *xorm.Session, a *models.Attendance) (int64, error)
 	UpdateAttendance(sess *xorm.Session, a *models.Attendance) (int64, error)
@@ -139,7 +138,7 @@ func (r attendanceRepository) FetchLatestAttendance(sess *xorm.Session, a *model
 	return attendance.build(), nil
 }
 
-func (r attendanceRepository) FetchAttendances(eng *xorm.Engine, a *models.Attendance, p *Pagination) ([]*models.Attendance, error) {
+func (r attendanceRepository) FetchAttendances(eng *xorm.Engine, a *models.Attendance, p *Paginator) ([]*models.Attendance, error) {
 	attendances := make([]*models.Attendance, 0)
 	page := p.CalculatePage()
 	err := eng.
