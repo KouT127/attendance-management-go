@@ -37,14 +37,12 @@ func (ac attendanceController) AttendanceListController(c *Context) {
 		return
 	}
 
-	value, exists := c.Get(middlewares.AuthorizedUserIdKey)
-	if !exists {
-		err := errors.New("invalid user id")
-		c.JSON(http.StatusNotFound, NewError("user_id", err))
+	userId, err := GetIdByKey(c, middlewares.AuthorizedUserIdKey)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, NewError("user", err))
 		return
 	}
 
-	userId := value.(string)
 	a := &Attendance{
 		UserId: userId,
 	}
@@ -94,19 +92,18 @@ func (ac attendanceController) AttendanceCreateController(c *Context) {
 		return
 	}
 
-	value, exists := c.Get(middlewares.AuthorizedUserIdKey)
-	if !exists {
-		err := errors.New("invalid user id")
+	userId, err := GetIdByKey(c, middlewares.AuthorizedUserIdKey)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, NewError("user", err))
 		return
 	}
+
 	t := new(AttendanceTime)
 	t.Remark = input.Remark
 	t.PushedAt = time.Now()
 	t.CreatedAt = time.Now()
 	t.UpdatedAt = time.Now()
-
-	userId := value.(string)
+	
 	query := new(Attendance)
 	query.UserId = userId
 
