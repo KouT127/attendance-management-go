@@ -1,8 +1,8 @@
 package routes
 
 import (
-	. "github.com/KouT127/attendance-management/backend/controllers"
 	"github.com/KouT127/attendance-management/backend/database"
+	. "github.com/KouT127/attendance-management/backend/handlers"
 	"github.com/KouT127/attendance-management/backend/middlewares"
 	. "github.com/KouT127/attendance-management/backend/repositories"
 	. "github.com/KouT127/attendance-management/backend/usecases"
@@ -26,12 +26,12 @@ func v1AttendancesRouter(v1 *RouterGroup) {
 	}
 	r := NewAttendanceRepository()
 	u := NewAttendanceInteractor(r)
-	c := NewAttendanceController(u)
+	c := NewAttendanceHandler(u)
 
 	attendances := v1.Group("/attendances", handlers...)
-	attendances.GET("", c.AttendanceListController)
-	attendances.POST("", c.AttendanceCreateController)
-	attendances.GET("monthly", c.AttendanceMonthlyController)
+	attendances.GET("", c.AttendanceListHandler)
+	attendances.POST("", c.AttendanceCreateHandler)
+	attendances.GET("monthly", c.AttendanceMonthlyHandler)
 }
 
 func v1UsersRouter(v1 *RouterGroup) {
@@ -41,11 +41,11 @@ func v1UsersRouter(v1 *RouterGroup) {
 	engine := database.NewDB()
 	r := NewUserRepository(*engine)
 	i := NewUserInteractor(r)
-	c := NewUserController(i)
+	c := NewUserHandler(i)
 
 	users := v1.Group("/users", handlers...)
-	users.GET("/mine", c.UserMineController)
-	users.PUT("/:id", c.UserUpdateController)
+	users.GET("/mine", c.UserMineHandler)
+	users.PUT("/:id", c.UserUpdateHandler)
 }
 
 func v1Router(r *Engine) {

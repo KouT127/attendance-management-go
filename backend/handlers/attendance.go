@@ -1,4 +1,4 @@
-package controllers
+package handlers
 
 import (
 	"github.com/KouT127/attendance-management/backend/middlewares"
@@ -9,23 +9,23 @@ import (
 	"net/http"
 )
 
-func NewAttendanceController(usecase AttendanceInteractor) *attendanceController {
-	return &attendanceController{
+func NewAttendanceHandler(usecase AttendanceInteractor) *attendanceHandler {
+	return &attendanceHandler{
 		usecase: usecase,
 	}
 }
 
-type AttendanceController interface {
-	AttendanceListController(c *Context)
-	AttendanceCreateController(c *Context)
-	AttendanceMonthlyController(c *Context)
+type AttendanceHandler interface {
+	AttendanceListHandler(c *Context)
+	AttendanceCreateHandler(c *Context)
+	AttendanceMonthlyHandler(c *Context)
 }
 
-type attendanceController struct {
+type attendanceHandler struct {
 	usecase AttendanceInteractor
 }
 
-func (ac attendanceController) AttendanceListController(c *Context) {
+func (ac attendanceHandler) AttendanceListHandler(c *Context) {
 	p := NewPaginatorInput(0, 5)
 
 	if err := c.Bind(p); err != nil {
@@ -53,7 +53,7 @@ func (ac attendanceController) AttendanceListController(c *Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-func (ac attendanceController) AttendanceMonthlyController(c *Context) {
+func (ac attendanceHandler) AttendanceMonthlyHandler(c *Context) {
 	p := NewPaginatorInput(0, 31)
 	s := NewSearchParams()
 
@@ -80,7 +80,7 @@ func (ac attendanceController) AttendanceMonthlyController(c *Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-func (ac attendanceController) AttendanceCreateController(c *Context) {
+func (ac attendanceHandler) AttendanceCreateHandler(c *Context) {
 	var (
 		input AttendanceInput
 	)

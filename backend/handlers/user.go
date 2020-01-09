@@ -1,4 +1,4 @@
-package controllers
+package handlers
 
 import (
 	"errors"
@@ -9,22 +9,22 @@ import (
 	"net/http"
 )
 
-func NewUserController(uc UserInteractor) *userController {
-	return &userController{
+func NewUserHandler(uc UserInteractor) *userHandler {
+	return &userHandler{
 		usecase: uc,
 	}
 }
 
-type UserController interface {
-	UserMineController(c *Context)
-	UserUpdateController(c *Context)
+type UserHandler interface {
+	UserMineHandler(c *Context)
+	UserUpdateHandler(c *Context)
 }
 
-type userController struct {
+type userHandler struct {
 	usecase UserInteractor
 }
 
-func (uc userController) UserMineController(c *Context) {
+func (uc userHandler) UserMineHandler(c *Context) {
 	value, exists := c.Get(middlewares.AuthorizedUserIdKey)
 	if !exists {
 		c.JSON(http.StatusBadRequest, H{
@@ -44,7 +44,7 @@ func (uc userController) UserMineController(c *Context) {
 	})
 }
 
-func (uc userController) UserUpdateController(c *Context) {
+func (uc userHandler) UserUpdateHandler(c *Context) {
 	var (
 		input UserInput
 	)
