@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-func NewUserHandler(uc UserInteractor) *userHandler {
+func NewUserHandler(uc UserUsecase) *userHandler {
 	return &userHandler{
 		usecase: uc,
 	}
@@ -21,7 +21,7 @@ type UserHandler interface {
 }
 
 type userHandler struct {
-	usecase UserInteractor
+	usecase UserUsecase
 }
 
 func (uc userHandler) UserMineHandler(c *Context) {

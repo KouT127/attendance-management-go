@@ -5,22 +5,22 @@ import (
 	. "github.com/KouT127/attendance-management/backend/repositories"
 )
 
-func NewUserInteractor(repo UserRepository) *userInteractor {
-	return &userInteractor{
+func NewUserUsecase(repo UserRepository) *userUsecase {
+	return &userUsecase{
 		repository: repo,
 	}
 }
 
-type UserInteractor interface {
+type UserUsecase interface {
 	ViewUser(userId string) (*User, error)
 	UpdateUser(userId string, userName string) (*User, error)
 }
 
-type userInteractor struct {
+type userUsecase struct {
 	repository UserRepository
 }
 
-func (i *userInteractor) ViewUser(userId string) (*User, error) {
+func (i *userUsecase) ViewUser(userId string) (*User, error) {
 	u := &User{}
 	has, err := i.repository.FetchUser(userId, u)
 
@@ -38,7 +38,7 @@ func (i *userInteractor) ViewUser(userId string) (*User, error) {
 	return u, nil
 }
 
-func (i *userInteractor) UpdateUser(userId string, userName string) (*User, error) {
+func (i *userUsecase) UpdateUser(userId string, userName string) (*User, error) {
 	u := &User{}
 	has, err := i.repository.FetchUser(userId, u)
 	if err != nil || !has {

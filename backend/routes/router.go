@@ -25,7 +25,7 @@ func v1AttendancesRouter(v1 *RouterGroup) {
 		middlewares.AuthRequired(),
 	}
 	r := NewAttendanceRepository()
-	u := NewAttendanceInteractor(r)
+	u := NewAttendanceUsecase(r)
 	c := NewAttendanceHandler(u)
 
 	attendances := v1.Group("/attendances", handlers...)
@@ -40,7 +40,7 @@ func v1UsersRouter(v1 *RouterGroup) {
 	}
 	engine := database.NewDB()
 	r := NewUserRepository(*engine)
-	i := NewUserInteractor(r)
+	i := NewUserUsecase(r)
 	c := NewUserHandler(i)
 
 	users := v1.Group("/users", handlers...)

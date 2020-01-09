@@ -7,8 +7,8 @@ import (
 	. "github.com/KouT127/attendance-management/backend/serializers"
 )
 
-func NewAttendanceInteractor(ar AttendanceRepository) *attendanceInteractor {
-	return &attendanceInteractor{
+func NewAttendanceUsecase(ar AttendanceRepository) *attendanceUsecase {
+	return &attendanceUsecase{
 		ar: ar,
 	}
 }
@@ -19,11 +19,11 @@ type AttendanceInteractor interface {
 	CreateAttendance(input *AttendanceInput, query *Attendance) (*AttendanceSerializer, error)
 }
 
-type attendanceInteractor struct {
+type attendanceUsecase struct {
 	ar AttendanceRepository
 }
 
-func (i *attendanceInteractor) ViewAttendances(pagination *PaginatorInput, attendance *Attendance) (*AttendancesSerializer, error) {
+func (i *attendanceUsecase) ViewAttendances(pagination *PaginatorInput, attendance *Attendance) (*AttendancesSerializer, error) {
 	eng := database.NewDB()
 	maxCnt, err := i.ar.FetchAttendancesCount(eng, attendance)
 	if err != nil {
@@ -51,7 +51,7 @@ func (i *attendanceInteractor) ViewAttendances(pagination *PaginatorInput, atten
 	return res, nil
 }
 
-func (i *attendanceInteractor) ViewAttendancesMonthly(pagination *PaginatorInput, attendance *Attendance) (*AttendancesSerializer, error) {
+func (i *attendanceUsecase) ViewAttendancesMonthly(pagination *PaginatorInput, attendance *Attendance) (*AttendancesSerializer, error) {
 	eng := database.NewDB()
 
 	attendances, err := i.ar.FetchAttendances(eng, attendance, pagination.BuildPaginator())
@@ -73,7 +73,7 @@ func (i *attendanceInteractor) ViewAttendancesMonthly(pagination *PaginatorInput
 	return res, nil
 }
 
-func (i *attendanceInteractor) CreateAttendance(input *AttendanceInput, query *Attendance) (*AttendanceSerializer, error) {
+func (i *attendanceUsecase) CreateAttendance(input *AttendanceInput, query *Attendance) (*AttendanceSerializer, error) {
 	sess := i.ar.NewSession(database.NewDB())
 	defer i.ar.Close(sess)
 	if err := i.ar.Begin(sess); err != nil {
