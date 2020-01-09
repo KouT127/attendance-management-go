@@ -20,7 +20,7 @@ type attendance struct {
 	UpdatedAt    time.Time `xorm:"updated_at"`
 }
 
-func (a attendance) build(cit *attendanceTime, cot *attendanceTime) models.Attendance {
+func (a *attendance) build(cit *attendanceTime, cot *attendanceTime) models.Attendance {
 	return models.Attendance{
 		Id:         a.Id,
 		UserId:     a.UserId,
@@ -32,7 +32,7 @@ func (a attendance) build(cit *attendanceTime, cot *attendanceTime) models.Atten
 }
 
 type attendanceTime struct {
-	Id        *int64
+	Id        int64
 	PushedAt  time.Time
 	Remark    string
 	CreatedAt time.Time `xorm:"created_at"`
@@ -41,7 +41,7 @@ type attendanceTime struct {
 
 func NewTime(at *models.AttendanceTime) *attendanceTime {
 	t := new(attendanceTime)
-	t.Id = &at.Id
+	t.Id = at.Id
 	t.Remark = at.Remark
 	t.CreatedAt = at.CreatedAt
 	t.UpdatedAt = at.UpdatedAt
@@ -51,7 +51,7 @@ func NewTime(at *models.AttendanceTime) *attendanceTime {
 
 func (t attendanceTime) build() *models.AttendanceTime {
 	return &models.AttendanceTime{
-		Id:        *t.Id,
+		Id:        t.Id,
 		Remark:    t.Remark,
 		PushedAt:  t.PushedAt,
 		CreatedAt: t.CreatedAt,
@@ -71,10 +71,10 @@ func (d attendanceDetail) build() *models.Attendance {
 		out *models.AttendanceTime
 	)
 	a := d.attendance
-	if d.ClockedInTime.Id != nil {
+	if d.ClockedInTime.Id != 0 {
 		in = d.ClockedInTime.build()
 	}
-	if d.ClockedOutTime.Id != nil {
+	if d.ClockedOutTime.Id != 0 {
 		out = d.ClockedOutTime.build()
 	}
 
@@ -96,7 +96,7 @@ func NewAttendanceRepository() *attendanceRepository {
 type AttendanceRepository interface {
 	FetchAttendancesCount(eng *xorm.Engine, a *models.Attendance) (int64, error)
 	FetchAttendances(eng *xorm.Engine, a *models.Attendance, p *Paginator) ([]*models.Attendance, error)
-	FetchLatestAttendance(sess *xorm.Session, a *models.Attendance) (*models.Attendance, error)
+	FetchLatestAttendance(eng *xorm.Engine, a *models.Attendance) (*models.Attendance, error)
 	CreateAttendance(sess *xorm.Session, a *models.Attendance) (int64, error)
 	UpdateAttendance(sess *xorm.Session, a *models.Attendance) (int64, error)
 	CreateAttendanceTime(sess *xorm.Session, t *models.AttendanceTime) error
@@ -108,17 +108,18 @@ type attendanceRepository struct {
 }
 
 func (r attendanceRepository) FetchAttendancesCount(eng *xorm.Engine, a *models.Attendance) (int64, error) {
-	attendance := &attendance{Id: a.Id}
+	attendance := &attendance{}
+	attendance.Id = a.Id
 	return eng.Table(AttendanceTable).Count(attendance)
 }
 
-func (r attendanceRepository) FetchLatestAttendance(sess *xorm.Session, a *models.Attendance) (*models.Attendance, error) {
+func (r attendanceRepository) FetchLatestAttendance(eng *xorm.Engine, a *models.Attendance) (*models.Attendance, error) {
 	attendance := &attendanceDetail{}
 	now := time.Now()
 	start := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
 	end := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 59, time.Local)
 
-	has, err := sess.Select("attendances.*, clockedInTime.*, clockedOutTime.*").
+	has, err := eng.Select("attendances.*, clockedInTime.*, clockedOutTime.*").
 		Table(AttendanceTable).
 		Join("left", "attendances_time clockedInTime", "attendances.clocked_in_id = clockedInTime.id").
 		Join("left", "attendances_time clockedOutTime", "attendances.clocked_out_id = clockedOutTime.id").
@@ -187,6 +188,6 @@ func (r attendanceRepository) CreateAttendanceTime(sess *xorm.Session, t *models
 	if _, err := sess.Table(AttendanceTimeTable).Insert(at); err != nil {
 		return err
 	}
-	t.Id = *at.Id
+	t.Id = at.Id
 	return nil
 }

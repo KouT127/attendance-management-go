@@ -23,11 +23,18 @@ type AttendanceResponse struct {
 
 type AttendanceSerializer struct {
 	CommonResponse
-	Attendance AttendanceResponse `json:"attendance"`
+	Attendance   AttendanceResponse `json:"attendance"`
+	IsClockedOut bool               `json:"isClockedOut"`
+}
+
+func NewAttendanceSerializer(attendance *Attendance) *AttendanceSerializer {
+	serializer := new(AttendanceSerializer)
+	serializer.Serialize(true, attendance)
+	return serializer
 }
 
 type AttendancesSerializer struct {
-	CommonResponse
+	CommonResponses
 	Attendances []*AttendanceResponse `json:"attendances"`
 }
 
@@ -42,9 +49,9 @@ func (r *AttendanceResponse) Build(a *Attendance) *AttendanceResponse {
 	return r
 }
 
-func (s *AttendanceSerializer) Serialize(isSuccessful bool, hasNext bool, attendance *Attendance) {
+func (s *AttendanceSerializer) Serialize(isSuccessful bool, attendance *Attendance) {
 	s.IsSuccessful = true
-	s.HasNext = hasNext
+	s.IsClockedOut = attendance.IsClockedOut()
 	res := new(AttendanceResponse)
 	s.Attendance = *res.Build(attendance)
 }

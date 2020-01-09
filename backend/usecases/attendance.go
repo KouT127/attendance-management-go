@@ -13,8 +13,9 @@ func NewAttendanceUsecase(ar AttendanceRepository) *attendanceUsecase {
 	}
 }
 
-type AttendanceInteractor interface {
+type AttendanceUsecase interface {
 	ViewAttendances(pagination *PaginatorInput, attendance *Attendance) (*AttendancesSerializer, error)
+	ViewLatestAttendance(attendance *Attendance) (*AttendanceSerializer, error)
 	ViewAttendancesMonthly(pagination *PaginatorInput, attendance *Attendance) (*AttendancesSerializer, error)
 	CreateAttendance(input *AttendanceInput, query *Attendance) (*AttendanceSerializer, error)
 }
@@ -51,6 +52,20 @@ func (i *attendanceUsecase) ViewAttendances(pagination *PaginatorInput, attendan
 	return res, nil
 }
 
+func (i *attendanceUsecase) ViewLatestAttendance(attendance *Attendance) (*AttendanceSerializer, error) {
+	eng := database.NewDB()
+
+	attendance, err := i.ar.FetchLatestAttendance(eng, attendance)
+	if err != nil {
+		return nil, err
+	}
+	attendance.IsClockedOut()
+
+	s := new(AttendanceSerializer)
+	s.Serialize(true, attendance)
+	return s, nil
+}
+
 func (i *attendanceUsecase) ViewAttendancesMonthly(pagination *PaginatorInput, attendance *Attendance) (*AttendancesSerializer, error) {
 	eng := database.NewDB()
 
@@ -74,7 +89,8 @@ func (i *attendanceUsecase) ViewAttendancesMonthly(pagination *PaginatorInput, a
 }
 
 func (i *attendanceUsecase) CreateAttendance(input *AttendanceInput, query *Attendance) (*AttendanceSerializer, error) {
-	sess := i.ar.NewSession(database.NewDB())
+	eng := database.NewDB()
+	sess := i.ar.NewSession(eng)
 	defer i.ar.Close(sess)
 	if err := i.ar.Begin(sess); err != nil {
 		return nil, err
@@ -85,7 +101,7 @@ func (i *attendanceUsecase) CreateAttendance(input *AttendanceInput, query *Atte
 	}
 	time := input.BuildAttendanceTime()
 
-	attendance, err := i.ar.FetchLatestAttendance(sess, query)
+	attendance, err := i.ar.FetchLatestAttendance(eng, query)
 	if err != nil {
 		return nil, err
 	}
@@ -95,28 +111,25 @@ func (i *attendanceUsecase) CreateAttendance(input *AttendanceInput, query *Atte
 	}
 
 	if attendance == nil {
-		attendance = &Attendance{
-			UserId:    query.UserId,
-			ClockedIn: time,
-		}
+		attendance = new(Attendance)
+		attendance.ClockIn(query.UserId, time)
 		if _, err := i.ar.CreateAttendance(sess, attendance); err != nil {
 			return nil, err
 		}
-	} else {
-		attendance = &Attendance{
-			Id:         attendance.Id,
-			UserId:     attendance.UserId,
-			ClockedIn:  attendance.ClockedIn,
-			ClockedOut: time,
-		}
-		if _, err := i.ar.UpdateAttendance(sess, attendance); err != nil {
+		
+		serializer := NewAttendanceSerializer(attendance)
+		if err := i.ar.Commit(sess); err != nil {
 			return nil, err
 		}
+		return serializer, nil
 	}
 
-	serializer := new(AttendanceSerializer)
-	serializer.Serialize(true, false, attendance)
+	attendance.ClockOut(time)
+	if _, err := i.ar.UpdateAttendance(sess, attendance); err != nil {
+		return nil, err
+	}
 
+	serializer := NewAttendanceSerializer(attendance)
 	if err := i.ar.Commit(sess); err != nil {
 		return nil, err
 	}

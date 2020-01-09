@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-func NewAttendanceHandler(usecase AttendanceInteractor) *attendanceHandler {
+func NewAttendanceHandler(usecase AttendanceUsecase) *attendanceHandler {
 	return &attendanceHandler{
 		usecase: usecase,
 	}
@@ -22,7 +22,25 @@ type AttendanceHandler interface {
 }
 
 type attendanceHandler struct {
-	usecase AttendanceInteractor
+	usecase AttendanceUsecase
+}
+
+func (ac attendanceHandler) AttendanceLatestHandler(c *Context) {
+	userId, err := GetIdByKey(c, middlewares.AuthorizedUserIdKey)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, NewError("user", err))
+		return
+	}
+	a := &Attendance{
+		UserId: userId,
+	}
+
+	res, err := ac.usecase.ViewLatestAttendance(a)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, NewError("attendances", err))
+	}
+	c.JSON(http.StatusOK, res)
+	return
 }
 
 func (ac attendanceHandler) AttendanceListHandler(c *Context) {
