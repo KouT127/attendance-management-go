@@ -28,6 +28,6 @@ func (a *Attendance) ClockOut(time *AttendanceTime) {
 	a.ClockedOut = time
 }
 
-func (a Attendance) IsClockedOut() bool {
+func (a *Attendance) IsClockedOut() bool {
 	return a.ClockedOut != nil
 }

@@ -25,7 +25,7 @@ type attendanceHandler struct {
 	usecase AttendanceUsecase
 }
 
-func (ac attendanceHandler) AttendanceLatestHandler(c *Context) {
+func (ac *attendanceHandler) AttendanceLatestHandler(c *Context) {
 	userId, err := GetIdByKey(c, middlewares.AuthorizedUserIdKey)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, NewError("user", err))
@@ -43,7 +43,7 @@ func (ac attendanceHandler) AttendanceLatestHandler(c *Context) {
 	return
 }
 
-func (ac attendanceHandler) AttendanceListHandler(c *Context) {
+func (ac *attendanceHandler) AttendanceListHandler(c *Context) {
 	p := NewPaginatorInput(0, 5)
 
 	if err := c.Bind(p); err != nil {
@@ -71,7 +71,7 @@ func (ac attendanceHandler) AttendanceListHandler(c *Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-func (ac attendanceHandler) AttendanceMonthlyHandler(c *Context) {
+func (ac *attendanceHandler) AttendanceMonthlyHandler(c *Context) {
 	p := NewPaginatorInput(0, 31)
 	s := NewSearchParams()
 
@@ -98,7 +98,7 @@ func (ac attendanceHandler) AttendanceMonthlyHandler(c *Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-func (ac attendanceHandler) AttendanceCreateHandler(c *Context) {
+func (ac *attendanceHandler) AttendanceCreateHandler(c *Context) {
 	var (
 		input AttendanceInput
 	)
