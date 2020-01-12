@@ -14,17 +14,17 @@ func NewAttendanceUsecase(ar AttendanceRepository) *attendanceUsecase {
 }
 
 type AttendanceUsecase interface {
-	ViewAttendances(pagination *PaginatorInput, attendance *Attendance) (*AttendancesSerializer, error)
-	ViewLatestAttendance(attendance *Attendance) (*AttendanceSerializer, error)
-	ViewAttendancesMonthly(pagination *PaginatorInput, attendance *Attendance) (*AttendancesSerializer, error)
-	CreateAttendance(input *AttendanceInput, query *Attendance) (*AttendanceSerializer, error)
+	ViewAttendances(pagination *PaginatorInput, attendance *Attendance) (*AttendancesResult, error)
+	ViewLatestAttendance(attendance *Attendance) (*AttendanceResult, error)
+	ViewAttendancesMonthly(pagination *PaginatorInput, attendance *Attendance) (*AttendancesResult, error)
+	CreateAttendance(input *AttendanceInput, query *Attendance) (*AttendanceResult, error)
 }
 
 type attendanceUsecase struct {
 	ar AttendanceRepository
 }
 
-func (i *attendanceUsecase) ViewAttendances(pagination *PaginatorInput, attendance *Attendance) (*AttendancesSerializer, error) {
+func (i *attendanceUsecase) ViewAttendances(pagination *PaginatorInput, attendance *Attendance) (*AttendancesResult, error) {
 	eng := database.NewDB()
 	maxCnt, err := i.ar.FetchAttendancesCount(eng, attendance)
 	if err != nil {
@@ -37,22 +37,22 @@ func (i *attendanceUsecase) ViewAttendances(pagination *PaginatorInput, attendan
 		return nil, err
 	}
 
-	responses := make([]*AttendanceResponse, 0)
+	responses := make([]*AttendanceResp, 0)
 
 	for _, attendance := range attendances {
-		res := &AttendanceResponse{}
-		res.Build(attendance)
+		res := &AttendanceResp{}
+		res.NewAttendanceResp(attendance)
 		responses = append(responses, res)
 	}
 
-	res := new(AttendancesSerializer)
+	res := new(AttendancesResult)
 	res.HasNext = pagination.HasNext(maxCnt)
 	res.IsSuccessful = true
 	res.Attendances = responses
 	return res, nil
 }
 
-func (i *attendanceUsecase) ViewLatestAttendance(attendance *Attendance) (*AttendanceSerializer, error) {
+func (i *attendanceUsecase) ViewLatestAttendance(attendance *Attendance) (*AttendanceResult, error) {
 	eng := database.NewDB()
 
 	attendance, err := i.ar.FetchLatestAttendance(eng, attendance)
@@ -61,12 +61,12 @@ func (i *attendanceUsecase) ViewLatestAttendance(attendance *Attendance) (*Atten
 	}
 	attendance.IsClockedOut()
 
-	s := new(AttendanceSerializer)
-	s.Serialize(true, attendance)
+	s := new(AttendanceResult)
+	s.NewAttendanceResult(true, attendance)
 	return s, nil
 }
 
-func (i *attendanceUsecase) ViewAttendancesMonthly(pagination *PaginatorInput, attendance *Attendance) (*AttendancesSerializer, error) {
+func (i *attendanceUsecase) ViewAttendancesMonthly(pagination *PaginatorInput, attendance *Attendance) (*AttendancesResult, error) {
 	eng := database.NewDB()
 
 	attendances, err := i.ar.FetchAttendances(eng, attendance, pagination.BuildPaginator())
@@ -74,21 +74,21 @@ func (i *attendanceUsecase) ViewAttendancesMonthly(pagination *PaginatorInput, a
 		return nil, err
 	}
 
-	responses := make([]*AttendanceResponse, 0)
+	responses := make([]*AttendanceResp, 0)
 
 	for _, attendance := range attendances {
-		res := new(AttendanceResponse)
-		res.Build(attendance)
+		res := new(AttendanceResp)
+		res.NewAttendanceResp(attendance)
 		responses = append(responses, res)
 	}
 
-	res := new(AttendancesSerializer)
+	res := new(AttendancesResult)
 	res.IsSuccessful = true
 	res.Attendances = responses
 	return res, nil
 }
 
-func (i *attendanceUsecase) CreateAttendance(input *AttendanceInput, query *Attendance) (*AttendanceSerializer, error) {
+func (i *attendanceUsecase) CreateAttendance(input *AttendanceInput, query *Attendance) (*AttendanceResult, error) {
 	eng := database.NewDB()
 	sess := i.ar.NewSession(eng)
 	defer i.ar.Close(sess)
@@ -116,7 +116,7 @@ func (i *attendanceUsecase) CreateAttendance(input *AttendanceInput, query *Atte
 		if _, err := i.ar.CreateAttendance(sess, attendance); err != nil {
 			return nil, err
 		}
-		
+
 		serializer := NewAttendanceSerializer(attendance)
 		if err := i.ar.Commit(sess); err != nil {
 			return nil, err

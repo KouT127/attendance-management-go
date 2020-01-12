@@ -5,14 +5,14 @@ import (
 	"github.com/KouT127/attendance-management/backend/utils/timezone"
 )
 
-type AttendanceTimeResponse struct {
+type AttendanceTimeResp struct {
 	PushedAt  string `json:"pushedAt"`
 	Remark    string `json:"remark"`
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
 }
 
-type AttendanceResponse struct {
+type AttendanceResp struct {
 	Id             int64           `json:"id"`
 	UserId         string          `json:"userId"`
 	ClockedInTime  *AttendanceTime `json:"clockedInTime"`
@@ -21,24 +21,24 @@ type AttendanceResponse struct {
 	UpdatedAt      string          `json:"updatedAt"`
 }
 
-type AttendanceSerializer struct {
+type AttendanceResult struct {
 	CommonResponse
-	Attendance   AttendanceResponse `json:"attendance"`
-	IsClockedOut bool               `json:"isClockedOut"`
+	Attendance   AttendanceResp `json:"attendance"`
+	IsClockedOut bool           `json:"isClockedOut"`
 }
 
-func NewAttendanceSerializer(attendance *Attendance) *AttendanceSerializer {
-	serializer := new(AttendanceSerializer)
-	serializer.Serialize(true, attendance)
+func NewAttendanceSerializer(attendance *Attendance) *AttendanceResult {
+	serializer := new(AttendanceResult)
+	serializer.NewAttendanceResult(true, attendance)
 	return serializer
 }
 
-type AttendancesSerializer struct {
+type AttendancesResult struct {
 	CommonResponses
-	Attendances []*AttendanceResponse `json:"attendances"`
+	Attendances []*AttendanceResp `json:"attendances"`
 }
 
-func (r *AttendanceResponse) Build(a *Attendance) *AttendanceResponse {
+func (r *AttendanceResp) NewAttendanceResp(a *Attendance) *AttendanceResp {
 	loc := timezone.NewJSTLocation()
 	r.Id = a.Id
 	r.UserId = a.UserId
@@ -49,14 +49,14 @@ func (r *AttendanceResponse) Build(a *Attendance) *AttendanceResponse {
 	return r
 }
 
-func (s *AttendanceSerializer) Serialize(isSuccessful bool, attendance *Attendance) {
+func (s *AttendanceResult) NewAttendanceResult(isSuccessful bool, attendance *Attendance) {
 	s.IsSuccessful = true
 	s.IsClockedOut = attendance.IsClockedOut()
-	res := new(AttendanceResponse)
-	s.Attendance = *res.Build(attendance)
+	res := new(AttendanceResp)
+	s.Attendance = *res.NewAttendanceResp(attendance)
 }
 
-func (s *AttendancesSerializer) Serialize(isSuccessful bool, hasNext bool, responses []*AttendanceResponse) {
+func (s *AttendancesResult) NewAttendancesResult(isSuccessful bool, hasNext bool, responses []*AttendanceResp) {
 	s.IsSuccessful = true
 	s.HasNext = hasNext
 	s.Attendances = responses
