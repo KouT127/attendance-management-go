@@ -3,6 +3,7 @@ package usecases
 import (
 	. "github.com/KouT127/attendance-management/models"
 	. "github.com/KouT127/attendance-management/repositories"
+	"github.com/KouT127/attendance-management/utils/logger"
 )
 
 func NewUserUsecase(repo UserRepository) *userUsecase {
@@ -23,7 +24,6 @@ type userUsecase struct {
 func (i *userUsecase) ViewUser(userId string) (*User, error) {
 	u := &User{}
 	has, err := i.repository.FetchUser(userId, u)
-
 	if err != nil {
 		return nil, err
 	}
@@ -50,5 +50,9 @@ func (i *userUsecase) UpdateUser(userId string, userName string) (*User, error) 
 	if err != nil {
 		return nil, err
 	}
+	logger.NewInfo(map[string]interface{}{
+		"user": *u,
+	}, "updated")
+
 	return u, nil
 }
