@@ -5,19 +5,9 @@ import {Header} from "./components/common/Header";
 import {useApplication} from "./hooks/application";
 import {PulseLoader} from "react-spinners";
 import {Splash} from "./pages/common/Splash";
+import {SignIn} from "./pages/auth/SignIn";
+import {AttendanceUser} from "./pages/attendance/AttendanceUser";
 
-
-const SignIn = React.lazy(() => import('./pages/auth/SignIn')
-    .then(importedModule => ({
-        default: importedModule.SignIn
-    }))
-);
-
-const AttendanceUser = React.lazy(() => import("./pages/attendance/AttendanceUser")
-    .then(importedModule => ({
-        default: importedModule.AttendanceUser
-    }))
-);
 
 const CreateUser = React.lazy(() => import("./pages/auth/CreateUser")
     .then(importedModule => ({
