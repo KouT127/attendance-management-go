@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/KouT127/attendance-management/backend/attendance/cmd"
-	"github.com/KouT127/attendance-management/backend/configs"
-	"github.com/KouT127/attendance-management/backend/database"
+	"github.com/KouT127/attendance-management/attendance/cmd"
+	"github.com/KouT127/attendance-management/configs"
+	"github.com/KouT127/attendance-management/database"
 	"github.com/spf13/cobra"
 	"os"
 )

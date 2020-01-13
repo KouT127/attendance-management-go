@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/KouT127/attendance-management/backend/configs"
-	"github.com/KouT127/attendance-management/backend/database"
-	"github.com/KouT127/attendance-management/backend/routes"
-	"github.com/KouT127/attendance-management/backend/utils/timezone"
+	"github.com/KouT127/attendance-management/configs"
+	"github.com/KouT127/attendance-management/database"
+	"github.com/KouT127/attendance-management/routes"
+	"github.com/KouT127/attendance-management/utils/timezone"
 )
 
 func main() {

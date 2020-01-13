@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"errors"
-	"github.com/KouT127/attendance-management/backend/middlewares"
-	. "github.com/KouT127/attendance-management/backend/serializers"
-	. "github.com/KouT127/attendance-management/backend/usecases"
+	"github.com/KouT127/attendance-management/middlewares"
+	. "github.com/KouT127/attendance-management/serializers"
+	. "github.com/KouT127/attendance-management/usecases"
 	. "github.com/gin-gonic/gin"
 	"net/http"
 )

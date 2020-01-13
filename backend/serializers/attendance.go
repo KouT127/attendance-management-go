@@ -1,8 +1,8 @@
 package serializers
 
 import (
-	. "github.com/KouT127/attendance-management/backend/models"
-	"github.com/KouT127/attendance-management/backend/utils/timezone"
+	. "github.com/KouT127/attendance-management/models"
+	"github.com/KouT127/attendance-management/utils/timezone"
 )
 
 type AttendanceTimeResp struct {

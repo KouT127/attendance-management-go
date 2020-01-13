@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/KouT127/attendance-management/backend/configs"
+	"github.com/KouT127/attendance-management/configs"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
 	"os"

@@ -1,10 +1,10 @@
 package usecases
 
 import (
-	"github.com/KouT127/attendance-management/backend/database"
-	. "github.com/KouT127/attendance-management/backend/models"
-	. "github.com/KouT127/attendance-management/backend/repositories"
-	. "github.com/KouT127/attendance-management/backend/serializers"
+	"github.com/KouT127/attendance-management/database"
+	. "github.com/KouT127/attendance-management/models"
+	. "github.com/KouT127/attendance-management/repositories"
+	. "github.com/KouT127/attendance-management/serializers"
 )
 
 func NewAttendanceUsecase(ar AttendanceRepository) *attendanceUsecase {

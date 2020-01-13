@@ -18,7 +18,7 @@ type Config struct {
 	}
 
 	Application struct {
-		IsDebug    bool
+		IsDebug bool
 	}
 }
 
@@ -41,7 +41,7 @@ var c Config
 
 func Init(e environment) {
 	viper.AddConfigPath(e.path())
-	viper.SetConfigName("config")
+	viper.SetConfigName("dbconf")
 	viper.SetConfigType("yml")
 	viper.AutomaticEnv()
 

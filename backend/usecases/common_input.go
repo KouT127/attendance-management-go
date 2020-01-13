@@ -1,6 +1,6 @@
 package usecases
 
-import . "github.com/KouT127/attendance-management/backend/repositories"
+import . "github.com/KouT127/attendance-management/repositories"
 
 type PaginatorInput struct {
 	Page  int64 `form:"page"`

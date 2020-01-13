@@ -4,7 +4,7 @@ import (
 	"context"
 	firebase "firebase.google.com/go"
 	"fmt"
-	"github.com/KouT127/attendance-management/backend/configs"
+	"github.com/KouT127/attendance-management/configs"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/api/option"
 	"net/http"
@@ -21,7 +21,7 @@ func AuthRequired() gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, u)
 			return
 		}
-		filename := fmt.Sprintf("%s/firebase-service.json", "./backend/configs")
+		filename := fmt.Sprintf("%s/firebase-service-stg.json", "./backend/configs")
 		opt := option.WithCredentialsFile(filename)
 		app, err := firebase.NewApp(context.Background(), nil, opt)
 		if err != nil {

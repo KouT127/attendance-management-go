@@ -1,11 +1,11 @@
 package routes
 
 import (
-	"github.com/KouT127/attendance-management/backend/database"
-	. "github.com/KouT127/attendance-management/backend/handlers"
-	"github.com/KouT127/attendance-management/backend/middlewares"
-	. "github.com/KouT127/attendance-management/backend/repositories"
-	. "github.com/KouT127/attendance-management/backend/usecases"
+	"github.com/KouT127/attendance-management/database"
+	. "github.com/KouT127/attendance-management/handlers"
+	"github.com/KouT127/attendance-management/middlewares"
+	. "github.com/KouT127/attendance-management/repositories"
+	. "github.com/KouT127/attendance-management/usecases"
 	"github.com/gin-contrib/cors"
 	. "github.com/gin-gonic/gin"
 	"net/http"

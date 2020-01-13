@@ -1,8 +1,8 @@
 package usecases
 
 import (
-	. "github.com/KouT127/attendance-management/backend/models"
-	. "github.com/KouT127/attendance-management/backend/repositories"
+	. "github.com/KouT127/attendance-management/models"
+	. "github.com/KouT127/attendance-management/repositories"
 )
 
 func NewUserUsecase(repo UserRepository) *userUsecase {
