@@ -16,6 +16,10 @@ func renderIndex(c *Context) {
 }
 
 func defaultRouter(r *Engine) {
+	r.GET("/health", func(ctx *Context) {
+		ctx.JSON(http.StatusOK, "ok")
+		return
+	})
 	r.LoadHTMLFiles("frontend/build/index.html")
 	r.NoRoute(renderIndex)
 }
