@@ -1,28 +1,31 @@
 package database
 
 import (
-	"github.com/KouT127/attendance-management/configs"
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
+	"github.com/joho/godotenv"
 	"os"
 	"time"
 	"xorm.io/core"
 )
 
 var (
-	engine *xorm.Engine
-	err    error
+	engine        *xorm.Engine
+	err           error
+	CONNECTION    string
+	USER          string
+	PASS          string
+	DB_CONNECTION string
 )
 
-func Init(c *configs.Config) {
-	USER := c.Database.User
-	PASS := c.Database.Pass
-	PROTOCOL := "tcp(" + c.Database.Host + ":" + c.Database.Port + ")"
-	DBNAME := c.Database.DbName
-	OPTION := c.Database.Option
+func Init() {
+	DB_CONNECTION = loadEnv()
+	if CONNECTION == "" {
+		DB_CONNECTION = loadLocalEnv()
+	}
 
-	CONNECT := USER + ":" + PASS + "@" + PROTOCOL + "/" + DBNAME + "?" + OPTION
-	engine, err = xorm.NewEngine("mysql", CONNECT)
+	engine, err = xorm.NewEngine("mysql", DB_CONNECTION)
 	if err != nil {
 		panic(err)
 	}
@@ -40,4 +43,24 @@ func Init(c *configs.Config) {
 
 func NewDB() *xorm.Engine {
 	return engine
+}
+
+func loadEnv() string {
+	CONNECTION := os.Getenv("CLOUDSQL_CONNECTION_NAME")
+	USER := os.Getenv("CLOUDSQL_USER")
+	PASS := os.Getenv("CLOUDSQL_PASSWORD")
+	DB_CONNECTION = fmt.Sprintf("%s:%s@%s/attendance_management?charset=utf8&parseTime=true", USER, PASS, CONNECTION)
+	return DB_CONNECTION
+}
+
+func loadLocalEnv() string {
+	err := godotenv.Load(fmt.Sprintf("./backend/.env.local"))
+	if err != nil {
+		panic(err)
+	}
+	CONNECTION := os.Getenv("DB_CONNECTION_NAME")
+	USER := os.Getenv("DB_USER")
+	PASS := os.Getenv("PASSWORD")
+	DB_CONNECTION = fmt.Sprintf("%s:%s@%s/attendance_management?charset=utf8&parseTime=true", USER, PASS, CONNECTION)
+	return DB_CONNECTION
 }

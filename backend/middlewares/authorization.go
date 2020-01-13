@@ -4,8 +4,8 @@ import (
 	"context"
 	firebase "firebase.google.com/go"
 	"fmt"
-	"github.com/KouT127/attendance-management/configs"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 	"net/http"
 	"strings"
@@ -13,17 +13,33 @@ import (
 
 const AuthorizedUserIdKey = "authorized_user_id"
 
+func loadCredFromFile(name string) *option.ClientOption {
+	filename := fmt.Sprintf(name)
+	opt := option.WithCredentialsFile(filename)
+	return &opt
+}
+
+func loadCredFromCtx() *option.ClientOption {
+	cred, err := google.FindDefaultCredentials(context.Background())
+	if err != nil {
+		return nil
+	}
+	opt := option.WithCredentials(cred)
+	return &opt
+}
+
+func NewCredential() *option.ClientOption {
+	opt := loadCredFromCtx()
+	if opt == nil {
+		opt = loadCredFromFile("./backend/configs/firebase-service-dev.json")
+	}
+	return opt
+}
+
 func AuthRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		conf := configs.NewConfig()
-		if conf == nil {
-			u := fmt.Sprintf("error firebase unauthorized")
-			c.AbortWithStatusJSON(http.StatusUnauthorized, u)
-			return
-		}
-		filename := fmt.Sprintf("%s/firebase-service-stg.json", "./backend/configs")
-		opt := option.WithCredentialsFile(filename)
-		app, err := firebase.NewApp(context.Background(), nil, opt)
+		opt := NewCredential()
+		app, err := firebase.NewApp(context.Background(), nil, *opt)
 		if err != nil {
 			u := fmt.Sprintf("error invalid credential file")
 			c.AbortWithStatusJSON(http.StatusUnauthorized, u)

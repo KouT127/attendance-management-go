@@ -25,3 +25,5 @@ yarn-error.log*
 
 bin/attendance-management
 backend/configs/*.json
+
+!backend/configs/.keep

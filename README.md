@@ -17,6 +17,11 @@ go get -u gopkg.in/urfave/cli.v2@master
 go get -u github.com/oxequa/realize
 ```
 
+```bash
+cd backend
+cp .env.local.sample .env.local
+```
+
 ## hot reload
 ```
 make run
