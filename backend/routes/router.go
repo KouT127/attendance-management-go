@@ -8,7 +8,9 @@ import (
 	. "github.com/KouT127/attendance-management/usecases"
 	"github.com/gin-contrib/cors"
 	. "github.com/gin-gonic/gin"
+	"log"
 	"net/http"
+	"os"
 )
 
 func renderIndex(c *Context) {
@@ -20,8 +22,8 @@ func defaultRouter(r *Engine) {
 		ctx.JSON(http.StatusOK, "ok")
 		return
 	})
-	r.LoadHTMLFiles("frontend/build/index.html")
-	r.NoRoute(renderIndex)
+	//r.LoadHTMLFiles("frontend/build/index.html")
+	//r.NoRoute(renderIndex)
 }
 
 func v1AttendancesRouter(v1 *RouterGroup) {
@@ -59,9 +61,12 @@ func v1Router(r *Engine) {
 }
 
 func Init() {
-	r := New()
-	r.Use(Logger())
-	r.Use(Recovery())
+	r := Default()
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+		log.Printf("Defaulting to port %s", port)
+	}
 	config := cors.DefaultConfig()
 	config.AllowMethods = []string{"OPTION", "GET", "POST", "PUT", "DELETE"}
 	config.AllowOrigins = []string{"*"}
@@ -72,5 +77,6 @@ func Init() {
 
 	v1Router(r)
 	defaultRouter(r)
-	panic(r.Run(":8080"))
+	http.Handle("/", r)
+	log.Fatal(r.Run(":" + port))
 }

@@ -52,3 +52,13 @@ export const firebaseConfig = {
 ```bash
 mv　YOUR_FILE backend/config/development/config/firebase-service.json
 ```
+
+## Use Cloud Sql
+```bash
+./cloud_sql_proxy -instances=<INSTANCE_NAME:REGION:NAME>=tcp:3306
+```
+
+## Deploy app engine
+```bash
+gcloud app deploy YOUR_FILE.yml
+```
