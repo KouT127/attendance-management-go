@@ -58,7 +58,15 @@ mv　YOUR_FILE backend/config/development/config/firebase-service.json
 ./cloud_sql_proxy -instances=<INSTANCE_NAME:REGION:NAME>=tcp:3306
 ```
 
+## Migrate database
+mysql://root:[PASSWORD]を入れる必要がある。
+```
+cd backend
+make migrate
+```
+
 ## Deploy app engine
 ```bash
 gcloud app deploy YOUR_FILE.yml
 ```
+
