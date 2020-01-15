@@ -3,7 +3,7 @@ package handlers
 import (
 	"errors"
 	"github.com/KouT127/attendance-management/middlewares"
-	. "github.com/KouT127/attendance-management/serializers"
+	"github.com/KouT127/attendance-management/responses"
 	. "github.com/KouT127/attendance-management/usecases"
 	. "github.com/gin-gonic/gin"
 	"net/http"
@@ -35,7 +35,7 @@ func (uc userHandler) UserMineHandler(c *Context) {
 	userId := value.(string)
 	u, err := uc.usecase.ViewUser(userId)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, NewError("user", err))
+		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
 		return
 	}
 
@@ -51,14 +51,14 @@ func (uc userHandler) UserUpdateHandler(c *Context) {
 
 	err := c.Bind(&input)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, NewError("user", err))
+		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
 		return
 	}
 
 	value, exists := c.Get(middlewares.AuthorizedUserIdKey)
 	if !exists {
 		err := errors.New("user not found")
-		c.JSON(http.StatusBadRequest, NewError("user", err))
+		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
 		return
 	}
 
@@ -66,7 +66,7 @@ func (uc userHandler) UserUpdateHandler(c *Context) {
 
 	u, err := uc.usecase.UpdateUser(userId, input.Name)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, NewError("user", err))
+		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
 		return
 	}
 	c.JSON(http.StatusOK, H{

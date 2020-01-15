@@ -50,9 +50,7 @@ func (i *userUsecase) UpdateUser(userId string, userName string) (*User, error) 
 	if err != nil {
 		return nil, err
 	}
-	logger.NewInfo(map[string]interface{}{
-		"user": *u,
-	}, "updated")
+	logger.NewInfo("updated user-" + u.Id)
 
 	return u, nil
 }

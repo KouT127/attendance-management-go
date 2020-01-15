@@ -1,10 +1,12 @@
 package handlers
 
 import (
+	"errors"
 	"github.com/KouT127/attendance-management/middlewares"
 	. "github.com/KouT127/attendance-management/models"
-	. "github.com/KouT127/attendance-management/serializers"
+	"github.com/KouT127/attendance-management/responses"
 	. "github.com/KouT127/attendance-management/usecases"
+	"github.com/KouT127/attendance-management/utils/logger"
 	. "github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -28,7 +30,7 @@ type attendanceHandler struct {
 func (ac *attendanceHandler) AttendanceLatestHandler(c *Context) {
 	userId, err := GetIdByKey(c, middlewares.AuthorizedUserIdKey)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, NewError("user", err))
+		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
 		return
 	}
 	a := &Attendance{
@@ -37,7 +39,9 @@ func (ac *attendanceHandler) AttendanceLatestHandler(c *Context) {
 
 	res, err := ac.usecase.ViewLatestAttendance(a)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, NewError("attendances", err))
+		logger.NewFatal(c, err.Error())
+		err := errors.New(responses.BadAccessError)
+		c.JSON(http.StatusBadRequest, responses.NewError("attendances", err))
 	}
 	c.JSON(http.StatusOK, res)
 	return
@@ -47,15 +51,17 @@ func (ac *attendanceHandler) AttendanceListHandler(c *Context) {
 	p := NewPaginatorInput(0, 5)
 
 	if err := c.Bind(p); err != nil {
-		c.JSON(http.StatusBadRequest, H{
-			"message": err,
-		})
+		logger.NewFatal(c, err.Error())
+		err := errors.New(responses.InvalidValueError)
+		c.JSON(http.StatusBadRequest, responses.NewError("seach", err))
 		return
 	}
 
 	userId, err := GetIdByKey(c, middlewares.AuthorizedUserIdKey)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, NewError("user", err))
+		logger.NewFatal(c, err.Error())
+		err := errors.New(responses.BadAccessError)
+		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
 		return
 	}
 
@@ -65,7 +71,9 @@ func (ac *attendanceHandler) AttendanceListHandler(c *Context) {
 
 	res, err := ac.usecase.ViewAttendances(p, a)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, NewError("attendances", err))
+		logger.NewFatal(c, err.Error())
+		err := errors.New(responses.BadAccessError)
+		c.JSON(http.StatusBadRequest, responses.NewError("attendances", err))
 	}
 
 	c.JSON(http.StatusOK, res)
@@ -76,13 +84,16 @@ func (ac *attendanceHandler) AttendanceMonthlyHandler(c *Context) {
 	s := NewSearchParams()
 
 	if err := c.Bind(s); err != nil {
-		c.JSON(http.StatusBadRequest, NewError("search", err))
+		logger.NewFatal(c, err.Error())
+		err := errors.New(responses.InvalidValueError)
+		c.JSON(http.StatusBadRequest, responses.NewError("search", err))
 		return
 	}
 
 	userId, err := GetIdByKey(c, middlewares.AuthorizedUserIdKey)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, NewError("user", err))
+		err := errors.New(responses.BadAccessError)
+		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
 		return
 	}
 
@@ -92,7 +103,8 @@ func (ac *attendanceHandler) AttendanceMonthlyHandler(c *Context) {
 
 	res, err := ac.usecase.ViewAttendancesMonthly(p, q)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, NewError("attendances", err))
+		err := errors.New(responses.BadAccessError)
+		c.JSON(http.StatusBadRequest, responses.NewError("attendances", err))
 	}
 
 	c.JSON(http.StatusOK, res)
@@ -104,13 +116,17 @@ func (ac *attendanceHandler) AttendanceCreateHandler(c *Context) {
 	)
 
 	if err := c.Bind(&input); err != nil {
-		c.JSON(http.StatusBadRequest, NewError("user", err))
+		logger.NewFatal(c, err.Error())
+		err := errors.New(responses.InvalidValueError)
+		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
 		return
 	}
 
 	userId, err := GetIdByKey(c, middlewares.AuthorizedUserIdKey)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, NewError("user", err))
+		logger.NewFatal(c, err.Error())
+		err := errors.New(responses.BadAccessError)
+		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
 		return
 	}
 
@@ -119,7 +135,9 @@ func (ac *attendanceHandler) AttendanceCreateHandler(c *Context) {
 
 	res, err := ac.usecase.CreateAttendance(&input, query)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, NewError("attendance", err))
+		logger.NewFatal(c, err.Error())
+		err := errors.New(responses.BadAccessError)
+		c.JSON(http.StatusBadRequest, responses.NewError("attendance", err))
 		return
 	}
 

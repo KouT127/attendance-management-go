@@ -4,7 +4,7 @@ import (
 	"github.com/KouT127/attendance-management/database"
 	. "github.com/KouT127/attendance-management/models"
 	. "github.com/KouT127/attendance-management/repositories"
-	. "github.com/KouT127/attendance-management/serializers"
+	. "github.com/KouT127/attendance-management/responses"
 )
 
 func NewAttendanceUsecase(ar AttendanceRepository) *attendanceUsecase {
