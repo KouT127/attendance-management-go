@@ -22,3 +22,4 @@ mockgen:
 	mockgen -source ./repositories/user.go -destination ./repositories/mock/user.go
 	mockgen -source ./usecases/attendance.go -destination ./usecases/mock/attendance.go
 	mockgen -source ./usecases/user.go -destination ./usecases/mock/user.go
+	mockgen -source ./database/database.go -destination ./database/mock/database.go

@@ -4,11 +4,13 @@ go 1.11
 
 require (
 	firebase.google.com/go v3.11.1+incompatible
+	github.com/DATA-DOG/go-sqlmock v1.4.0 // indirect
 	github.com/gin-contrib/cors v1.3.0
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-ozzo/ozzo-validation/v3 v3.8.1
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/go-xorm/xorm v0.7.9
+	github.com/golang/mock v1.3.1
 	github.com/joho/godotenv v1.3.0
 	github.com/sirupsen/logrus v1.2.0
 	github.com/spf13/cobra v0.0.5
