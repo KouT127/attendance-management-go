@@ -5,3 +5,4 @@ env_variables:
   CLOUDSQL_CONNECTION_NAME: unix(/cloudsql/NAME:REGION:NAME)
   CLOUDSQL_USER: USER
   CLOUDSQL_PASSWORD: PASSWORD
+  DB_TABLE: attendance_management

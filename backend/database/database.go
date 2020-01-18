@@ -50,7 +50,8 @@ func loadEnv() string {
 	CONNECTION = os.Getenv("CLOUDSQL_CONNECTION_NAME")
 	USER = os.Getenv("CLOUDSQL_USER")
 	PASS = os.Getenv("CLOUDSQL_PASSWORD")
-	SOURCE = fmt.Sprintf("%s:%s@%s/attendance_management?charset=utf8&parseTime=true", USER, PASS, CONNECTION)
+	TABLE = os.Getenv("DB_TABLE")
+	SOURCE = fmt.Sprintf("%s:%s@%s/%s?charset=utf8&parseTime=true", USER, PASS, CONNECTION, TABLE)
 	return SOURCE
 }
 
@@ -62,6 +63,7 @@ func loadLocalEnv() string {
 	CONNECTION = os.Getenv("DB_CONNECTION_NAME")
 	USER = os.Getenv("DB_USER")
 	PASS = os.Getenv("DB_PASSWORD")
-	SOURCE = fmt.Sprintf("%s:%s@%s/attendance_management?charset=utf8&parseTime=true", USER, PASS, CONNECTION)
+	TABLE = os.Getenv("DB_TABLE")
+	SOURCE = fmt.Sprintf("%s:%s@%s/%s?charset=utf8&parseTime=true", USER, PASS, CONNECTION, TABLE)
 	return SOURCE
 }
