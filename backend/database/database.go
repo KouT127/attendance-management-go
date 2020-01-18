@@ -11,21 +11,22 @@ import (
 )
 
 var (
-	engine        *xorm.Engine
-	err           error
-	CONNECTION    string
-	USER          string
-	PASS          string
-	DB_CONNECTION string
+	engine     *xorm.Engine
+	err        error
+	CONNECTION string
+	USER       string
+	PASS       string
+	TABLE      string
+	SOURCE     string
 )
 
 func Init() {
-	DB_CONNECTION = loadEnv()
+	SOURCE = loadEnv()
 	if CONNECTION == "" {
-		DB_CONNECTION = loadLocalEnv()
+		SOURCE = loadLocalEnv()
 	}
 
-	engine, err = xorm.NewEngine("mysql", DB_CONNECTION)
+	engine, err = xorm.NewEngine("mysql", SOURCE)
 	if err != nil {
 		panic(err)
 	}
@@ -49,8 +50,8 @@ func loadEnv() string {
 	CONNECTION = os.Getenv("CLOUDSQL_CONNECTION_NAME")
 	USER = os.Getenv("CLOUDSQL_USER")
 	PASS = os.Getenv("CLOUDSQL_PASSWORD")
-	DB_CONNECTION = fmt.Sprintf("%s:%s@%s/attendance_management?charset=utf8&parseTime=true", USER, PASS, CONNECTION)
-	return DB_CONNECTION
+	SOURCE = fmt.Sprintf("%s:%s@%s/attendance_management?charset=utf8&parseTime=true", USER, PASS, CONNECTION)
+	return SOURCE
 }
 
 func loadLocalEnv() string {
@@ -60,7 +61,7 @@ func loadLocalEnv() string {
 	}
 	CONNECTION = os.Getenv("DB_CONNECTION_NAME")
 	USER = os.Getenv("DB_USER")
-	PASS = os.Getenv("PASSWORD")
-	DB_CONNECTION = fmt.Sprintf("%s:%s@%s/attendance_management?charset=utf8&parseTime=true", USER, PASS, CONNECTION)
-	return DB_CONNECTION
+	PASS = os.Getenv("DB_PASSWORD")
+	SOURCE = fmt.Sprintf("%s:%s@%s/attendance_management?charset=utf8&parseTime=true", USER, PASS, CONNECTION)
+	return SOURCE
 }

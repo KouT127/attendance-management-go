@@ -159,13 +159,11 @@ func (r *attendanceRepository) FetchAttendances(eng *xorm.Engine, a *models.Atte
 }
 
 func (r *attendanceRepository) CreateAttendance(sess *xorm.Session, a *models.Attendance) (int64, error) {
-	attendance := attendance{
-		UserId:       a.UserId,
-		ClockedOutId: nil,
-		ClockedInId:  nil,
-		CreatedAt:    time.Now().UTC(),
-		UpdatedAt:    time.Now().UTC(),
-	}
+	attendance := attendance{}
+	attendance.UserId = a.UserId
+	attendance.CreatedAt = time.Now()
+	attendance.UpdatedAt = time.Now()
+
 	if a.ClockedIn.Id != 0 {
 		attendance.ClockedInId = &a.ClockedIn.Id
 	}
