@@ -10,10 +10,12 @@ require (
 	github.com/go-ozzo/ozzo-validation/v3 v3.8.1
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/go-xorm/xorm v0.7.9
+	github.com/golang-migrate/migrate/v4 v4.8.0
 	github.com/golang/mock v1.3.1
 	github.com/joho/godotenv v1.3.0
-	github.com/sirupsen/logrus v1.2.0
+	github.com/sirupsen/logrus v1.4.1
 	github.com/spf13/cobra v0.0.5
+	github.com/stretchr/testify v1.4.0
 	go.uber.org/atomic v1.4.0 // indirect
 	go.uber.org/multierr v1.1.0 // indirect
 	go.uber.org/zap v1.10.0
