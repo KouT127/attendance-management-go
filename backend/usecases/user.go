@@ -1,28 +1,28 @@
 package usecases
 
 import (
-	. "github.com/KouT127/attendance-management/models"
-	. "github.com/KouT127/attendance-management/repositories"
+	"github.com/KouT127/attendance-management/models"
+	"github.com/KouT127/attendance-management/repositories"
 	"github.com/KouT127/attendance-management/utils/logger"
 )
 
-func NewUserUsecase(repo UserRepository) *userUsecase {
+func NewUserUsecase(repo repositories.UserRepository) *userUsecase {
 	return &userUsecase{
 		repository: repo,
 	}
 }
 
 type UserUsecase interface {
-	ViewUser(userId string) (*User, error)
-	UpdateUser(userId string, userName string) (*User, error)
+	ViewUser(userId string) (*models.User, error)
+	UpdateUser(userId string, userName string) (*models.User, error)
 }
 
 type userUsecase struct {
-	repository UserRepository
+	repository repositories.UserRepository
 }
 
-func (i *userUsecase) ViewUser(userId string) (*User, error) {
-	u := &User{}
+func (i *userUsecase) ViewUser(userId string) (*models.User, error) {
+	u := &models.User{}
 	has, err := i.repository.FetchUser(userId, u)
 	if err != nil {
 		return nil, err
@@ -38,15 +38,15 @@ func (i *userUsecase) ViewUser(userId string) (*User, error) {
 	return u, nil
 }
 
-func (i *userUsecase) UpdateUser(userId string, userName string) (*User, error) {
-	u := &User{}
+func (i *userUsecase) UpdateUser(userId string, userName string) (*models.User, error) {
+	u := &models.User{}
 	has, err := i.repository.FetchUser(userId, u)
 	if err != nil || !has {
 		return nil, err
 	}
 
 	u.Name = userName
-	_, err = i.repository.UpdateUser(u, &User{Id: u.Id})
+	_, err = i.repository.UpdateUser(u, &models.User{Id: u.Id})
 	if err != nil {
 		return nil, err
 	}
