@@ -23,7 +23,7 @@ func TestAttendanceRepository_CreateAttendance(t *testing.T) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		mockTime := attendanceTime{
+		mockTime := AttendanceTime{
 			Id:        1,
 			Remark:    "test",
 			PushedAt:  time.Now(),
