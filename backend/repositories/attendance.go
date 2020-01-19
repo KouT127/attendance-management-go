@@ -1,14 +1,10 @@
 package repositories
 
 import (
+	. "github.com/KouT127/attendance-management/database"
 	"github.com/KouT127/attendance-management/models"
 	"github.com/go-xorm/xorm"
 	"time"
-)
-
-const (
-	AttendanceTable     = "attendances"
-	AttendanceTimeTable = "attendances_time"
 )
 
 type Attendance struct {

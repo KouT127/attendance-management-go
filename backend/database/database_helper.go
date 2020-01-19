@@ -61,9 +61,9 @@ func migrateUp() error {
 
 func dropTable() error {
 	tables := []string{
-		"attendances_time",
-		"attendances",
-		"users",
+		AttendanceTimeTable,
+		AttendanceTable,
+		UserTable,
 		"schema_migrations",
 	}
 	for _, table := range tables {

@@ -10,6 +10,12 @@ import (
 	"xorm.io/core"
 )
 
+const (
+	UserTable           = "users"
+	AttendanceTable     = "attendances"
+	AttendanceTimeTable = "attendances_time"
+)
+
 var (
 	engine     *xorm.Engine
 	err        error

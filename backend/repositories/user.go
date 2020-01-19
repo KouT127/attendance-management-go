@@ -1,20 +1,17 @@
 package repositories
 
 import (
+	. "github.com/KouT127/attendance-management/database"
 	"github.com/KouT127/attendance-management/models"
 	. "github.com/go-xorm/xorm"
 	"time"
-)
-
-const (
-	UserTable = "users"
 )
 
 type User struct {
 	Id        string
 	Name      string
 	Email     string
-	ImageUrl  string    `xorm:"image_url"`
+	ImageUrl  string
 	CreatedAt time.Time `xorm:"created_at"`
 	UpdatedAt time.Time `xorm:"updated_at"`
 }
