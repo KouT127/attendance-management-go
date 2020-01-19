@@ -20,7 +20,7 @@ func ConnectDatabase() {
 		panic(err)
 	}
 	logger := xorm.NewSimpleLogger(os.Stdout)
-	logger.ShowSQL(true)
+	logger.ShowSQL(false)
 	logger.SetLevel(core.LOG_INFO)
 	loc, err := time.LoadLocation("UTC")
 	if err != nil {
@@ -78,25 +78,17 @@ func CreateTestTable() {
 	if err := migrateUp(); err != nil {
 		panic(err)
 	}
-	print("migrate \n")
 }
 
 func DropTestTable() {
 	if err := dropTable(); err != nil {
 		panic(err)
 	}
-	print("drop \n")
 }
 
 func PrepareTestDatabase() func() {
-	print("preparing \n")
 	CreateTestTable()
 	return func() {
-		print("teardown\n")
 		DropTestTable()
 	}
-}
-
-func SetupTest() {
-
 }
