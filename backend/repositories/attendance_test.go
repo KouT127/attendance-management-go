@@ -15,7 +15,7 @@ func insertUser(eng *xorm.Engine) {
 		Id:   "1",
 		Name: "test",
 	}
-	_, err := eng.Insert(&mockUser)
+	_, err := eng.Table(database.UserTable).Insert(&mockUser)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -29,7 +29,7 @@ func insertTime(eng *xorm.Engine) {
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
-	_, _ = eng.Insert(&mockTime)
+	_, _ = eng.Table(database.AttendanceTimeTable).Insert(&mockTime)
 }
 
 func TestAttendanceRepository_CreateAttendance(t *testing.T) {
