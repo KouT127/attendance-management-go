@@ -22,7 +22,7 @@ type userUsecase struct {
 }
 
 func (i *userUsecase) ViewUser(userId string) (*models.User, error) {
-	u := &models.User{}
+	u := new(models.User)
 	has, err := i.repository.FetchUser(userId, u)
 	if err != nil {
 		return nil, err
@@ -39,14 +39,13 @@ func (i *userUsecase) ViewUser(userId string) (*models.User, error) {
 }
 
 func (i *userUsecase) UpdateUser(userId string, userName string) (*models.User, error) {
-	u := &models.User{}
+	u := new(models.User)
 	has, err := i.repository.FetchUser(userId, u)
 	if err != nil || !has {
 		return nil, err
 	}
-
 	u.Name = userName
-	_, err = i.repository.UpdateUser(u, &models.User{Id: u.Id})
+	_, err = i.repository.UpdateUser(u, u.Id)
 	if err != nil {
 		return nil, err
 	}
