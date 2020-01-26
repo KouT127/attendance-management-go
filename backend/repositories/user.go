@@ -2,7 +2,7 @@ package repositories
 
 import (
 	. "github.com/KouT127/attendance-management/database"
-	"github.com/KouT127/attendance-management/models"
+	"github.com/KouT127/attendance-management/domains"
 	. "github.com/go-xorm/xorm"
 	"time"
 )
@@ -16,7 +16,7 @@ type User struct {
 	UpdatedAt time.Time `xorm:"updated_at"`
 }
 
-func NewUser(u *models.User) *User {
+func NewUser(u *domains.User) *User {
 	user := new(User)
 	user.Id = u.Id
 	user.Name = u.Name
@@ -25,7 +25,7 @@ func NewUser(u *models.User) *User {
 	return user
 }
 
-func (u *User) build(user *models.User) {
+func (u *User) build(user *domains.User) {
 	user.Id = u.Id
 	user.Name = u.Name
 	user.ImageUrl = u.ImageUrl
@@ -38,28 +38,28 @@ func NewUserRepository(e Engine) *userRepository {
 }
 
 type UserRepository interface {
-	FetchUser(userId string, user *models.User) (bool, error)
-	CreateUser(user *models.User) (int64, error)
-	UpdateUser(user *models.User, id string) (int64, error)
+	FetchUser(userId string, user *domains.User) (bool, error)
+	CreateUser(user *domains.User) (int64, error)
+	UpdateUser(user *domains.User, id string) (int64, error)
 }
 
 type userRepository struct {
 	engine Engine
 }
 
-func (r userRepository) FetchUsers(u *models.User) ([]*models.User, error) {
-	users := make([]*models.User, 0)
+func (r userRepository) FetchUsers(u *domains.User) ([]*domains.User, error) {
+	users := make([]*domains.User, 0)
 	err := r.engine.
 		Table(UserTable).
 		Iterate(u, func(idx int, bean interface{}) error {
-			u := bean.(*models.User)
+			u := bean.(*domains.User)
 			users = append(users, u)
 			return nil
 		})
 	return users, err
 }
 
-func (r *userRepository) FetchUser(userId string, user *models.User) (bool, error) {
+func (r *userRepository) FetchUser(userId string, user *domains.User) (bool, error) {
 	u := new(User)
 	has, err := r.engine.
 		Table(UserTable).
@@ -69,7 +69,7 @@ func (r *userRepository) FetchUser(userId string, user *models.User) (bool, erro
 	return has, err
 }
 
-func (r *userRepository) CreateUser(user *models.User) (int64, error) {
+func (r *userRepository) CreateUser(user *domains.User) (int64, error) {
 	u := NewUser(user)
 	cnt, err := r.engine.
 		Table(UserTable).
@@ -78,7 +78,7 @@ func (r *userRepository) CreateUser(user *models.User) (int64, error) {
 	return cnt, err
 }
 
-func (r *userRepository) UpdateUser(user *models.User, id string) (int64, error) {
+func (r *userRepository) UpdateUser(user *domains.User, id string) (int64, error) {
 	u := NewUser(user)
 	cnt, err := r.engine.
 		Table(UserTable).

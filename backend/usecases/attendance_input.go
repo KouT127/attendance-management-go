@@ -1,7 +1,7 @@
 package usecases
 
 import (
-	. "github.com/KouT127/attendance-management/models"
+	. "github.com/KouT127/attendance-management/domains"
 	validation "github.com/go-ozzo/ozzo-validation/v3"
 	"time"
 )

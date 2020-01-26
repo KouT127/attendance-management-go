@@ -1,7 +1,7 @@
 package responses
 
 import (
-	. "github.com/KouT127/attendance-management/models"
+	. "github.com/KouT127/attendance-management/domains"
 	"github.com/KouT127/attendance-management/utils/timezone"
 )
 
