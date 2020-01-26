@@ -24,6 +24,14 @@ type userHandler struct {
 	usecase UserUsecase
 }
 
+// @Description get mine information
+// @Security ApiKeyAuth
+// @param Authorization header string true "Authorization"
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} domains.User
+// @Failure 400 {object} responses.CommonError
+// @Router /users/mine [get]
 func (uc userHandler) UserMineHandler(c *Context) {
 	value, exists := c.Get(middlewares.AuthorizedUserIdKey)
 	if !exists {

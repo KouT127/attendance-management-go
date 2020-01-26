@@ -2,16 +2,38 @@ package routes
 
 import (
 	"github.com/KouT127/attendance-management/database"
+	"github.com/KouT127/attendance-management/docs"
 	. "github.com/KouT127/attendance-management/handlers"
 	"github.com/KouT127/attendance-management/middlewares"
 	. "github.com/KouT127/attendance-management/repositories"
 	. "github.com/KouT127/attendance-management/usecases"
 	"github.com/gin-contrib/cors"
 	. "github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"log"
 	"net/http"
 	"os"
 )
+
+// @title Swagger Example API
+// @version 1.0
+// @description This is a sample server celler server.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:8080
+// @BasePath /api/v1
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 
 func renderIndex(c *Context) {
 	c.HTML(http.StatusOK, "index.html", H{})
@@ -61,6 +83,13 @@ func v1Router(r *Engine) {
 }
 
 func Init() {
+	docs.SwaggerInfo.Title = "Example API"
+	docs.SwaggerInfo.Description = "This is a sample server."
+	docs.SwaggerInfo.Version = "1.0"
+	docs.SwaggerInfo.Host = "localhost:8080"
+	docs.SwaggerInfo.BasePath = "/v1"
+	docs.SwaggerInfo.Schemes = []string{"http", "https"}
+
 	r := Default()
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -77,6 +106,7 @@ func Init() {
 
 	v1Router(r)
 	defaultRouter(r)
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	http.Handle("/", r)
 	log.Fatal(r.Run(":" + port))
 }

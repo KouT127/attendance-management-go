@@ -1,0 +1,53 @@
+basePath: '{{.BasePath}}'
+definitions:
+  domains.User:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      imageUrl:
+        type: string
+      name:
+        type: string
+    type: object
+  responses.CommonError:
+    properties:
+      errors:
+        type: object
+    type: object
+host: '{{.Host}}'
+info:
+  contact: {}
+  description: '{{.Description}}'
+  license: {}
+  title: '{{.Title}}'
+  version: '{{.Version}}'
+paths:
+  /users/mine:
+    get:
+      consumes:
+      - application/json
+      description: get mine information
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domains.User'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.CommonError'
+            type: object
+      security:
+      - ApiKeyAuth: []
+swagger: "2.0"
