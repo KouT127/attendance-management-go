@@ -112,7 +112,8 @@ func (i *attendanceUsecase) CreateAttendance(input *AttendanceInput, query *mode
 
 	if attendance == nil {
 		attendance = new(models.Attendance)
-		attendance.ClockIn(query.UserId, time)
+		attendance.UserId = query.UserId
+		attendance.ClockIn(time)
 		if _, err := i.ar.CreateAttendance(sess, attendance); err != nil {
 			return nil, err
 		}
