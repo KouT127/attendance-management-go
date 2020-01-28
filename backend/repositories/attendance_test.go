@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"github.com/KouT127/attendance-management/database"
-	"github.com/KouT127/attendance-management/domains"
+	"github.com/KouT127/attendance-management/models"
 	"github.com/go-xorm/xorm"
 	"github.com/stretchr/testify/assert"
 	"log"
@@ -11,7 +11,7 @@ import (
 )
 
 func insertUser(eng *xorm.Engine) {
-	mockUser := domains.User{
+	mockUser := models.User{
 		Id:   "1",
 		Name: "test",
 	}
@@ -45,7 +45,7 @@ func TestAttendanceRepository_CreateAttendance(t *testing.T) {
 		repo := NewAttendanceRepository()
 		sess := repo.NewSession(eng)
 
-		mockAttendanceTime := domains.AttendanceTime{
+		mockAttendanceTime := models.AttendanceTime{
 			Id:        1,
 			Remark:    "test",
 			PushedAt:  time.Now(),
@@ -53,7 +53,7 @@ func TestAttendanceRepository_CreateAttendance(t *testing.T) {
 			UpdatedAt: time.Now(),
 		}
 
-		mockAttendance := domains.Attendance{
+		mockAttendance := models.Attendance{
 			UserId:    "1",
 			ClockedIn: &mockAttendanceTime,
 			CreatedAt: time.Time{},
@@ -85,7 +85,7 @@ func TestAttendanceRepository_CreateAttendance(t *testing.T) {
 		repo := NewAttendanceRepository()
 		sess := repo.NewSession(eng)
 
-		mockAttendanceTime := domains.AttendanceTime{
+		mockAttendanceTime := models.AttendanceTime{
 			Id:        1,
 			Remark:    "test",
 			PushedAt:  time.Now(),
@@ -93,7 +93,7 @@ func TestAttendanceRepository_CreateAttendance(t *testing.T) {
 			UpdatedAt: time.Now(),
 		}
 
-		mockAttendance := domains.Attendance{
+		mockAttendance := models.Attendance{
 			UserId:    "1",
 			ClockedIn: &mockAttendanceTime,
 			CreatedAt: time.Time{},

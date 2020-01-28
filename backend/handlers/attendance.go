@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"errors"
-	. "github.com/KouT127/attendance-management/domains"
 	"github.com/KouT127/attendance-management/middlewares"
+	. "github.com/KouT127/attendance-management/models"
 	"github.com/KouT127/attendance-management/responses"
 	. "github.com/KouT127/attendance-management/usecases"
 	"github.com/KouT127/attendance-management/utils/logger"

@@ -2,7 +2,7 @@ package usecases
 
 import (
 	"github.com/KouT127/attendance-management/database"
-	"github.com/KouT127/attendance-management/domains"
+	"github.com/KouT127/attendance-management/models"
 	"github.com/KouT127/attendance-management/repositories"
 	. "github.com/KouT127/attendance-management/responses"
 )
@@ -14,24 +14,24 @@ func NewAttendanceUsecase(ar repositories.AttendanceRepository) *attendanceUseca
 }
 
 type AttendanceUsecase interface {
-	ViewAttendances(pagination *PaginatorInput, attendance *domains.Attendance) (*AttendancesResult, error)
-	ViewLatestAttendance(attendance *domains.Attendance) (*AttendanceResult, error)
-	ViewAttendancesMonthly(pagination *PaginatorInput, attendance *domains.Attendance) (*AttendancesResult, error)
-	CreateAttendance(input *AttendanceInput, query *domains.Attendance) (*AttendanceResult, error)
+	ViewAttendances(pagination *PaginatorInput, attendance *models.Attendance) (*AttendancesResult, error)
+	ViewLatestAttendance(attendance *models.Attendance) (*AttendanceResult, error)
+	ViewAttendancesMonthly(pagination *PaginatorInput, attendance *models.Attendance) (*AttendancesResult, error)
+	CreateAttendance(input *AttendanceInput, query *models.Attendance) (*AttendanceResult, error)
 }
 
 type attendanceUsecase struct {
 	ar repositories.AttendanceRepository
 }
 
-func (i *attendanceUsecase) ViewAttendances(pagination *PaginatorInput, attendance *domains.Attendance) (*AttendancesResult, error) {
+func (i *attendanceUsecase) ViewAttendances(pagination *PaginatorInput, attendance *models.Attendance) (*AttendancesResult, error) {
 	eng := database.NewDB()
 	maxCnt, err := i.ar.FetchAttendancesCount(eng, attendance)
 	if err != nil {
 		return nil, err
 	}
 
-	attendances := make([]*domains.Attendance, 0)
+	attendances := make([]*models.Attendance, 0)
 	attendances, err = i.ar.FetchAttendances(eng, attendance, pagination.BuildPaginator())
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (i *attendanceUsecase) ViewAttendances(pagination *PaginatorInput, attendan
 	return res, nil
 }
 
-func (i *attendanceUsecase) ViewLatestAttendance(attendance *domains.Attendance) (*AttendanceResult, error) {
+func (i *attendanceUsecase) ViewLatestAttendance(attendance *models.Attendance) (*AttendanceResult, error) {
 	eng := database.NewDB()
 
 	attendance, err := i.ar.FetchLatestAttendance(eng, attendance)
@@ -66,7 +66,7 @@ func (i *attendanceUsecase) ViewLatestAttendance(attendance *domains.Attendance)
 	return s, nil
 }
 
-func (i *attendanceUsecase) ViewAttendancesMonthly(pagination *PaginatorInput, attendance *domains.Attendance) (*AttendancesResult, error) {
+func (i *attendanceUsecase) ViewAttendancesMonthly(pagination *PaginatorInput, attendance *models.Attendance) (*AttendancesResult, error) {
 	eng := database.NewDB()
 
 	attendances, err := i.ar.FetchAttendances(eng, attendance, pagination.BuildPaginator())
@@ -88,7 +88,7 @@ func (i *attendanceUsecase) ViewAttendancesMonthly(pagination *PaginatorInput, a
 	return res, nil
 }
 
-func (i *attendanceUsecase) CreateAttendance(input *AttendanceInput, query *domains.Attendance) (*AttendanceResult, error) {
+func (i *attendanceUsecase) CreateAttendance(input *AttendanceInput, query *models.Attendance) (*AttendanceResult, error) {
 	eng := database.NewDB()
 	sess := i.ar.NewSession(eng)
 	defer i.ar.Close(sess)
@@ -111,7 +111,7 @@ func (i *attendanceUsecase) CreateAttendance(input *AttendanceInput, query *doma
 	}
 
 	if attendance == nil {
-		attendance = new(domains.Attendance)
+		attendance = new(models.Attendance)
 		attendance.ClockIn(query.UserId, time)
 		if _, err := i.ar.CreateAttendance(sess, attendance); err != nil {
 			return nil, err
