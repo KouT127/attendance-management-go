@@ -47,7 +47,7 @@ type userRepository struct {
 	engine Engine
 }
 
-func (r userRepository) FetchUsers(u *models.User) ([]*models.User, error) {
+func (r *userRepository) FetchUsers(u *models.User) ([]*models.User, error) {
 	users := make([]*models.User, 0)
 	err := r.engine.
 		Table(UserTable).
