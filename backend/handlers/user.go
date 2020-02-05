@@ -48,7 +48,7 @@ func (uc userHandler) UserMineHandler(c *Context) {
 	}
 
 	c.JSON(http.StatusOK, H{
-		"user": u,
+		"user": responses.NewUserResp(u),
 	})
 }
 
@@ -78,6 +78,6 @@ func (uc userHandler) UserUpdateHandler(c *Context) {
 		return
 	}
 	c.JSON(http.StatusOK, H{
-		"user": u,
+		"user": responses.NewUserResp(u),
 	})
 }
