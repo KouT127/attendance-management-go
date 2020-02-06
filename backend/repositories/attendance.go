@@ -92,7 +92,7 @@ func NewAttendanceRepository() *attendanceRepository {
 type AttendanceRepository interface {
 	FetchAttendancesCount(eng *xorm.Engine, a *models.Attendance) (int64, error)
 	FetchAttendances(eng *xorm.Engine, a *models.Attendance, p *Paginator) ([]*models.Attendance, error)
-	FetchLatestAttendance(eng *xorm.Engine, a *models.Attendance) (*models.Attendance, error)
+	FetchLatestAttendance(eng *xorm.Engine, query *models.Attendance) (*models.Attendance, error)
 	CreateAttendance(sess *xorm.Session, a *models.Attendance) (int64, error)
 	UpdateAttendance(sess *xorm.Session, a *models.Attendance) (int64, error)
 	CreateAttendanceTime(sess *xorm.Session, t *models.AttendanceTime) error
