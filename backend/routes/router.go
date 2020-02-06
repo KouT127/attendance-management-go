@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"github.com/KouT127/attendance-management/database"
 	"github.com/KouT127/attendance-management/docs"
 	. "github.com/KouT127/attendance-management/handlers"
 	"github.com/KouT127/attendance-management/middlewares"
@@ -66,9 +65,9 @@ func v1UsersRouter(v1 *RouterGroup) {
 	handlers := []HandlerFunc{
 		middlewares.AuthRequired(),
 	}
-	engine := database.NewDB()
-	r := NewUserRepository(*engine)
-	i := NewUserUsecase(r)
+	userRepo := NewUserRepository()
+	attendanceRepo := NewAttendanceRepository()
+	i := NewUserUsecase(userRepo, attendanceRepo)
 	c := NewUserHandler(i)
 
 	users := v1.Group("/users", handlers...)

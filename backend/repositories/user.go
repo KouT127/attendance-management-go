@@ -32,25 +32,21 @@ func (u *User) build(user *models.User) {
 	user.ImageUrl = u.ImageUrl
 }
 
-func NewUserRepository(e Engine) *userRepository {
-	return &userRepository{
-		engine: e,
-	}
+func NewUserRepository() *userRepository {
+	return &userRepository{}
 }
 
 type UserRepository interface {
-	FetchUser(userId string, user *models.User) (bool, error)
-	CreateUser(user *models.User) (int64, error)
-	UpdateUser(user *models.User, id string) (int64, error)
+	FetchUser(eng *Engine, userId string, user *models.User) (bool, error)
+	CreateUser(eng *Engine, user *models.User) (int64, error)
+	UpdateUser(eng *Engine, user *models.User, id string) (int64, error)
 }
 
-type userRepository struct {
-	engine Engine
-}
+type userRepository struct{}
 
-func (r *userRepository) FetchUsers(u *models.User) ([]*models.User, error) {
+func (r *userRepository) FetchUsers(eng *Engine, u *models.User) ([]*models.User, error) {
 	users := make([]*models.User, 0)
-	err := r.engine.
+	err := eng.
 		Table(UserTable).
 		Iterate(u, func(idx int, bean interface{}) error {
 			u := bean.(*models.User)
@@ -60,9 +56,9 @@ func (r *userRepository) FetchUsers(u *models.User) ([]*models.User, error) {
 	return users, err
 }
 
-func (r *userRepository) FetchUser(userId string, user *models.User) (bool, error) {
+func (r *userRepository) FetchUser(eng *Engine, userId string, user *models.User) (bool, error) {
 	u := new(User)
-	has, err := r.engine.
+	has, err := eng.
 		Table(UserTable).
 		Where("id = ?", userId).
 		Get(u)
@@ -70,18 +66,18 @@ func (r *userRepository) FetchUser(userId string, user *models.User) (bool, erro
 	return has, err
 }
 
-func (r *userRepository) CreateUser(user *models.User) (int64, error) {
+func (r *userRepository) CreateUser(eng *Engine, user *models.User) (int64, error) {
 	u := NewUser(user)
-	cnt, err := r.engine.
+	cnt, err := eng.
 		Table(UserTable).
 		Insert(u)
 	u.build(user)
 	return cnt, err
 }
 
-func (r *userRepository) UpdateUser(user *models.User, id string) (int64, error) {
+func (r *userRepository) UpdateUser(eng *Engine, user *models.User, id string) (int64, error) {
 	u := NewUser(user)
-	cnt, err := r.engine.
+	cnt, err := eng.
 		Table(UserTable).
 		Where("id = ?", user.Id).
 		Update(u)

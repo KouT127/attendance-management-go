@@ -27,7 +27,7 @@ type AttendanceResult struct {
 	IsClockedOut bool           `json:"isClockedOut"`
 }
 
-func NewAttendanceSerializer(attendance *Attendance) *AttendanceResult {
+func NewAttendanceResult(attendance *Attendance) *AttendanceResult {
 	serializer := new(AttendanceResult)
 	serializer.NewAttendanceResult(true, attendance)
 	return serializer
@@ -38,22 +38,22 @@ type AttendancesResult struct {
 	Attendances []*AttendanceResp `json:"attendances"`
 }
 
-func (r *AttendanceResp) NewAttendanceResp(a *Attendance) *AttendanceResp {
+func NewAttendanceResp(a *Attendance) AttendanceResp {
+	resp := AttendanceResp{}
 	loc := timezone.NewJSTLocation()
-	r.Id = a.Id
-	r.UserId = a.UserId
-	r.ClockedInTime = a.ClockedIn
-	r.ClockedOutTime = a.ClockedOut
-	r.CreatedAt = a.CreatedAt.In(loc).Format("2006-01-02-15:04:05")
-	r.UpdatedAt = a.UpdatedAt.In(loc).Format("2006-01-02-15:04:05")
-	return r
+	resp.Id = a.Id
+	resp.UserId = a.UserId
+	resp.ClockedInTime = a.ClockedIn
+	resp.ClockedOutTime = a.ClockedOut
+	resp.CreatedAt = a.CreatedAt.In(loc).Format("2006-01-02-15:04:05")
+	resp.UpdatedAt = a.UpdatedAt.In(loc).Format("2006-01-02-15:04:05")
+	return resp
 }
 
 func (s *AttendanceResult) NewAttendanceResult(isSuccessful bool, attendance *Attendance) {
 	s.IsSuccessful = true
 	s.IsClockedOut = attendance.IsClockedOut()
-	res := new(AttendanceResp)
-	s.Attendance = *res.NewAttendanceResp(attendance)
+	s.Attendance = NewAttendanceResp(attendance)
 }
 
 func (s *AttendancesResult) NewAttendancesResult(isSuccessful bool, hasNext bool, responses []*AttendanceResp) {

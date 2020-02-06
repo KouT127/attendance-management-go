@@ -40,9 +40,8 @@ func (i *attendanceUsecase) ViewAttendances(pagination *PaginatorInput, attendan
 	responses := make([]*AttendanceResp, 0)
 
 	for _, attendance := range attendances {
-		res := &AttendanceResp{}
-		res.NewAttendanceResp(attendance)
-		responses = append(responses, res)
+		resp := NewAttendanceResp(attendance)
+		responses = append(responses, &resp)
 	}
 
 	res := new(AttendancesResult)
@@ -77,9 +76,8 @@ func (i *attendanceUsecase) ViewAttendancesMonthly(pagination *PaginatorInput, a
 	responses := make([]*AttendanceResp, 0)
 
 	for _, attendance := range attendances {
-		res := new(AttendanceResp)
-		res.NewAttendanceResp(attendance)
-		responses = append(responses, res)
+		resp := NewAttendanceResp(attendance)
+		responses = append(responses, &resp)
 	}
 
 	res := new(AttendancesResult)
@@ -118,7 +116,7 @@ func (i *attendanceUsecase) CreateAttendance(input *AttendanceInput, query *mode
 			return nil, err
 		}
 
-		serializer := NewAttendanceSerializer(attendance)
+		serializer := NewAttendanceResult(attendance)
 		if err := i.ar.Commit(sess); err != nil {
 			return nil, err
 		}
@@ -130,7 +128,7 @@ func (i *attendanceUsecase) CreateAttendance(input *AttendanceInput, query *mode
 		return nil, err
 	}
 
-	serializer := NewAttendanceSerializer(attendance)
+	serializer := NewAttendanceResult(attendance)
 	if err := i.ar.Commit(sess); err != nil {
 		return nil, err
 	}

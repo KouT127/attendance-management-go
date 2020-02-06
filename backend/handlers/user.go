@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"github.com/KouT127/attendance-management/database"
 	"github.com/KouT127/attendance-management/middlewares"
 	"github.com/KouT127/attendance-management/responses"
 	. "github.com/KouT127/attendance-management/usecases"
@@ -33,6 +34,7 @@ type userHandler struct {
 // @Failure 400 {object} responses.CommonError
 // @Router /users/mine [get]
 func (uc userHandler) UserMineHandler(c *Context) {
+	eng := database.NewDB()
 	value, exists := c.Get(middlewares.AuthorizedUserIdKey)
 	if !exists {
 		c.JSON(http.StatusBadRequest, H{
@@ -41,14 +43,15 @@ func (uc userHandler) UserMineHandler(c *Context) {
 		return
 	}
 	userId := value.(string)
-	u, err := uc.usecase.ViewUser(userId)
+	u, a, err := uc.usecase.ViewUser(eng, userId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
 		return
 	}
 
 	c.JSON(http.StatusOK, H{
-		"user": responses.NewUserResp(u),
+		"user":       responses.NewUserResp(u),
+		"attendance": responses.NewAttendanceResult(a),
 	})
 }
 
@@ -56,6 +59,7 @@ func (uc userHandler) UserUpdateHandler(c *Context) {
 	var (
 		input UserInput
 	)
+	eng := database.NewDB()
 
 	err := c.Bind(&input)
 	if err != nil {
@@ -72,7 +76,7 @@ func (uc userHandler) UserUpdateHandler(c *Context) {
 
 	userId := value.(string)
 
-	u, err := uc.usecase.UpdateUser(userId, input.Name)
+	u, err := uc.usecase.UpdateUser(eng, userId, input.Name)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
 		return
