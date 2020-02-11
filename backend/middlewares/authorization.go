@@ -43,30 +43,30 @@ func AuthRequired() gin.HandlerFunc {
 		opt := NewCredential()
 		app, err := firebase.NewApp(context.Background(), nil, *opt)
 		if err != nil {
-			logger.NewFatal(c, "error invalid credential file")
-			u := fmt.Sprintf("bad access")
+			logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, "error invalid credential file")
+			u := fmt.Sprintf("unauthorized")
 			c.AbortWithStatusJSON(http.StatusUnauthorized, u)
 			return
 		}
 		client, err := app.Auth(context.Background())
 		if err != nil {
-			logger.NewFatal(c, "error firebase unauthorized")
-			u := fmt.Sprintf("bad access")
+			logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, "error firebase unauthorized")
+			u := fmt.Sprintf("unauthorized")
 			c.AbortWithStatusJSON(http.StatusUnauthorized, u)
 			return
 		}
 		header := c.Request.Header.Get("Authorization")
 		replacedToken := strings.Replace(header, "Bearer ", "", 1)
 		if replacedToken == "" {
-			logger.NewFatal(c, "error verifying ID token")
-			u := fmt.Sprintf("bad access")
+			logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, "error verifying ID token")
+			u := fmt.Sprintf("unauthorized")
 			c.AbortWithStatusJSON(http.StatusUnauthorized, u)
 			return
 		}
 		verifiedToken, err := client.VerifyIDToken(context.Background(), replacedToken)
 		if err != nil {
 			logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, "error verifying id token")
-			u := fmt.Sprintf("bad access")
+			u := fmt.Sprintf("unauthorized")
 			c.AbortWithStatusJSON(http.StatusUnauthorized, u)
 			return
 		}
