@@ -88,28 +88,19 @@ func (r *attendanceRepository) FetchAttendancesCount(ctx context.Context, db *sq
 }
 
 func (r *attendanceRepository) FetchLatestAttendance(ctx context.Context, db *sql.DB, query *models.Attendance) (*models.Attendance, error) {
-	//attendance := &AttendanceDetail{}
-	//now := time.Now()
-	//start := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
-	//end := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 59, time.Local)
-	//
-	//has, err := eng.Select("attendances.*, clockedInTime.*, clockedOutTime.*").
-	//	Table(AttendanceTable).
-	//	Join("left", "attendances_time clockedInTime", "attendances.clocked_in_id = clockedInTime.id").
-	//	Join("left", "attendances_time clockedOutTime", "attendances.clocked_out_id = clockedOutTime.id").
-	//	Where("attendances.user_id = ?", a.UserId).
-	//	Where("attendances.created_at Between ? and ? ", start, end).
-	//	Limit(1).
-	//	OrderBy("-attendances.id").
-	//	Get(attendance)
-	//
-	//if err != nil {
-	//	return nil, err
-	//}
-	//if !has {
-	//	return nil, nil
-	//}
+	detail := new(AttendanceDetail)
+	err := database.Attendances(
+		Select("attendances.*, clocked_in_time.*, clocked_out_time.*"),
+		InnerJoin("attendances_time clocked_in_time on clocked_in_time.id = attendances.clocked_in_id"),
+		InnerJoin("attendances_time clocked_out_time on clocked_out_time.id = attendances.clocked_out_id"),
+		Where("user_id = ?", query.UserId),
+		Limit(1),
+		OrderBy("-attendances.id"),
+	).Bind(ctx, db, detail)
 
+	if err != nil {
+		return nil, err
+	}
 	return nil, nil
 }
 
@@ -124,13 +115,13 @@ func (r *attendanceRepository) FetchAttendances(ctx context.Context, db *sql.DB,
 		Where("user_id = ?", query.UserId),
 		Limit(int(p.Limit)),
 		Offset(int(page)),
-		OrderBy("attendances.id"),
+		OrderBy("-attendances.id"),
 	).Bind(ctx, db, &details)
 
 	if err != nil {
 		return nil, err
 	}
-	
+
 	for _, detail := range details {
 		attendances = append(attendances, detail.build())
 	}
