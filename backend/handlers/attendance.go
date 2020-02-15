@@ -8,6 +8,7 @@ import (
 	. "github.com/KouT127/attendance-management/usecases"
 	"github.com/KouT127/attendance-management/utils/logger"
 	. "github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -39,7 +40,7 @@ func (ac *attendanceHandler) AttendanceLatestHandler(c *Context) {
 
 	res, err := ac.usecase.ViewLatestAttendance(a)
 	if err != nil {
-		logger.NewFatal(c, err.Error())
+		logger.NewWarn(logrus.Fields{"context": c}, err.Error())
 		err := errors.New(responses.BadAccessError)
 		c.JSON(http.StatusBadRequest, responses.NewError("attendances", err))
 	}
@@ -51,7 +52,7 @@ func (ac *attendanceHandler) AttendanceListHandler(c *Context) {
 	p := NewPaginatorInput(0, 5)
 
 	if err := c.Bind(p); err != nil {
-		logger.NewFatal(c, err.Error())
+		logger.NewWarn(logrus.Fields{"context": c}, err.Error())
 		err := errors.New(responses.InvalidValueError)
 		c.JSON(http.StatusBadRequest, responses.NewError("seach", err))
 		return
@@ -59,7 +60,7 @@ func (ac *attendanceHandler) AttendanceListHandler(c *Context) {
 
 	userId, err := GetIdByKey(c, middlewares.AuthorizedUserIdKey)
 	if err != nil {
-		logger.NewFatal(c, err.Error())
+		logger.NewWarn(logrus.Fields{"context": c}, err.Error())
 		err := errors.New(responses.BadAccessError)
 		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
 		return
@@ -71,7 +72,7 @@ func (ac *attendanceHandler) AttendanceListHandler(c *Context) {
 
 	res, err := ac.usecase.ViewAttendances(p, a)
 	if err != nil {
-		logger.NewFatal(c, err.Error())
+		logger.NewWarn(logrus.Fields{"context": c}, err.Error())
 		err := errors.New(responses.BadAccessError)
 		c.JSON(http.StatusBadRequest, responses.NewError("attendances", err))
 	}
@@ -84,7 +85,7 @@ func (ac *attendanceHandler) AttendanceMonthlyHandler(c *Context) {
 	s := NewSearchParams()
 
 	if err := c.Bind(s); err != nil {
-		logger.NewFatal(c, err.Error())
+		logger.NewWarn(logrus.Fields{"context": c}, err.Error())
 		err := errors.New(responses.InvalidValueError)
 		c.JSON(http.StatusBadRequest, responses.NewError("search", err))
 		return
@@ -116,7 +117,7 @@ func (ac *attendanceHandler) AttendanceCreateHandler(c *Context) {
 	)
 
 	if err := c.Bind(&input); err != nil {
-		logger.NewFatal(c, err.Error())
+		logger.NewWarn(logrus.Fields{"context": c}, err.Error())
 		err := errors.New(responses.InvalidValueError)
 		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
 		return
@@ -124,7 +125,7 @@ func (ac *attendanceHandler) AttendanceCreateHandler(c *Context) {
 
 	userId, err := GetIdByKey(c, middlewares.AuthorizedUserIdKey)
 	if err != nil {
-		logger.NewFatal(c, err.Error())
+		logger.NewWarn(logrus.Fields{"context": c}, err.Error())
 		err := errors.New(responses.BadAccessError)
 		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
 		return
@@ -135,7 +136,7 @@ func (ac *attendanceHandler) AttendanceCreateHandler(c *Context) {
 
 	res, err := ac.usecase.CreateAttendance(&input, attendance)
 	if err != nil {
-		logger.NewFatal(c, err.Error())
+		logger.NewWarn(logrus.Fields{"context": c}, err.Error())
 		err := errors.New(responses.BadAccessError)
 		c.JSON(http.StatusBadRequest, responses.NewError("attendance", err))
 		return
