@@ -130,10 +130,10 @@ func (ac *attendanceHandler) AttendanceCreateHandler(c *Context) {
 		return
 	}
 
-	query := new(Attendance)
-	query.UserId = userId
+	attendance := new(Attendance)
+	attendance.UserId = userId
 
-	res, err := ac.usecase.CreateAttendance(&input, query)
+	res, err := ac.usecase.CreateAttendance(&input, attendance)
 	if err != nil {
 		logger.NewFatal(c, err.Error())
 		err := errors.New(responses.BadAccessError)

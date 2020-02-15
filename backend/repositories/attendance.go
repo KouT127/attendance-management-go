@@ -22,17 +22,17 @@ func NewTime(at *models.AttendanceTime) *database.AttendancesTime {
 }
 
 type AttendanceDetail struct {
-	database.Attendance `boil:",bind"`
-	ClockedInTime       database.AttendancesTime `boil:",bind"`
-	ClockedOutTime      database.AttendancesTime `boil:",bind"`
+	Attendances    database.Attendance      `boil:",bind"`
+	ClockedInTime  database.AttendancesTime `boil:",bind"`
+	ClockedOutTime database.AttendancesTime `boil:",bind"`
 }
 
-func (d AttendanceDetail) build() *models.Attendance {
+func (d AttendanceDetail) build(attendance *models.Attendance) {
 	var (
 		in  *models.AttendanceTime
 		out *models.AttendanceTime
 	)
-	a := d.Attendance
+	a := d.Attendances
 	if d.ClockedInTime.ID != 0 {
 		in = &models.AttendanceTime{
 			Id:        d.ClockedInTime.ID,
@@ -51,15 +51,13 @@ func (d AttendanceDetail) build() *models.Attendance {
 			UpdatedAt: d.ClockedOutTime.UpdatedAt.Time,
 		}
 	}
-	attendance := &models.Attendance{
-		Id:         a.ID,
-		UserId:     a.UserID.String,
-		ClockedIn:  in,
-		ClockedOut: out,
-		CreatedAt:  a.CreatedAt.Time,
-		UpdatedAt:  a.UpdatedAt.Time,
-	}
-	return attendance
+
+	attendance.Id = a.ID
+	attendance.UserId = a.UserID.String
+	attendance.ClockedIn = in
+	attendance.ClockedOut = out
+	attendance.CreatedAt = a.CreatedAt.Time
+	attendance.UpdatedAt = a.UpdatedAt.Time
 }
 
 func NewAttendanceRepository() *attendanceRepository {
@@ -69,7 +67,7 @@ func NewAttendanceRepository() *attendanceRepository {
 type AttendanceRepository interface {
 	FetchAttendancesCount(ctx context.Context, db *sql.DB, a *models.Attendance) (int64, error)
 	FetchAttendances(ctx context.Context, db *sql.DB, query *models.Attendance, p *Paginator) ([]*models.Attendance, error)
-	FetchLatestAttendance(ctx context.Context, db *sql.DB, query *models.Attendance) (*models.Attendance, error)
+	FetchLatestAttendance(ctx context.Context, db *sql.DB, attendance *models.Attendance) error
 	CreateAttendance(ctx context.Context, db *sql.DB, a *models.Attendance) error
 	UpdateAttendance(ctx context.Context, db *sql.DB, a *models.Attendance) error
 	CreateAttendanceTime(ctx context.Context, db *sql.DB, t *models.AttendanceTime) error
@@ -87,21 +85,30 @@ func (r *attendanceRepository) FetchAttendancesCount(ctx context.Context, db *sq
 	return cnt, err
 }
 
-func (r *attendanceRepository) FetchLatestAttendance(ctx context.Context, db *sql.DB, query *models.Attendance) (*models.Attendance, error) {
+func (r *attendanceRepository) FetchLatestAttendance(ctx context.Context, db *sql.DB, attendance *models.Attendance) error {
+	now := time.Now()
+	start := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
+	end := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 59, time.Local)
+
 	detail := new(AttendanceDetail)
 	err := database.Attendances(
 		Select("attendances.*, clocked_in_time.*, clocked_out_time.*"),
-		InnerJoin("attendances_time clocked_in_time on clocked_in_time.id = attendances.clocked_in_id"),
-		InnerJoin("attendances_time clocked_out_time on clocked_out_time.id = attendances.clocked_out_id"),
-		Where("user_id = ?", query.UserId),
+		InnerJoin("attendances_time clocked_in_time on clocked_in_time.id = attendances.clocked_in_id or attendances.clocked_in_id is null"),
+		InnerJoin("attendances_time clocked_out_time on clocked_out_time.id = attendances.clocked_out_id or attendances.clocked_out_id is null"),
+		Where("user_id = ?", attendance.UserId),
+		Where("attendances.created_at Between ? and ? ", start, end),
 		Limit(1),
 		OrderBy("-attendances.id"),
 	).Bind(ctx, db, detail)
 
 	if err != nil {
-		return nil, err
+		if err.Error() == "sql: no rows in result set" {
+			return nil
+		}
+		return err
 	}
-	return nil, nil
+	detail.build(attendance)
+	return nil
 }
 
 func (r *attendanceRepository) FetchAttendances(ctx context.Context, db *sql.DB, query *models.Attendance, p *Paginator) ([]*models.Attendance, error) {
@@ -109,9 +116,9 @@ func (r *attendanceRepository) FetchAttendances(ctx context.Context, db *sql.DB,
 	page := p.CalculatePage()
 	details := make([]AttendanceDetail, 0)
 	err := database.Attendances(
-		Select("attendances.*, clocked_in_time.*, clocked_out_time.*"),
-		InnerJoin("attendances_time clocked_in_time on clocked_in_time.id = attendances.clocked_in_id"),
-		InnerJoin("attendances_time clocked_out_time on clocked_out_time.id = attendances.clocked_out_id"),
+		Select("attendances.id, attendances.*, clocked_in_time.*, clocked_out_time.*"),
+		InnerJoin("attendances_time clocked_in_time on clocked_in_time.id = attendances.clocked_in_id or attendances.clocked_in_id is null"),
+		InnerJoin("attendances_time clocked_out_time on clocked_out_time.id = attendances.clocked_out_id or attendances.clocked_out_id is null"),
 		Where("user_id = ?", query.UserId),
 		Limit(int(p.Limit)),
 		Offset(int(page)),
@@ -123,7 +130,9 @@ func (r *attendanceRepository) FetchAttendances(ctx context.Context, db *sql.DB,
 	}
 
 	for _, detail := range details {
-		attendances = append(attendances, detail.build())
+		attendance := new(models.Attendance)
+		detail.build(attendance)
+		attendances = append(attendances, attendance)
 	}
 	return attendances, err
 }

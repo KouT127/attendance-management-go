@@ -43,7 +43,7 @@ func (i *userUsecase) ViewUser(userId string) (*models.User, *models.Attendance,
 		}
 	}
 	attendance.UserId = user.Id
-	attendance, err = i.attendanceRepository.FetchLatestAttendance(ctx, db, attendance)
+	err = i.attendanceRepository.FetchLatestAttendance(ctx, db, attendance)
 	if err != nil {
 		logger.NewWarn(nil, err.Error())
 		return nil, nil, err

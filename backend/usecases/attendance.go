@@ -56,7 +56,7 @@ func (i *attendanceUsecase) ViewAttendances(pagination *PaginatorInput, attendan
 func (i *attendanceUsecase) ViewLatestAttendance(attendance *models.Attendance) (*AttendanceResult, error) {
 	db := database.NewDB()
 	ctx := context.Background()
-	attendance, err := i.ar.FetchLatestAttendance(ctx, db, attendance)
+	err := i.ar.FetchLatestAttendance(ctx, db, attendance)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func (i *attendanceUsecase) ViewAttendancesMonthly(pagination *PaginatorInput, a
 	return res, nil
 }
 
-func (i *attendanceUsecase) CreateAttendance(input *AttendanceInput, query *models.Attendance) (*AttendanceResult, error) {
+func (i *attendanceUsecase) CreateAttendance(input *AttendanceInput, attendance *models.Attendance) (*AttendanceResult, error) {
 	db := database.NewDB()
 	ctx := context.Background()
 	if err := input.Validate(); err != nil {
@@ -97,7 +97,7 @@ func (i *attendanceUsecase) CreateAttendance(input *AttendanceInput, query *mode
 	}
 	time := input.BuildAttendanceTime()
 
-	attendance, err := i.ar.FetchLatestAttendance(ctx, db, query)
+	err := i.ar.FetchLatestAttendance(ctx, db, attendance)
 	if err != nil {
 		return nil, err
 	}
@@ -106,9 +106,7 @@ func (i *attendanceUsecase) CreateAttendance(input *AttendanceInput, query *mode
 		return nil, err
 	}
 
-	if attendance == nil {
-		attendance = new(models.Attendance)
-		attendance.UserId = query.UserId
+	if attendance.Id == 0 {
 		attendance.ClockIn(time)
 		if err := i.ar.CreateAttendance(ctx, db, attendance); err != nil {
 			return nil, err
