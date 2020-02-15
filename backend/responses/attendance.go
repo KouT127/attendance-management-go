@@ -13,7 +13,7 @@ type AttendanceTimeResp struct {
 }
 
 type AttendanceResp struct {
-	Id             int64           `json:"id"`
+	Id             uint            `json:"id"`
 	UserId         string          `json:"userId"`
 	ClockedInTime  *AttendanceTime `json:"clockedInTime"`
 	ClockedOutTime *AttendanceTime `json:"clockedOutTime"`

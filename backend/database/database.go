@@ -1,23 +1,22 @@
 package database
 
 import (
+	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/go-xorm/xorm"
 	"github.com/joho/godotenv"
+	"github.com/volatiletech/sqlboiler/boil"
 	"os"
-	"time"
-	"xorm.io/core"
 )
 
 const (
-	UserTable           = "users"
-	AttendanceTable     = "attendances"
-	AttendanceTimeTable = "attendances_time"
+	userTable           = "users"
+	attendanceTable     = "attendances"
+	attendanceTimeTable = "attendances_time"
 )
 
 var (
-	engine     *xorm.Engine
+	db         *sql.DB
 	err        error
 	CONNECTION string
 	USER       string
@@ -30,26 +29,17 @@ func Init() {
 	SOURCE = loadEnv()
 	if CONNECTION == "" {
 		SOURCE = loadLocalEnv()
+		boil.DebugMode = true
 	}
+	db, err = sql.Open("mysql", SOURCE)
 
-	engine, err = xorm.NewEngine("mysql", SOURCE)
 	if err != nil {
 		panic(err)
 	}
-	logger := xorm.NewSimpleLogger(os.Stdout)
-	logger.ShowSQL(true)
-	logger.SetLevel(core.LOG_INFO)
-	loc, err := time.LoadLocation("UTC")
-	if err != nil {
-		panic(err)
-	}
-	engine.SetTZLocation(loc)
-	engine.SetTZDatabase(loc)
-	engine.SetLogger(logger)
 }
 
-func NewDB() *xorm.Engine {
-	return engine
+func NewDB() *sql.DB {
+	return db
 }
 
 func loadEnv() string {

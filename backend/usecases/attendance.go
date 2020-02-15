@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"context"
 	"github.com/KouT127/attendance-management/database"
 	"github.com/KouT127/attendance-management/models"
 	"github.com/KouT127/attendance-management/repositories"
@@ -25,14 +26,15 @@ type attendanceUsecase struct {
 }
 
 func (i *attendanceUsecase) ViewAttendances(pagination *PaginatorInput, attendance *models.Attendance) (*AttendancesResult, error) {
-	eng := database.NewDB()
-	maxCnt, err := i.ar.FetchAttendancesCount(eng, attendance)
+	db := database.NewDB()
+	ctx := context.Background()
+	maxCnt, err := i.ar.FetchAttendancesCount(ctx, db, attendance)
 	if err != nil {
 		return nil, err
 	}
 
 	attendances := make([]*models.Attendance, 0)
-	attendances, err = i.ar.FetchAttendances(eng, attendance, pagination.BuildPaginator())
+	attendances, err = i.ar.FetchAttendances(ctx, db, attendance, pagination.BuildPaginator())
 	if err != nil {
 		return nil, err
 	}
@@ -52,9 +54,9 @@ func (i *attendanceUsecase) ViewAttendances(pagination *PaginatorInput, attendan
 }
 
 func (i *attendanceUsecase) ViewLatestAttendance(attendance *models.Attendance) (*AttendanceResult, error) {
-	eng := database.NewDB()
-
-	attendance, err := i.ar.FetchLatestAttendance(eng, attendance)
+	db := database.NewDB()
+	ctx := context.Background()
+	attendance, err := i.ar.FetchLatestAttendance(ctx, db, attendance)
 	if err != nil {
 		return nil, err
 	}
@@ -66,9 +68,10 @@ func (i *attendanceUsecase) ViewLatestAttendance(attendance *models.Attendance) 
 }
 
 func (i *attendanceUsecase) ViewAttendancesMonthly(pagination *PaginatorInput, attendance *models.Attendance) (*AttendancesResult, error) {
-	eng := database.NewDB()
+	db := database.NewDB()
+	ctx := context.Background()
 
-	attendances, err := i.ar.FetchAttendances(eng, attendance, pagination.BuildPaginator())
+	attendances, err := i.ar.FetchAttendances(ctx, db, attendance, pagination.BuildPaginator())
 	if err != nil {
 		return nil, err
 	}
@@ -87,24 +90,19 @@ func (i *attendanceUsecase) ViewAttendancesMonthly(pagination *PaginatorInput, a
 }
 
 func (i *attendanceUsecase) CreateAttendance(input *AttendanceInput, query *models.Attendance) (*AttendanceResult, error) {
-	eng := database.NewDB()
-	sess := i.ar.NewSession(eng)
-	defer i.ar.Close(sess)
-	if err := i.ar.Begin(sess); err != nil {
-		return nil, err
-	}
-
+	db := database.NewDB()
+	ctx := context.Background()
 	if err := input.Validate(); err != nil {
 		return nil, err
 	}
 	time := input.BuildAttendanceTime()
 
-	attendance, err := i.ar.FetchLatestAttendance(eng, query)
+	attendance, err := i.ar.FetchLatestAttendance(ctx, db, query)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := i.ar.CreateAttendanceTime(sess, time); err != nil {
+	if err := i.ar.CreateAttendanceTime(ctx, db, time); err != nil {
 		return nil, err
 	}
 
@@ -112,25 +110,19 @@ func (i *attendanceUsecase) CreateAttendance(input *AttendanceInput, query *mode
 		attendance = new(models.Attendance)
 		attendance.UserId = query.UserId
 		attendance.ClockIn(time)
-		if _, err := i.ar.CreateAttendance(sess, attendance); err != nil {
+		if err := i.ar.CreateAttendance(ctx, db, attendance); err != nil {
 			return nil, err
 		}
 
 		serializer := NewAttendanceResult(attendance)
-		if err := i.ar.Commit(sess); err != nil {
-			return nil, err
-		}
 		return serializer, nil
 	}
 
 	attendance.ClockOut(time)
-	if _, err := i.ar.UpdateAttendance(sess, attendance); err != nil {
+	if err := i.ar.UpdateAttendance(ctx, db, attendance); err != nil {
 		return nil, err
 	}
 
 	serializer := NewAttendanceResult(attendance)
-	if err := i.ar.Commit(sess); err != nil {
-		return nil, err
-	}
 	return serializer, nil
 }

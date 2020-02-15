@@ -3,7 +3,7 @@ package models
 import "time"
 
 type AttendanceTime struct {
-	Id        int64
+	Id        uint
 	Remark    string
 	PushedAt  time.Time
 	CreatedAt time.Time
@@ -11,7 +11,7 @@ type AttendanceTime struct {
 }
 
 type Attendance struct {
-	Id         int64
+	Id         uint
 	UserId     string
 	ClockedIn  *AttendanceTime
 	ClockedOut *AttendanceTime

@@ -1,34 +1,25 @@
 package database
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/KouT127/attendance-management/utils/directory"
-	"github.com/go-xorm/xorm"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/joho/godotenv"
+	"github.com/volatiletech/sqlboiler/boil"
 	"os"
-	"time"
-	"xorm.io/core"
 )
 
 func ConnectDatabase() {
 	conn := loadTestEnv()
-	engine, err = xorm.NewEngine("mysql", conn)
+
+	db, err = sql.Open("mysql", conn)
 	if err != nil {
 		panic(err)
 	}
-	logger := xorm.NewSimpleLogger(os.Stdout)
-	logger.ShowSQL(false)
-	logger.SetLevel(core.LOG_INFO)
-	loc, err := time.LoadLocation("UTC")
-	if err != nil {
-		panic(err)
-	}
-	engine.SetTZLocation(loc)
-	engine.SetTZDatabase(loc)
-	engine.SetLogger(logger)
+	boil.DebugMode = true
 }
 
 func getMigrationsPath() string {
@@ -61,13 +52,15 @@ func migrateUp() error {
 
 func dropTable() error {
 	tables := []string{
-		AttendanceTimeTable,
-		AttendanceTable,
-		UserTable,
+		attendanceTimeTable,
+		attendanceTable,
+		userTable,
 		"schema_migrations",
 	}
 	for _, table := range tables {
-		if err := engine.DropTables(table); err != nil {
+
+		_, err := db.Exec("drop database ?", table)
+		if err != nil {
 			panic(err)
 		}
 	}
