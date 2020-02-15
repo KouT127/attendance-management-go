@@ -130,7 +130,10 @@ func (r *attendanceRepository) FetchAttendances(ctx context.Context, db *sql.DB,
 	if err != nil {
 		return nil, err
 	}
-
+	
+	for _, detail := range details {
+		attendances = append(attendances, detail.build())
+	}
 	return attendances, err
 }
 
