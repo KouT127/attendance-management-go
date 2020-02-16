@@ -3,20 +3,22 @@ package models
 import "time"
 
 type AttendanceTime struct {
-	Id        int64
-	Remark    string
-	PushedAt  time.Time
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	Id               int64
+	Remark           string
+	AttendanceId     int64
+	AttendanceKindId int64
+	PushedAt         time.Time
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
 }
 
 type Attendance struct {
 	Id         int64
 	UserId     string
-	ClockedIn  *AttendanceTime
-	ClockedOut *AttendanceTime
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
+	ClockedIn  *AttendanceTime
+	ClockedOut *AttendanceTime
 }
 
 type attendanceOption interface {

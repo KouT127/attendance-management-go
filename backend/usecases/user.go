@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"fmt"
 	"github.com/KouT127/attendance-management/models"
 	"github.com/KouT127/attendance-management/repositories"
 	"github.com/KouT127/attendance-management/utils/logger"
@@ -41,6 +42,7 @@ func (i *userUsecase) ViewUser(eng *xorm.Engine, userId string) (*models.User, *
 	}
 	attendance.UserId = user.Id
 	attendance, err = i.attendanceRepository.FetchLatestAttendance(eng, attendance)
+	fmt.Println(attendance)
 	if err != nil {
 		return nil, nil, err
 	}

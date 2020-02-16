@@ -7,13 +7,29 @@ import (
 	"time"
 )
 
+type AttendanceKind int
+
+const (
+	AttendanceKindNone AttendanceKind = iota
+	AttendanceKindClockIn
+	AttendanceKindClockOut
+)
+
+func (k AttendanceKind) String() string {
+	switch k {
+	case AttendanceKindClockIn:
+		return "出勤"
+	case AttendanceKindClockOut:
+		return "退勤"
+	}
+	return "不明"
+}
+
 type Attendance struct {
-	Id           int64
-	UserId       string
-	ClockedInId  *int64
-	ClockedOutId *int64
-	CreatedAt    time.Time `xorm:"created_at"`
-	UpdatedAt    time.Time `xorm:"updated_at"`
+	Id        int64
+	UserId    string
+	CreatedAt time.Time `xorm:"created_at"`
+	UpdatedAt time.Time `xorm:"updated_at"`
 }
 
 func (a *Attendance) build(cit *AttendanceTime, cot *AttendanceTime) models.Attendance {
@@ -28,17 +44,21 @@ func (a *Attendance) build(cit *AttendanceTime, cot *AttendanceTime) models.Atte
 }
 
 type AttendanceTime struct {
-	Id        int64
-	PushedAt  time.Time
-	Remark    string
-	CreatedAt time.Time `xorm:"created_at"`
-	UpdatedAt time.Time `xorm:"updated_at"`
+	Id               int64
+	PushedAt         time.Time
+	Remark           string
+	AttendanceId     int64
+	AttendanceKindId int64
+	CreatedAt        time.Time `xorm:"created_at"`
+	UpdatedAt        time.Time `xorm:"updated_at"`
 }
 
 func NewTime(at *models.AttendanceTime) *AttendanceTime {
 	t := new(AttendanceTime)
 	t.Id = at.Id
 	t.Remark = at.Remark
+	t.AttendanceId = at.AttendanceId
+	t.AttendanceKindId = at.AttendanceKindId
 	t.CreatedAt = at.CreatedAt
 	t.UpdatedAt = at.UpdatedAt
 	t.PushedAt = at.PushedAt
@@ -93,8 +113,7 @@ type AttendanceRepository interface {
 	FetchAttendancesCount(eng *xorm.Engine, a *models.Attendance) (int64, error)
 	FetchAttendances(eng *xorm.Engine, a *models.Attendance, p *Paginator) ([]*models.Attendance, error)
 	FetchLatestAttendance(eng *xorm.Engine, query *models.Attendance) (*models.Attendance, error)
-	CreateAttendance(sess *xorm.Session, a *models.Attendance) (int64, error)
-	UpdateAttendance(sess *xorm.Session, a *models.Attendance) (int64, error)
+	CreateAttendance(sess *xorm.Session, a *models.Attendance) error
 	CreateAttendanceTime(sess *xorm.Session, t *models.AttendanceTime) error
 	Transaction
 }
@@ -115,10 +134,10 @@ func (r *attendanceRepository) FetchLatestAttendance(eng *xorm.Engine, a *models
 	start := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
 	end := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 59, time.Local)
 
-	has, err := eng.Select("attendances.*, clockedInTime.*, clockedOutTime.*").
+	has, err := eng.Select("attendances.*, clocked_in_time.*, clocked_out_time.*").
 		Table(AttendanceTable).
-		Join("left", "attendances_time clockedInTime", "attendances.clocked_in_id = clockedInTime.id").
-		Join("left", "attendances_time clockedOutTime", "attendances.clocked_out_id = clockedOutTime.id").
+		Join("left", "attendances_time clocked_in_time", "attendances.id = clocked_in_time.attendance_id").
+		Join("left", "attendances_time clocked_out_time", "attendances.id = clocked_out_time.attendance_id").
 		Where("attendances.user_id = ?", a.UserId).
 		Where("attendances.created_at Between ? and ? ", start, end).
 		Limit(1).
@@ -139,10 +158,12 @@ func (r *attendanceRepository) FetchAttendances(eng *xorm.Engine, a *models.Atte
 	attendances := make([]*models.Attendance, 0)
 	page := p.CalculatePage()
 	err := eng.
-		Select("attendances.*, clockedInTime.*, clockedOutTime.*").
+		Select("attendances.*, clocked_in_time.*, clocked_out_time.*").
 		Table(AttendanceTable).
-		Join("left", "attendances_time clockedInTime", "attendances.clocked_in_id = clockedInTime.id").
-		Join("left", "attendances_time clockedOutTime", "attendances.clocked_out_id = clockedOutTime.id").
+		Join("left", "attendances_time clocked_in_time", "attendances.id = clocked_in_time.attendance_id").
+		Join("left", "attendances_time clocked_out_time", "attendances.id = clocked_out_time.attendance_id").
+		Where("clocked_in_time.attendance_kind_id = ?", AttendanceKindClockIn).
+		Where("clocked_out_time.attendance_kind_id = ?", AttendanceKindClockOut).
 		Limit(int(p.Limit), int(page)).
 		OrderBy("-attendances.id").
 		Iterate(&AttendanceDetail{}, func(idx int, bean interface{}) error {
@@ -154,27 +175,16 @@ func (r *attendanceRepository) FetchAttendances(eng *xorm.Engine, a *models.Atte
 	return attendances, err
 }
 
-func (r *attendanceRepository) CreateAttendance(sess *xorm.Session, a *models.Attendance) (int64, error) {
+func (r *attendanceRepository) CreateAttendance(sess *xorm.Session, a *models.Attendance) error {
 	attendance := Attendance{}
 	attendance.UserId = a.UserId
 	attendance.CreatedAt = time.Now()
 	attendance.UpdatedAt = time.Now()
-
-	if a.ClockedIn.Id != 0 {
-		attendance.ClockedInId = &a.ClockedIn.Id
+	if _, err := sess.Table(AttendanceTable).Insert(&attendance); err != nil {
+		return err
 	}
-	return sess.Table(AttendanceTable).Insert(attendance)
-}
-
-func (r *attendanceRepository) UpdateAttendance(sess *xorm.Session, a *models.Attendance) (int64, error) {
-	attendance := Attendance{
-		ClockedOutId: &a.ClockedOut.Id,
-		UpdatedAt:    time.Now(),
-	}
-	if a.ClockedOut.Id != 0 {
-		attendance.ClockedOutId = &a.ClockedOut.Id
-	}
-	return sess.Table(AttendanceTable).ID(a.Id).Cols("clocked_out_id", "updated_at").Update(&attendance)
+	a.Id = attendance.Id
+	return nil
 }
 
 func (r *attendanceRepository) CreateAttendanceTime(sess *xorm.Session, t *models.AttendanceTime) error {

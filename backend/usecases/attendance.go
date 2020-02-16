@@ -58,7 +58,6 @@ func (i *attendanceUsecase) ViewLatestAttendance(attendance *models.Attendance) 
 	if err != nil {
 		return nil, err
 	}
-	attendance.IsClockedOut()
 
 	s := new(AttendanceResult)
 	s.NewAttendanceResult(true, attendance)
@@ -97,34 +96,22 @@ func (i *attendanceUsecase) CreateAttendance(input *AttendanceInput, query *mode
 	if err := input.Validate(); err != nil {
 		return nil, err
 	}
-	time := input.BuildAttendanceTime()
-
 	attendance, err := i.ar.FetchLatestAttendance(eng, query)
 	if err != nil {
-		return nil, err
-	}
-
-	if err := i.ar.CreateAttendanceTime(sess, time); err != nil {
 		return nil, err
 	}
 
 	if attendance == nil {
 		attendance = new(models.Attendance)
 		attendance.UserId = query.UserId
-		attendance.ClockIn(time)
-		if _, err := i.ar.CreateAttendance(sess, attendance); err != nil {
+		if err := i.ar.CreateAttendance(sess, attendance); err != nil {
 			return nil, err
 		}
-
-		serializer := NewAttendanceResult(attendance)
-		if err := i.ar.Commit(sess); err != nil {
-			return nil, err
-		}
-		return serializer, nil
 	}
 
-	attendance.ClockOut(time)
-	if _, err := i.ar.UpdateAttendance(sess, attendance); err != nil {
+	time := input.BuildAttendanceTime(attendance.Id, attendance.IsClockedOut())
+
+	if err := i.ar.CreateAttendanceTime(sess, time); err != nil {
 		return nil, err
 	}
 
