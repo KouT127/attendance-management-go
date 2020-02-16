@@ -2,7 +2,9 @@ package routes
 
 import (
 	. "github.com/KouT127/attendance-management/handlers"
+	"github.com/KouT127/attendance-management/handlers/v1/attendance"
 	"github.com/KouT127/attendance-management/middlewares"
+	"github.com/KouT127/attendance-management/models"
 	. "github.com/KouT127/attendance-management/repositories"
 	. "github.com/KouT127/attendance-management/usecases"
 	"github.com/gin-contrib/cors"
@@ -29,14 +31,11 @@ func v1AttendancesRouter(v1 *RouterGroup) {
 	handlers := []HandlerFunc{
 		middlewares.AuthRequired(),
 	}
-	r := NewAttendanceRepository()
-	u := NewAttendanceUsecase(r)
-	c := NewAttendanceHandler(u)
 
 	attendances := v1.Group("/attendances", handlers...)
-	attendances.GET("", c.AttendanceListHandler)
-	attendances.POST("", c.AttendanceCreateHandler)
-	attendances.GET("monthly", c.AttendanceMonthlyHandler)
+	attendances.GET("", attendance.AttendanceListHandler)
+	attendances.POST("", attendance.AttendanceCreateHandler)
+	attendances.GET("monthly", attendance.AttendanceMonthlyHandler)
 }
 
 func v1UsersRouter(v1 *RouterGroup) {
@@ -74,6 +73,7 @@ func Init() {
 
 	r.StaticFS("/static", http.Dir("frontend/build/static"))
 
+	models.Init()
 	v1Router(r)
 	defaultRouter(r)
 	http.Handle("/", r)

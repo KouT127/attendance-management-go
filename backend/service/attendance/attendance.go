@@ -6,30 +6,13 @@ import (
 	. "github.com/KouT127/attendance-management/usecases"
 )
 
-func ViewAttendances(pagination *PaginatorInput, attendance *Attendance) (*AttendancesResult, error) {
-	maxCnt, err := FetchAttendancesCount(attendance)
-	if err != nil {
-		return nil, err
-	}
-
+func ViewAttendances(pagination *PaginatorInput, attendance *Attendance) ([]*Attendance, error) {
 	attendances := make([]*Attendance, 0)
-	attendances, err = FetchAttendances(attendance, pagination.BuildPaginator())
+	attendances, err := FetchAttendances(attendance, pagination.BuildPaginator())
 	if err != nil {
 		return nil, err
 	}
-
-	responses := make([]*AttendanceResp, 0)
-
-	for _, attendance := range attendances {
-		resp := NewAttendanceResp(attendance)
-		responses = append(responses, &resp)
-	}
-
-	res := new(AttendancesResult)
-	res.HasNext = pagination.HasNext(maxCnt)
-	res.IsSuccessful = true
-	res.Attendances = responses
-	return res, nil
+	return attendances, nil
 }
 
 func ViewLatestAttendance(attendance *Attendance) (*AttendanceResult, error) {
