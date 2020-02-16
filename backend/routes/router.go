@@ -1,12 +1,10 @@
 package routes
 
 import (
-	. "github.com/KouT127/attendance-management/handlers"
 	"github.com/KouT127/attendance-management/handlers/v1/attendance"
+	"github.com/KouT127/attendance-management/handlers/v1/user"
 	"github.com/KouT127/attendance-management/middlewares"
 	"github.com/KouT127/attendance-management/models"
-	. "github.com/KouT127/attendance-management/repositories"
-	. "github.com/KouT127/attendance-management/usecases"
 	"github.com/gin-contrib/cors"
 	. "github.com/gin-gonic/gin"
 	"log"
@@ -28,28 +26,24 @@ func defaultRouter(r *Engine) {
 }
 
 func v1AttendancesRouter(v1 *RouterGroup) {
-	handlers := []HandlerFunc{
+	middlewares := []HandlerFunc{
 		middlewares.AuthRequired(),
 	}
 
-	attendances := v1.Group("/attendances", handlers...)
+	attendances := v1.Group("/attendances", middlewares...)
 	attendances.GET("", attendance.AttendanceListHandler)
 	attendances.POST("", attendance.AttendanceCreateHandler)
 	attendances.GET("monthly", attendance.AttendanceMonthlyHandler)
 }
 
 func v1UsersRouter(v1 *RouterGroup) {
-	handlers := []HandlerFunc{
+	middlewares := []HandlerFunc{
 		middlewares.AuthRequired(),
 	}
-	userRepo := NewUserRepository()
-	attendanceRepo := NewAttendanceRepository()
-	i := NewUserUsecase(userRepo, attendanceRepo)
-	c := NewUserHandler(i)
 
-	users := v1.Group("/users", handlers...)
-	users.GET("/mine", c.UserMineHandler)
-	users.PUT("/:id", c.UserUpdateHandler)
+	users := v1.Group("/users", middlewares...)
+	users.GET("/mine", user.UserMineHandler)
+	users.PUT("/:id", user.UserUpdateHandler)
 }
 
 func v1Router(r *Engine) {
