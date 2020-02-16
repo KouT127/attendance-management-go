@@ -176,11 +176,11 @@ func (r *attendanceRepository) FetchAttendances(eng *xorm.Engine, a *models.Atte
 }
 
 func (r *attendanceRepository) CreateAttendance(sess *xorm.Session, a *models.Attendance) error {
-	attendance := Attendance{}
+	attendance := new(Attendance)
 	attendance.UserId = a.UserId
 	attendance.CreatedAt = time.Now()
 	attendance.UpdatedAt = time.Now()
-	if _, err := sess.Table(AttendanceTable).Insert(&attendance); err != nil {
+	if _, err := sess.Table(AttendanceTable).Insert(attendance); err != nil {
 		return err
 	}
 	a.Id = attendance.Id
