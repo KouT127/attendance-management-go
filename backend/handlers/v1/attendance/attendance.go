@@ -7,8 +7,8 @@ import (
 	. "github.com/KouT127/attendance-management/models"
 	. "github.com/KouT127/attendance-management/responses"
 	attendanceService "github.com/KouT127/attendance-management/service/attendance"
-	. "github.com/KouT127/attendance-management/usecases"
 	"github.com/KouT127/attendance-management/utils/logger"
+	. "github.com/KouT127/attendance-management/validators"
 	. "github.com/gin-gonic/gin"
 	"net/http"
 )

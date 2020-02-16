@@ -3,7 +3,7 @@ package attendance
 import (
 	. "github.com/KouT127/attendance-management/models"
 	. "github.com/KouT127/attendance-management/responses"
-	. "github.com/KouT127/attendance-management/usecases"
+	. "github.com/KouT127/attendance-management/validators"
 )
 
 func ViewAttendances(pagination *PaginatorInput, attendance *Attendance) ([]*Attendance, error) {

@@ -1,4 +1,4 @@
-package usecases
+package validators
 
 import (
 	. "github.com/KouT127/attendance-management/models"

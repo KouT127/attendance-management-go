@@ -1,8 +1,7 @@
-package usecases
+package validators
 
 import (
 	. "github.com/KouT127/attendance-management/models"
-	"github.com/KouT127/attendance-management/repositories"
 	validation "github.com/go-ozzo/ozzo-validation/v3"
 	"time"
 )
@@ -26,9 +25,9 @@ func (i AttendanceInput) BuildAttendanceTime(id int64, isClockedOut bool) *Atten
 	t.UpdatedAt = time.Now()
 
 	if !isClockedOut {
-		t.AttendanceKindId = int64(repositories.AttendanceKindClockIn)
+		t.AttendanceKindId = int64(AttendanceKindClockIn)
 	} else {
-		t.AttendanceKindId = int64(repositories.AttendanceKindClockOut)
+		t.AttendanceKindId = int64(AttendanceKindClockOut)
 	}
 	return t
 }
