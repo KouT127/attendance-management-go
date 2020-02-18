@@ -8,7 +8,6 @@ import (
 
 func ViewUser(userId string) (*models.User, *models.Attendance, error) {
 	user := new(models.User)
-	attendance := new(models.Attendance)
 	has, err := models.FetchUser(userId, user)
 	if err != nil {
 		return nil, nil, err
@@ -21,8 +20,8 @@ func ViewUser(userId string) (*models.User, *models.Attendance, error) {
 			return nil, nil, err
 		}
 	}
-	attendance.UserId = user.Id
-	attendance, err = models.FetchLatestAttendance(attendance)
+
+	attendance, err := models.FetchLatestAttendance(userId)
 	fmt.Println(attendance)
 	if err != nil {
 		return nil, nil, err

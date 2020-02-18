@@ -4,7 +4,7 @@ import (
 	"errors"
 	. "github.com/KouT127/attendance-management/handlers"
 	"github.com/KouT127/attendance-management/middlewares"
-	. "github.com/KouT127/attendance-management/models"
+	"github.com/KouT127/attendance-management/models"
 	. "github.com/KouT127/attendance-management/responses"
 	attendanceService "github.com/KouT127/attendance-management/services/attendance"
 	"github.com/KouT127/attendance-management/utils/logger"
@@ -19,7 +19,7 @@ func AttendanceLatestHandler(c *Context) {
 		c.JSON(http.StatusBadRequest, NewError("user", err))
 		return
 	}
-	a := &Attendance{
+	a := &models.Attendance{
 		UserId: userId,
 	}
 
@@ -51,8 +51,8 @@ func AttendanceListHandler(c *Context) {
 		return
 	}
 
-	a := &Attendance{UserId: userId}
-	maxCnt, err := FetchAttendancesCount(a)
+	a := &models.Attendance{UserId: userId}
+	maxCnt, err := models.FetchAttendancesCount(a)
 	if err != nil {
 		err := errors.New(BadAccessError)
 		c.JSON(http.StatusBadRequest, NewError("attendances", err))
@@ -93,7 +93,7 @@ func AttendanceMonthlyHandler(c *Context) {
 		return
 	}
 
-	q := &Attendance{
+	q := &models.Attendance{
 		UserId: userId,
 	}
 
@@ -124,7 +124,7 @@ func AttendanceCreateHandler(c *Context) {
 		return
 	}
 
-	query := new(Attendance)
+	query := new(models.Attendance)
 	query.UserId = userId
 
 	res, err := attendanceService.CreateOrUpdateAttendance(&input, query)

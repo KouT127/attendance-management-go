@@ -16,7 +16,7 @@ func ViewAttendances(pagination *PaginatorInput, attendance *Attendance) ([]*Att
 }
 
 func ViewLatestAttendance(attendance *Attendance) (*AttendanceResult, error) {
-	attendance, err := FetchLatestAttendance(attendance)
+	attendance, err := FetchLatestAttendance(attendance.UserId)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func CreateOrUpdateAttendance(input *AttendanceInput, query *Attendance) (*Atten
 	if err := input.Validate(); err != nil {
 		return nil, err
 	}
-	attendance, err := FetchLatestAttendance(query)
+	attendance, err := FetchLatestAttendance(query.UserId)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,6 @@ func CreateOrUpdateAttendance(input *AttendanceInput, query *Attendance) (*Atten
 	}
 
 	time := input.BuildAttendanceTime(attendance.Id, attendance.IsClockedOut())
-
 	if err := CreateAttendanceTime(time); err != nil {
 		return nil, err
 	}

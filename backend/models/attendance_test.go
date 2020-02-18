@@ -94,18 +94,18 @@ func TestAttendance_IsClockedOut(t *testing.T) {
 	})
 }
 
-//func insertUser(eng *xorm.Engine) {
+//func insertUser(engine *xorm.Engine) {
 //	mockUser := models.User{
 //		Id:   "1",
 //		Name: "test",
 //	}
-//	_, err := eng.Table(database.UserTable).Insert(&mockUser)
+//	_, err := engine.Table(database.UserTable).Insert(&mockUser)
 //	if err != nil {
 //		log.Fatal(err)
 //	}
 //}
 //
-//func insertTime(eng *xorm.Engine) {
+//func insertTime(engine *xorm.Engine) {
 //	mockTime := AttendanceTime{
 //		Id:        1,
 //		Remark:    "test",
@@ -113,7 +113,7 @@ func TestAttendance_IsClockedOut(t *testing.T) {
 //		CreatedAt: time.Now(),
 //		UpdatedAt: time.Now(),
 //	}
-//	_, _ = eng.Table(database.AttendanceTimeTable).Insert(&mockTime)
+//	_, _ = engine.Table(database.AttendanceTimeTable).Insert(&mockTime)
 //}
 //
 //func TestAttendanceRepository_CreateAttendance(t *testing.T) {
@@ -121,13 +121,13 @@ func TestAttendance_IsClockedOut(t *testing.T) {
 //		database.ConnectDatabase()
 //		tearDown := database.PrepareTestDatabase()
 //		defer tearDown()
-//		eng := database.NewDB()
+//		engine := database.NewDB()
 //
-//		insertUser(eng)
-//		insertTime(eng)
+//		insertUser(engine)
+//		insertTime(engine)
 //
 //		repo := NewAttendanceRepository()
-//		sess := repo.NewSession(eng)
+//		sess := repo.NewSession(engine)
 //
 //		mockAttendanceTime := models.AttendanceTime{
 //			Id:        1,
@@ -162,12 +162,12 @@ func TestAttendance_IsClockedOut(t *testing.T) {
 //		database.ConnectDatabase()
 //		tearDown := database.PrepareTestDatabase()
 //		defer tearDown()
-//		eng := database.NewDB()
+//		engine := database.NewDB()
 //
-//		insertTime(eng)
+//		insertTime(engine)
 //
 //		repo := NewAttendanceRepository()
-//		sess := repo.NewSession(eng)
+//		sess := repo.NewSession(engine)
 //
 //		mockAttendanceTime := models.AttendanceTime{
 //			Id:        1,

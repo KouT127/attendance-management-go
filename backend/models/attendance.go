@@ -157,22 +157,30 @@ func (a *Attendance) IsClockedOut() bool {
 }
 
 func FetchAttendancesCount(a *Attendance) (int64, error) {
-	attendance := &Attendance{}
-	attendance.Id = a.Id
-	return engine.Table(database.AttendanceTable).Count(attendance)
+	return fetchAttendancesCount(engine, a)
 }
 
-func FetchLatestAttendance(a *Attendance) (*Attendance, error) {
+func fetchAttendancesCount(eng Engine, a *Attendance) (int64, error) {
+	attendance := &Attendance{}
+	attendance.Id = a.Id
+	return eng.Table(database.AttendanceTable).Count(attendance)
+}
+
+func FetchLatestAttendance(userId string) (*Attendance, error) {
+	return fetchLatestAttendance(engine, userId)
+}
+
+func fetchLatestAttendance(eng Engine, userId string) (*Attendance, error) {
 	attendance := &AttendanceDetail{}
 	now := time.Now()
 	start := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
 	end := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 59, time.Local)
 
-	has, err := engine.Select("attendances.*, clocked_in_time.*, clocked_out_time.*").
+	has, err := eng.Select("attendances.*, clocked_in_time.*, clocked_out_time.*").
 		Table(database.AttendanceTable).
 		Join("left", "attendances_time clocked_in_time", "attendances.id = clocked_in_time.attendance_id").
 		Join("left", "attendances_time clocked_out_time", "attendances.id = clocked_out_time.attendance_id").
-		Where("attendances.user_id = ?", a.UserId).
+		Where("attendances.user_id = ?", userId).
 		Where("attendances.created_at Between ? and ? ", start, end).
 		Limit(1).
 		OrderBy("-attendances.id").
@@ -189,15 +197,20 @@ func FetchLatestAttendance(a *Attendance) (*Attendance, error) {
 }
 
 func FetchAttendances(a *Attendance, p *Paginator) ([]*Attendance, error) {
+	return fetchAttendances(engine, a, p)
+}
+
+func fetchAttendances(eng Engine, a *Attendance, p *Paginator) ([]*Attendance, error) {
 	attendances := make([]*Attendance, 0)
 	page := p.CalculatePage()
-	err := engine.
+	err := eng.
 		Select("attendances.*, clocked_in_time.*, clocked_out_time.*").
 		Table(database.AttendanceTable).
 		Join("left", "attendances_time clocked_in_time", "attendances.id = clocked_in_time.attendance_id").
 		Join("left", "attendances_time clocked_out_time", "attendances.id = clocked_out_time.attendance_id").
 		Where("clocked_in_time.attendance_kind_id = ?", AttendanceKindClockIn).
-		Where("clocked_out_time.attendance_kind_id = ?", AttendanceKindClockOut).
+		And("clocked_out_time.attendance_kind_id = ?", AttendanceKindClockOut).
+		And("attendances.user_id = ?", a.UserId).
 		Limit(int(p.Limit), int(page)).
 		OrderBy("-attendances.id").
 		Iterate(&AttendanceDetail{}, func(idx int, bean interface{}) error {
@@ -211,11 +224,15 @@ func FetchAttendances(a *Attendance, p *Paginator) ([]*Attendance, error) {
 
 func CreateAttendance(a *Attendance) error {
 	sess := engine.NewSession()
+	return createAttendance(sess, a)
+}
+
+func createAttendance(eng Engine, a *Attendance) error {
 	attendance := new(Attendance)
 	attendance.UserId = a.UserId
 	attendance.CreatedAt = time.Now()
 	attendance.UpdatedAt = time.Now()
-	if _, err := sess.Table(database.AttendanceTable).Insert(attendance); err != nil {
+	if _, err := eng.Table(database.AttendanceTable).Insert(attendance); err != nil {
 		return err
 	}
 	a.Id = attendance.Id
@@ -224,8 +241,12 @@ func CreateAttendance(a *Attendance) error {
 
 func CreateAttendanceTime(t *AttendanceTime) error {
 	sess := engine.NewSession()
+	return createAttendanceTime(sess, t)
+}
+
+func createAttendanceTime(eng Engine, t *AttendanceTime) error {
 	at := NewTime(t)
-	if _, err := sess.Table(database.AttendanceTimeTable).Insert(at); err != nil {
+	if _, err := eng.Table(database.AttendanceTimeTable).Insert(at); err != nil {
 		return err
 	}
 	t.Id = at.Id

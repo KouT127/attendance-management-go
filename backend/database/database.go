@@ -46,6 +46,7 @@ func Init() {
 	engine.SetTZLocation(loc)
 	engine.SetTZDatabase(loc)
 	engine.SetLogger(logger)
+	engine.ShowExecTime(true)
 }
 
 func NewDB() *xorm.Engine {
