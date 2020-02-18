@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-func UserMineHandler(c *Context) {
+func V1MineHandler(c *Context) {
 	value, exists := c.Get(middlewares.AuthorizedUserIdKey)
 	if !exists {
 		c.JSON(http.StatusBadRequest, H{
@@ -31,7 +31,7 @@ func UserMineHandler(c *Context) {
 	})
 }
 
-func UserUpdateHandler(c *Context) {
+func V1UpdateHandler(c *Context) {
 	var (
 		input UserInput
 	)

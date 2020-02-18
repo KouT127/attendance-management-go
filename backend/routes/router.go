@@ -31,9 +31,9 @@ func v1AttendancesRouter(v1 *RouterGroup) {
 	}
 
 	attendances := v1.Group("/attendances", middlewares...)
-	attendances.GET("", attendance.AttendanceListHandler)
-	attendances.POST("", attendance.AttendanceCreateHandler)
-	attendances.GET("monthly", attendance.AttendanceMonthlyHandler)
+	attendances.GET("", attendance.V1ListHandler)
+	attendances.POST("", attendance.V1CreateHandler)
+	attendances.GET("monthly", attendance.V1MonthlyHandler)
 }
 
 func v1UsersRouter(v1 *RouterGroup) {
@@ -42,8 +42,8 @@ func v1UsersRouter(v1 *RouterGroup) {
 	}
 
 	users := v1.Group("/users", middlewares...)
-	users.GET("/mine", user.UserMineHandler)
-	users.PUT("/:id", user.UserUpdateHandler)
+	users.GET("/mine", user.V1MineHandler)
+	users.PUT("/:id", user.V1UpdateHandler)
 }
 
 func v1Router(r *Engine) {

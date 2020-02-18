@@ -13,7 +13,7 @@ import (
 	"net/http"
 )
 
-func AttendanceLatestHandler(c *Context) {
+func V1LatestHandler(c *Context) {
 	userId, err := GetIdByKey(c, middlewares.AuthorizedUserIdKey)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, NewError("user", err))
@@ -33,7 +33,7 @@ func AttendanceLatestHandler(c *Context) {
 	return
 }
 
-func AttendanceListHandler(c *Context) {
+func V1ListHandler(c *Context) {
 	p := NewPaginatorInput(0, 5)
 
 	if err := c.Bind(p); err != nil {
@@ -76,7 +76,7 @@ func AttendanceListHandler(c *Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-func AttendanceMonthlyHandler(c *Context) {
+func V1MonthlyHandler(c *Context) {
 	p := NewPaginatorInput(0, 31)
 	s := NewSearchParams()
 
@@ -106,7 +106,7 @@ func AttendanceMonthlyHandler(c *Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-func AttendanceCreateHandler(c *Context) {
+func V1CreateHandler(c *Context) {
 	var (
 		input AttendanceInput
 	)
