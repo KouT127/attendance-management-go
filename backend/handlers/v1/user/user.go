@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/KouT127/attendance-management/middlewares"
 	"github.com/KouT127/attendance-management/responses"
-	userService "github.com/KouT127/attendance-management/service/user"
+	userService "github.com/KouT127/attendance-management/services/user"
 	. "github.com/KouT127/attendance-management/validators"
 	. "github.com/gin-gonic/gin"
 	"net/http"
