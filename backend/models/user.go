@@ -41,14 +41,13 @@ func FetchUsers(u *User) ([]*User, error) {
 	return users, err
 }
 
-func FetchUser(userId string, user *User) (bool, error) {
+func FetchUser(userId string) (*User, error) {
 	u := new(User)
-	has, err := engine.
+	_, err := engine.
 		Table(database.UserTable).
 		Where("id = ?", userId).
 		Get(u)
-	u.build(user)
-	return has, err
+	return u, err
 }
 
 func CreateUser(user *User) (int64, error) {
@@ -61,11 +60,9 @@ func CreateUser(user *User) (int64, error) {
 }
 
 func UpdateUser(user *User) (int64, error) {
-	u := NewUser(user)
 	cnt, err := engine.
 		Table(database.UserTable).
 		Where("id = ?", user.Id).
-		Update(u)
-	u.build(user)
+		Update(user)
 	return cnt, err
 }

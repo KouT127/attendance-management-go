@@ -3,6 +3,7 @@ package user
 import (
 	"errors"
 	"github.com/KouT127/attendance-management/middlewares"
+	"github.com/KouT127/attendance-management/models"
 	"github.com/KouT127/attendance-management/responses"
 	userService "github.com/KouT127/attendance-management/services/user"
 	. "github.com/KouT127/attendance-management/validators"
@@ -18,8 +19,15 @@ func V1MineHandler(c *Context) {
 		})
 		return
 	}
+
 	userId := value.(string)
-	u, a, err := userService.ViewUser(userId)
+	u, err := userService.GetOrCreateUser(userId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
+		return
+	}
+
+	attendance, err := models.FetchLatestAttendance(userId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
 		return
@@ -27,16 +35,14 @@ func V1MineHandler(c *Context) {
 
 	c.JSON(http.StatusOK, H{
 		"user":       responses.NewUserResp(u),
-		"attendance": responses.NewAttendanceResult(a),
+		"attendance": responses.NewAttendanceResult(attendance),
 	})
 }
 
 func V1UpdateHandler(c *Context) {
-	var (
-		input UserInput
-	)
+	input := new(UserInput)
 
-	err := c.Bind(&input)
+	err := c.Bind(input)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
 		return
@@ -50,13 +56,19 @@ func V1UpdateHandler(c *Context) {
 	}
 
 	userId := value.(string)
-
-	u, err := userService.UpdateUser(userId, input.Name)
-	if err != nil {
+	user, err := models.FetchUser(userId)
+	if err != nil || user.Id == "" {
+		err := errors.New("user not found")
 		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
 		return
 	}
+
+	if err := userService.UpdateUser(user, input.Name); err != nil {
+		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
+		return
+	}
+
 	c.JSON(http.StatusOK, H{
-		"user": responses.NewUserResp(u),
+		"user": responses.NewUserResp(user),
 	})
 }
