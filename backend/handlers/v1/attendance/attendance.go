@@ -124,15 +124,21 @@ func V1CreateHandler(c *Context) {
 		return
 	}
 
-	query := new(models.Attendance)
-	query.UserId = userId
+	if err := input.Validate(); err != nil {
+		err := errors.New(BadAccessError)
+		c.JSON(http.StatusBadRequest, NewError("input", err))
+		return
+	}
 
-	res, err := attendanceService.CreateOrUpdateAttendance(&input, query)
-	if err != nil {
+	attendance := new(models.Attendance)
+	attendanceTime := input.BuildAttendanceTime()
+
+	if err := models.CreateOrUpdateAttendance(attendance, attendanceTime, userId); err != nil {
 		err := errors.New(BadAccessError)
 		c.JSON(http.StatusBadRequest, NewError("attendance", err))
 		return
 	}
 
+	res := NewAttendanceResult(attendance)
 	c.JSON(http.StatusOK, res)
 }

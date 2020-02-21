@@ -144,30 +144,10 @@ func (a *Attendance) setValues(opts ...attendanceOption) {
 	}
 }
 
-func (a *Attendance) ClockIn(time *AttendanceTime) {
-	a.setValues(attendanceWithClockedIn(time))
-}
-
-func (a *Attendance) ClockOut(time *AttendanceTime) {
-	a.setValues(attendanceWithClockedOut(time))
-}
-
-func (a *Attendance) IsClockedOut() bool {
-	return a.ClockedOut != nil
-}
-
-func FetchAttendancesCount(a *Attendance) (int64, error) {
-	return fetchAttendancesCount(engine, a)
-}
-
 func fetchAttendancesCount(eng Engine, a *Attendance) (int64, error) {
 	attendance := &Attendance{}
 	attendance.Id = a.Id
 	return eng.Table(database.AttendanceTable).Count(attendance)
-}
-
-func FetchLatestAttendance(userId string) (*Attendance, error) {
-	return fetchLatestAttendance(engine, userId)
 }
 
 func fetchLatestAttendance(eng Engine, userId string) (*Attendance, error) {
@@ -196,10 +176,6 @@ func fetchLatestAttendance(eng Engine, userId string) (*Attendance, error) {
 	return attendance.build(), nil
 }
 
-func FetchAttendances(a *Attendance, p *Paginator) ([]*Attendance, error) {
-	return fetchAttendances(engine, a, p)
-}
-
 func fetchAttendances(eng Engine, a *Attendance, p *Paginator) ([]*Attendance, error) {
 	attendances := make([]*Attendance, 0)
 	page := p.CalculatePage()
@@ -222,11 +198,6 @@ func fetchAttendances(eng Engine, a *Attendance, p *Paginator) ([]*Attendance, e
 	return attendances, err
 }
 
-func CreateAttendance(a *Attendance) error {
-	sess := engine.NewSession()
-	return createAttendance(sess, a)
-}
-
 func createAttendance(eng Engine, a *Attendance) error {
 	attendance := new(Attendance)
 	attendance.UserId = a.UserId
@@ -239,16 +210,79 @@ func createAttendance(eng Engine, a *Attendance) error {
 	return nil
 }
 
-func CreateAttendanceTime(t *AttendanceTime) error {
-	sess := engine.NewSession()
-	return createAttendanceTime(sess, t)
-}
-
 func createAttendanceTime(eng Engine, t *AttendanceTime) error {
 	at := NewTime(t)
 	if _, err := eng.Table(database.AttendanceTimeTable).Insert(at); err != nil {
 		return err
 	}
 	t.Id = at.Id
+	return nil
+}
+
+func (a *Attendance) ClockIn(time *AttendanceTime) {
+	a.setValues(attendanceWithClockedIn(time))
+}
+
+func (a *Attendance) ClockOut(time *AttendanceTime) {
+	a.setValues(attendanceWithClockedOut(time))
+}
+
+func (a *Attendance) IsClockedOut() bool {
+	return a.ClockedOut != nil
+}
+
+func FetchAttendancesCount(a *Attendance) (int64, error) {
+	return fetchAttendancesCount(engine, a)
+}
+
+func FetchLatestAttendance(userId string) (*Attendance, error) {
+	return fetchLatestAttendance(engine, userId)
+}
+
+func FetchAttendances(a *Attendance, p *Paginator) ([]*Attendance, error) {
+	return fetchAttendances(engine, a, p)
+}
+
+func CreateAttendance(a *Attendance) error {
+	sess := engine.NewSession()
+	return createAttendance(sess, a)
+}
+
+func CreateAttendanceTime(t *AttendanceTime) error {
+	sess := engine.NewSession()
+	return createAttendanceTime(sess, t)
+}
+
+type CreateOrUpdateOpts struct {
+	*Attendance
+	*AttendanceTime
+	UserId string
+}
+
+func CreateOrUpdateAttendance(attendance *Attendance, attendanceTime *AttendanceTime, userId string) error {
+	sess := engine.NewSession()
+	attendance, err := fetchLatestAttendance(sess, userId)
+	if err != nil {
+		return err
+	}
+
+	if attendance == nil {
+		attendance = new(Attendance)
+		attendance.UserId = userId
+		if err := createAttendance(sess, attendance); err != nil {
+			return err
+		}
+	}
+
+	attendanceTime.Id = attendance.Id
+	if !attendance.IsClockedOut() {
+		attendanceTime.AttendanceKindId = int64(AttendanceKindClockIn)
+	} else {
+		attendanceTime.AttendanceKindId = int64(AttendanceKindClockOut)
+	}
+
+	if err := createAttendanceTime(sess, attendanceTime); err != nil {
+		return err
+	}
 	return nil
 }

@@ -44,29 +44,3 @@ func ViewAttendancesMonthly(pagination *PaginatorInput, attendance *Attendance) 
 	res.Attendances = responses
 	return res, nil
 }
-
-func CreateOrUpdateAttendance(input *AttendanceInput, query *Attendance) (*AttendanceResult, error) {
-	if err := input.Validate(); err != nil {
-		return nil, err
-	}
-	attendance, err := FetchLatestAttendance(query.UserId)
-	if err != nil {
-		return nil, err
-	}
-
-	if attendance == nil {
-		attendance = new(Attendance)
-		attendance.UserId = query.UserId
-		if err := CreateAttendance(attendance); err != nil {
-			return nil, err
-		}
-	}
-
-	time := input.BuildAttendanceTime(attendance.Id, attendance.IsClockedOut())
-	if err := CreateAttendanceTime(time); err != nil {
-		return nil, err
-	}
-
-	serializer := NewAttendanceResult(attendance)
-	return serializer, nil
-}
