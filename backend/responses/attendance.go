@@ -43,6 +43,8 @@ func NewAttendanceResp(a *Attendance) AttendanceResp {
 	loc := timezone.NewJSTLocation()
 	resp.Id = a.Id
 	resp.UserId = a.UserId
+	resp.ClockedInTime = a.ClockedIn
+	resp.ClockedOutTime = a.ClockedOut
 	resp.CreatedAt = a.CreatedAt.In(loc).Format("2006-01-02-15:04:05")
 	resp.UpdatedAt = a.UpdatedAt.In(loc).Format("2006-01-02-15:04:05")
 	return resp

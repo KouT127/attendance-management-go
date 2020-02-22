@@ -50,11 +50,13 @@ func NewTime(at *AttendanceTime) *AttendanceTime {
 
 func (t AttendanceTime) build() *AttendanceTime {
 	return &AttendanceTime{
-		Id:        t.Id,
-		Remark:    t.Remark,
-		PushedAt:  t.PushedAt,
-		CreatedAt: t.CreatedAt,
-		UpdatedAt: t.UpdatedAt,
+		Id:               t.Id,
+		Remark:           t.Remark,
+		AttendanceId:     t.AttendanceId,
+		AttendanceKindId: t.AttendanceKindId,
+		PushedAt:         t.PushedAt,
+		CreatedAt:        t.CreatedAt,
+		UpdatedAt:        t.UpdatedAt,
 	}
 }
 
