@@ -182,11 +182,9 @@ func fetchAttendances(eng Engine, a *Attendance, p *Paginator) ([]*Attendance, e
 	err := eng.
 		Select("attendances.*, clocked_in_time.*, clocked_out_time.*").
 		Table(database.AttendanceTable).
-		Join("left", "attendances_time clocked_in_time", "attendances.id = clocked_in_time.attendance_id").
-		Join("left", "attendances_time clocked_out_time", "attendances.id = clocked_out_time.attendance_id").
-		Where("clocked_in_time.attendance_kind_id = ?", AttendanceKindClockIn).
-		And("clocked_out_time.attendance_kind_id = ?", AttendanceKindClockOut).
-		And("attendances.user_id = ?", a.UserId).
+		Join("left", "attendances_time clocked_in_time", "attendances.id = clocked_in_time.attendance_id and clocked_in_time.attendance_kind_id = 1").
+		Join("left", "attendances_time clocked_out_time", "attendances.id = clocked_out_time.attendance_id and clocked_out_time.attendance_kind_id = 2").
+		Where("attendances.user_id = ?", a.UserId).
 		Limit(int(p.Limit), int(page)).
 		OrderBy("-attendances.id").
 		Iterate(&AttendanceDetail{}, func(idx int, bean interface{}) error {
@@ -274,7 +272,7 @@ func CreateOrUpdateAttendance(attendance *Attendance, attendanceTime *Attendance
 		}
 	}
 
-	attendanceTime.Id = attendance.Id
+	attendanceTime.AttendanceId = attendance.Id
 	if !attendance.IsClockedOut() {
 		attendanceTime.AttendanceKindId = int64(AttendanceKindClockIn)
 	} else {
