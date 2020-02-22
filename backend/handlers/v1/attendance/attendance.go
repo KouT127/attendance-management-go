@@ -10,6 +10,7 @@ import (
 	"github.com/KouT127/attendance-management/utils/logger"
 	. "github.com/KouT127/attendance-management/validators"
 	. "github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -54,13 +55,17 @@ func V1ListHandler(c *Context) {
 	a := &models.Attendance{UserId: userId}
 	maxCnt, err := models.FetchAttendancesCount(a)
 	if err != nil {
+		logger.NewWarn(logrus.Fields{}, err.Error())
 		err := errors.New(BadAccessError)
 		c.JSON(http.StatusBadRequest, NewError("attendances", err))
+		return
 	}
-	attendances, err := attendanceService.ViewAttendances(p, a)
+	attendances, err := models.FetchAttendances(a, p.BuildPaginator())
 	if err != nil {
+		logger.NewWarn(logrus.Fields{}, err.Error())
 		err := errors.New(BadAccessError)
 		c.JSON(http.StatusBadRequest, NewError("attendances", err))
+		return
 	}
 
 	responses := make([]*AttendanceResp, 0)

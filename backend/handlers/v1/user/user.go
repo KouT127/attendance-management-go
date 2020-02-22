@@ -6,8 +6,10 @@ import (
 	"github.com/KouT127/attendance-management/models"
 	"github.com/KouT127/attendance-management/responses"
 	userService "github.com/KouT127/attendance-management/services/user"
+	"github.com/KouT127/attendance-management/utils/logger"
 	. "github.com/KouT127/attendance-management/validators"
 	. "github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -23,12 +25,14 @@ func V1MineHandler(c *Context) {
 	userId := value.(string)
 	u, err := userService.GetOrCreateUser(userId)
 	if err != nil {
+		logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, err.Error())
 		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
 		return
 	}
 
 	attendance, err := models.FetchLatestAttendance(userId)
 	if err != nil {
+		logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, err.Error())
 		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
 		return
 	}
