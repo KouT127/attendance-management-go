@@ -30,3 +30,5 @@ backend/configs/*.json
 !backend/configs/.keep
 backend/*.yml
 !backend/app.yml
+
+docker/sql/*

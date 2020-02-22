@@ -1,7 +1,7 @@
 FROM golang:1.13 as builder
 
 WORKDIR /go/src/github.com/KouT127/attendance-management/
-COPY . .
+COPY .. .
 
 #RUN go mod download
 
