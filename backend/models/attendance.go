@@ -10,6 +10,7 @@ type AttendanceTime struct {
 	Remark           string
 	AttendanceId     int64
 	AttendanceKindId int64
+	IsModified       bool
 	PushedAt         time.Time
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
@@ -29,6 +30,14 @@ func (a *Attendance) IsClockedOut() bool {
 	return a.ClockedOut != nil
 }
 
+func (a *Attendance) nextKind() AttendanceKind {
+	if !a.IsClockedOut() {
+		return AttendanceKindClockIn
+	} else {
+		return AttendanceKindClockOut
+	}
+}
+
 func (a *Attendance) build(cit *AttendanceTime, cot *AttendanceTime) Attendance {
 	return Attendance{
 		Id:         a.Id,
@@ -38,18 +47,6 @@ func (a *Attendance) build(cit *AttendanceTime, cot *AttendanceTime) Attendance 
 		CreatedAt:  a.CreatedAt,
 		UpdatedAt:  a.UpdatedAt,
 	}
-}
-
-func NewTime(at *AttendanceTime) *AttendanceTime {
-	t := new(AttendanceTime)
-	t.Id = at.Id
-	t.Remark = at.Remark
-	t.AttendanceId = at.AttendanceId
-	t.AttendanceKindId = at.AttendanceKindId
-	t.CreatedAt = at.CreatedAt
-	t.UpdatedAt = at.UpdatedAt
-	t.PushedAt = at.PushedAt
-	return t
 }
 
 func (t AttendanceTime) build() *AttendanceTime {
@@ -153,6 +150,8 @@ func fetchAttendances(eng Engine, a *Attendance, p *Paginator) ([]*Attendance, e
 		Join("left", "attendances_time clocked_in_time", "attendances.id = clocked_in_time.attendance_id and clocked_in_time.attendance_kind_id = 1").
 		Join("left", "attendances_time clocked_out_time", "attendances.id = clocked_out_time.attendance_id and clocked_out_time.attendance_kind_id = 2").
 		Where("attendances.user_id = ?", a.UserId).
+		And("clocked_in_time.is_modified = false").
+		And("clocked_out_time.is_modified = false").
 		Limit(int(p.Limit), int(page)).
 		OrderBy("-attendances.id").
 		Iterate(&AttendanceDetail{}, func(idx int, bean interface{}) error {
@@ -164,12 +163,15 @@ func fetchAttendances(eng Engine, a *Attendance, p *Paginator) ([]*Attendance, e
 	return attendances, err
 }
 
-func updateAttendanceTime(eng Engine, attendanceTime *AttendanceTime) error {
+func updateOldAttendanceTime(eng Engine, attendanceTime *AttendanceTime) error {
+	query := &AttendanceTime{
+		AttendanceId:     attendanceTime.AttendanceId,
+		AttendanceKindId: attendanceTime.AttendanceKindId,
+		IsModified:       false,
+	}
 	_, err := eng.Table(database.AttendanceTimeTable).
-		Where("attendance_id = ?", attendanceTime.AttendanceId).
-		And("attendance_kind_id = ?", attendanceTime.AttendanceKindId).
-		And("is_updated = ?", true).
-		Update(attendanceTime)
+		UseBool("is_modified").
+		Update(&AttendanceTime{UpdatedAt: time.Now(), IsModified: true,}, query)
 	if err != nil {
 		return err
 	}
@@ -177,23 +179,16 @@ func updateAttendanceTime(eng Engine, attendanceTime *AttendanceTime) error {
 }
 
 func createAttendance(eng Engine, a *Attendance) error {
-	attendance := new(Attendance)
-	attendance.UserId = a.UserId
-	attendance.CreatedAt = time.Now()
-	attendance.UpdatedAt = time.Now()
-	if _, err := eng.Table(database.AttendanceTable).Insert(attendance); err != nil {
+	if _, err := eng.Table(database.AttendanceTable).Insert(a); err != nil {
 		return err
 	}
-	a.Id = attendance.Id
 	return nil
 }
 
 func createAttendanceTime(eng Engine, t *AttendanceTime) error {
-	at := NewTime(t)
-	if _, err := eng.Table(database.AttendanceTimeTable).Insert(at); err != nil {
+	if _, err := eng.Table(database.AttendanceTimeTable).Insert(t); err != nil {
 		return err
 	}
-	t.Id = at.Id
 	return nil
 }
 
@@ -225,13 +220,10 @@ func CreateOrUpdateAttendance(attendance *Attendance, attendanceTime *Attendance
 	}
 
 	attendanceTime.AttendanceId = attendance.Id
-	if !attendance.IsClockedOut() {
-		attendanceTime.AttendanceKindId = int64(AttendanceKindClockIn)
-	} else {
-		attendanceTime.AttendanceKindId = int64(AttendanceKindClockOut)
+	attendanceTime.AttendanceKindId = int64(attendance.nextKind())
+	if err = updateOldAttendanceTime(sess, attendanceTime); err != nil {
+		return err
 	}
-
-	// TODO: すでにあるデータに対して、変更済みフラグを更新する
 
 	if err := createAttendanceTime(sess, attendanceTime); err != nil {
 		return err
