@@ -13,26 +13,6 @@ import (
 	"net/http"
 )
 
-func V1LatestHandler(c *Context) {
-	userId, err := GetIdByKey(c, middlewares.AuthorizedUserIdKey)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, NewError("user", err))
-		return
-	}
-	a := &models.Attendance{
-		UserId: userId,
-	}
-
-	res, err := attendanceService.ViewLatestAttendance(a)
-	if err != nil {
-		logger.NewFatal(c, err.Error())
-		err := errors.New(BadAccessError)
-		c.JSON(http.StatusBadRequest, NewError("attendances", err))
-	}
-	c.JSON(http.StatusOK, res)
-	return
-}
-
 func V1ListHandler(c *Context) {
 	p := NewPaginatorInput(0, 5)
 
