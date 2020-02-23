@@ -10,7 +10,7 @@ var (
 	engine *xorm.Engine
 )
 
-func Init() {
+func SetDatabase() {
 	engine = database.NewDB()
 }
 

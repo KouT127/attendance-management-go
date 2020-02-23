@@ -60,6 +60,7 @@ func V1ListHandler(c *Context) {
 		c.JSON(http.StatusBadRequest, NewError("attendances", err))
 		return
 	}
+
 	attendances, err := models.FetchAttendances(a, p.BuildPaginator())
 	if err != nil {
 		logger.NewWarn(logrus.Fields{}, err.Error())
