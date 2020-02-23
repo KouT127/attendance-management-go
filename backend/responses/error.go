@@ -1,11 +1,25 @@
 package responses
 
 type CommonError struct {
-	Errors map[string]interface{} `json:"errors"`
+	IsSuccessful bool   `json:"is_successful"`
+	Message      string `json:"message"`
 }
 
-func NewError(key string, err error) CommonError {
-	res := CommonError{}
+type ValidationError struct {
+	IsSuccessful bool                   `json:"is_successful"`
+	Message      string                 `json:"message"`
+	Errors       map[string]interface{} `json:"errors"`
+}
+
+func NewError(msg string) CommonError {
+	return CommonError{
+		IsSuccessful: false,
+		Message:      msg,
+	}
+}
+
+func NewValidationError(key string, err error) ValidationError {
+	res := ValidationError{}
 	res.Errors = make(map[string]interface{})
 	res.Errors[key] = err.Error()
 	return res

@@ -1,7 +1,6 @@
 package attendance
 
 import (
-	"errors"
 	. "github.com/KouT127/attendance-management/handlers"
 	"github.com/KouT127/attendance-management/middlewares"
 	"github.com/KouT127/attendance-management/models"
@@ -39,16 +38,14 @@ func V1ListHandler(c *Context) {
 
 	if err := c.Bind(p); err != nil {
 		logger.NewFatal(c, err.Error())
-		err := errors.New(InvalidValueError)
-		c.JSON(http.StatusBadRequest, NewError("seach", err))
+		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
 	}
 
 	userId, err := GetIdByKey(c, middlewares.AuthorizedUserIdKey)
 	if err != nil {
 		logger.NewFatal(c, err.Error())
-		err := errors.New(BadAccessError)
-		c.JSON(http.StatusBadRequest, NewError("user", err))
+		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
 	}
 
@@ -56,16 +53,14 @@ func V1ListHandler(c *Context) {
 	maxCnt, err := models.FetchAttendancesCount(a)
 	if err != nil {
 		logger.NewWarn(logrus.Fields{}, err.Error())
-		err := errors.New(BadAccessError)
-		c.JSON(http.StatusBadRequest, NewError("attendances", err))
+		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
 	}
 
 	attendances, err := models.FetchAttendances(a, p.BuildPaginator())
 	if err != nil {
 		logger.NewWarn(logrus.Fields{}, err.Error())
-		err := errors.New(BadAccessError)
-		c.JSON(http.StatusBadRequest, NewError("attendances", err))
+		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
 	}
 
@@ -87,15 +82,14 @@ func V1MonthlyHandler(c *Context) {
 	s := NewSearchParams()
 
 	if err := c.Bind(s); err != nil {
-		err := errors.New(InvalidValueError)
-		c.JSON(http.StatusBadRequest, NewError("search", err))
+
+		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
 	}
 
 	userId, err := GetIdByKey(c, middlewares.AuthorizedUserIdKey)
 	if err != nil {
-		err := errors.New(BadAccessError)
-		c.JSON(http.StatusBadRequest, NewError("user", err))
+		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
 	}
 
@@ -105,34 +99,27 @@ func V1MonthlyHandler(c *Context) {
 
 	res, err := attendanceService.ViewAttendancesMonthly(p, q)
 	if err != nil {
-		err := errors.New(BadAccessError)
-		c.JSON(http.StatusBadRequest, NewError("attendances", err))
+		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 	}
 
 	c.JSON(http.StatusOK, res)
 }
 
 func V1CreateHandler(c *Context) {
-	var (
-		input AttendanceInput
-	)
-
-	if err := c.Bind(&input); err != nil {
-		err := errors.New(InvalidValueError)
-		c.JSON(http.StatusBadRequest, NewError("user", err))
+	input := new(AttendanceInput)
+	if err := c.Bind(input); err != nil {
+		c.JSON(http.StatusBadRequest, NewValidationError("user", err))
 		return
 	}
 
 	userId, err := GetIdByKey(c, middlewares.AuthorizedUserIdKey)
 	if err != nil {
-		err := errors.New(BadAccessError)
-		c.JSON(http.StatusBadRequest, NewError("user", err))
+		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
 	}
 
 	if err := input.Validate(); err != nil {
-		err := errors.New(BadAccessError)
-		c.JSON(http.StatusBadRequest, NewError("input", err))
+		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
 	}
 
@@ -140,8 +127,7 @@ func V1CreateHandler(c *Context) {
 	attendanceTime := input.BuildAttendanceTime()
 
 	if err := models.CreateOrUpdateAttendance(attendance, attendanceTime, userId); err != nil {
-		err := errors.New(BadAccessError)
-		c.JSON(http.StatusBadRequest, NewError("attendance", err))
+		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
 	}
 

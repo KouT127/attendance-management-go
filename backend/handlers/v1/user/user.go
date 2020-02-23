@@ -26,14 +26,14 @@ func V1MineHandler(c *Context) {
 	u, err := userService.GetOrCreateUser(userId)
 	if err != nil {
 		logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, err.Error())
-		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
+		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))
 		return
 	}
 
 	attendance, err := models.FetchLatestAttendance(userId)
 	if err != nil {
 		logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, err.Error())
-		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
+		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))
 		return
 	}
 
@@ -48,14 +48,14 @@ func V1UpdateHandler(c *Context) {
 
 	err := c.Bind(input)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
+		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))
 		return
 	}
 
 	value, exists := c.Get(middlewares.AuthorizedUserIdKey)
 	if !exists {
 		err := errors.New("user not found")
-		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
+		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))
 		return
 	}
 
@@ -63,12 +63,12 @@ func V1UpdateHandler(c *Context) {
 	user, err := models.FetchUser(userId)
 	if err != nil || user.Id == "" {
 		err := errors.New("user not found")
-		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
+		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))
 		return
 	}
 
 	if err := userService.UpdateUser(user, input.Name); err != nil {
-		c.JSON(http.StatusBadRequest, responses.NewError("user", err))
+		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))
 		return
 	}
 
