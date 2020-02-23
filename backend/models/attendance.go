@@ -12,8 +12,13 @@ type AttendanceTime struct {
 	AttendanceKindId int64
 	IsModified       bool
 	PushedAt         time.Time
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
+func (AttendanceTime) TableName() string {
+	return database.AttendanceTimeTable
 }
 
 type Attendance struct {
@@ -26,38 +31,30 @@ type Attendance struct {
 	ClockedOut *AttendanceTime `xorm:"-"`
 }
 
-func (a *Attendance) IsClockedOut() bool {
+func (Attendance) TableName() string {
+	return database.AttendanceTable
+}
+
+func (a *Attendance) isClockedOut() bool {
 	return a.ClockedOut != nil
 }
 
 func (a *Attendance) nextKind() AttendanceKind {
-	if !a.IsClockedOut() {
+	if !a.isClockedOut() {
 		return AttendanceKindClockIn
 	} else {
 		return AttendanceKindClockOut
 	}
 }
 
-func (a *Attendance) build(cit *AttendanceTime, cot *AttendanceTime) Attendance {
+func (a *Attendance) setTimes(cit *AttendanceTime, cot *AttendanceTime) Attendance {
 	return Attendance{
 		Id:         a.Id,
 		UserId:     a.UserId,
-		ClockedIn:  cit.build(),
-		ClockedOut: cot.build(),
+		ClockedIn:  cit,
+		ClockedOut: cot,
 		CreatedAt:  a.CreatedAt,
 		UpdatedAt:  a.UpdatedAt,
-	}
-}
-
-func (t AttendanceTime) build() *AttendanceTime {
-	return &AttendanceTime{
-		Id:               t.Id,
-		Remark:           t.Remark,
-		AttendanceId:     t.AttendanceId,
-		AttendanceKindId: t.AttendanceKindId,
-		PushedAt:         t.PushedAt,
-		CreatedAt:        t.CreatedAt,
-		UpdatedAt:        t.UpdatedAt,
 	}
 }
 
@@ -67,17 +64,17 @@ type AttendanceDetail struct {
 	ClockedOutTime *AttendanceTime `xorm:"extends"`
 }
 
-func (d AttendanceDetail) build() *Attendance {
+func (d AttendanceDetail) toAttendance() *Attendance {
 	var (
 		in  *AttendanceTime
 		out *AttendanceTime
 	)
 	a := d.Attendance
 	if d.ClockedInTime.Id != 0 {
-		in = d.ClockedInTime.build()
+		in = d.ClockedInTime
 	}
 	if d.ClockedOutTime.Id != 0 {
-		out = d.ClockedOutTime.build()
+		out = d.ClockedOutTime
 	}
 
 	attendance := &Attendance{
@@ -112,7 +109,7 @@ func (k AttendanceKind) String() string {
 func fetchAttendancesCount(eng Engine, a *Attendance) (int64, error) {
 	attendance := &Attendance{}
 	attendance.Id = a.Id
-	return eng.Table(database.AttendanceTable).Count(attendance)
+	return eng.Count(attendance)
 }
 
 func fetchLatestAttendance(eng Engine, userId string) (*Attendance, error) {
@@ -138,7 +135,7 @@ func fetchLatestAttendance(eng Engine, userId string) (*Attendance, error) {
 		return nil, nil
 	}
 
-	return attendance.build(), nil
+	return attendance.toAttendance(), nil
 }
 
 func fetchAttendances(eng Engine, a *Attendance, p *Paginator) ([]*Attendance, error) {
@@ -156,7 +153,7 @@ func fetchAttendances(eng Engine, a *Attendance, p *Paginator) ([]*Attendance, e
 		OrderBy("-attendances.id").
 		Iterate(&AttendanceDetail{}, func(idx int, bean interface{}) error {
 			d := bean.(*AttendanceDetail)
-			a := d.build()
+			a := d.toAttendance()
 			attendances = append(attendances, a)
 			return nil
 		})
@@ -169,9 +166,8 @@ func updateOldAttendanceTime(eng Engine, attendanceTime *AttendanceTime) error {
 		AttendanceKindId: attendanceTime.AttendanceKindId,
 		IsModified:       false,
 	}
-	_, err := eng.Table(database.AttendanceTimeTable).
-		UseBool("is_modified").
-		Update(&AttendanceTime{UpdatedAt: time.Now(), IsModified: true,}, query)
+	_, err := eng.UseBool("is_modified").
+		Update(&AttendanceTime{IsModified: true, UpdatedAt: time.Now()}, query)
 	if err != nil {
 		return err
 	}
@@ -179,14 +175,14 @@ func updateOldAttendanceTime(eng Engine, attendanceTime *AttendanceTime) error {
 }
 
 func createAttendance(eng Engine, a *Attendance) error {
-	if _, err := eng.Table(database.AttendanceTable).Insert(a); err != nil {
+	if _, err := eng.Insert(a); err != nil {
 		return err
 	}
 	return nil
 }
 
 func createAttendanceTime(eng Engine, t *AttendanceTime) error {
-	if _, err := eng.Table(database.AttendanceTimeTable).Insert(t); err != nil {
+	if _, err := eng.Insert(t); err != nil {
 		return err
 	}
 	return nil

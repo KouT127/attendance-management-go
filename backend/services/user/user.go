@@ -13,8 +13,7 @@ func GetOrCreateUser(userId string) (*models.User, error) {
 
 	if user.Id == "" {
 		user.Id = userId
-		_, err := models.CreateUser(user)
-		if err != nil {
+		if err := models.CreateUser(user); err != nil {
 			return nil, err
 		}
 	}
@@ -24,7 +23,7 @@ func GetOrCreateUser(userId string) (*models.User, error) {
 
 func UpdateUser(user *models.User, userName string) error {
 	user.Name = userName
-	if _, err := models.UpdateUser(user); err != nil {
+	if err := models.UpdateUser(user); err != nil {
 		return err
 	}
 	logger.NewInfo("updated user-" + user.Id)

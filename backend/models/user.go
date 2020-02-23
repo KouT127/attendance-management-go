@@ -14,25 +14,13 @@ type User struct {
 	UpdatedAt time.Time `xorm:"updated_at"`
 }
 
-func NewUser(u *User) *User {
-	user := new(User)
-	user.Id = u.Id
-	user.Name = u.Name
-	user.ImageUrl = u.ImageUrl
-	user.UpdatedAt = time.Now()
-	return user
-}
-
-func (u *User) build(user *User) {
-	user.Id = u.Id
-	user.Name = u.Name
-	user.ImageUrl = u.ImageUrl
+func (User) TableName() string {
+	return database.UserTable
 }
 
 func FetchUsers(u *User) ([]*User, error) {
 	users := make([]*User, 0)
 	err := engine.
-		Table(database.UserTable).
 		Iterate(u, func(idx int, bean interface{}) error {
 			u := bean.(*User)
 			users = append(users, u)
@@ -42,27 +30,23 @@ func FetchUsers(u *User) ([]*User, error) {
 }
 
 func FetchUser(userId string) (*User, error) {
-	u := new(User)
-	_, err := engine.
-		Table(database.UserTable).
-		Where("id = ?", userId).
-		Get(u)
-	return u, err
+	u := User{Id: userId}
+	if _, err := engine.Get(&u); err != nil {
+		return nil, err
+	}
+	return &u, nil
 }
 
-func CreateUser(user *User) (int64, error) {
-	u := NewUser(user)
-	cnt, err := engine.
-		Table(database.UserTable).
-		Insert(u)
-	u.build(user)
-	return cnt, err
+func CreateUser(user *User) error {
+	if _, err := engine.Insert(user); err != nil {
+		return err
+	}
+	return nil
 }
 
-func UpdateUser(user *User) (int64, error) {
-	cnt, err := engine.
-		Table(database.UserTable).
-		Where("id = ?", user.Id).
-		Update(user)
-	return cnt, err
+func UpdateUser(user *User) error {
+	if _, err := engine.Update(user, &User{Id: user.Id}); err != nil {
+		return err
+	}
+	return nil
 }
