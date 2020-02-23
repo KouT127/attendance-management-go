@@ -18,11 +18,15 @@ type AttendanceTime struct {
 type Attendance struct {
 	Id        int64
 	UserId    string
-	CreatedAt time.Time `xorm:"created_at"`
-	UpdatedAt time.Time `xorm:"updated_at"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
 
 	ClockedIn  *AttendanceTime `xorm:"-"`
 	ClockedOut *AttendanceTime `xorm:"-"`
+}
+
+func (a *Attendance) IsClockedOut() bool {
+	return a.ClockedOut != nil
 }
 
 func (a *Attendance) build(cit *AttendanceTime, cot *AttendanceTime) Attendance {
@@ -108,44 +112,6 @@ func (k AttendanceKind) String() string {
 	return "不明"
 }
 
-type attendanceOption interface {
-	apply(*Attendance)
-}
-
-type clockedIn struct {
-	t *AttendanceTime
-}
-
-type clockedOut struct {
-	t *AttendanceTime
-}
-
-func (c clockedIn) apply(a *Attendance) {
-	a.ClockedIn = c.t
-}
-
-func attendanceWithClockedIn(t *AttendanceTime) clockedIn {
-	return clockedIn{
-		t: t,
-	}
-}
-
-func (c clockedOut) apply(a *Attendance) {
-	a.ClockedOut = c.t
-}
-
-func attendanceWithClockedOut(t *AttendanceTime) clockedOut {
-	return clockedOut{
-		t: t,
-	}
-}
-
-func (a *Attendance) setValues(opts ...attendanceOption) {
-	for _, opt := range opts {
-		opt.apply(a)
-	}
-}
-
 func fetchAttendancesCount(eng Engine, a *Attendance) (int64, error) {
 	attendance := &Attendance{}
 	attendance.Id = a.Id
@@ -198,6 +164,18 @@ func fetchAttendances(eng Engine, a *Attendance, p *Paginator) ([]*Attendance, e
 	return attendances, err
 }
 
+func updateAttendanceTime(eng Engine, attendanceTime *AttendanceTime) error {
+	_, err := eng.Table(database.AttendanceTimeTable).
+		Where("attendance_id = ?", attendanceTime.AttendanceId).
+		And("attendance_kind_id = ?", attendanceTime.AttendanceKindId).
+		And("is_updated = ?", true).
+		Update(attendanceTime)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func createAttendance(eng Engine, a *Attendance) error {
 	attendance := new(Attendance)
 	attendance.UserId = a.UserId
@@ -219,18 +197,6 @@ func createAttendanceTime(eng Engine, t *AttendanceTime) error {
 	return nil
 }
 
-func (a *Attendance) ClockIn(time *AttendanceTime) {
-	a.setValues(attendanceWithClockedIn(time))
-}
-
-func (a *Attendance) ClockOut(time *AttendanceTime) {
-	a.setValues(attendanceWithClockedOut(time))
-}
-
-func (a *Attendance) IsClockedOut() bool {
-	return a.ClockedOut != nil
-}
-
 func FetchAttendancesCount(a *Attendance) (int64, error) {
 	return fetchAttendancesCount(engine, a)
 }
@@ -241,22 +207,6 @@ func FetchLatestAttendance(userId string) (*Attendance, error) {
 
 func FetchAttendances(a *Attendance, p *Paginator) ([]*Attendance, error) {
 	return fetchAttendances(engine, a, p)
-}
-
-func CreateAttendance(a *Attendance) error {
-	sess := engine.NewSession()
-	return createAttendance(sess, a)
-}
-
-func CreateAttendanceTime(t *AttendanceTime) error {
-	sess := engine.NewSession()
-	return createAttendanceTime(sess, t)
-}
-
-type CreateOrUpdateOpts struct {
-	*Attendance
-	*AttendanceTime
-	UserId string
 }
 
 func CreateOrUpdateAttendance(attendance *Attendance, attendanceTime *AttendanceTime, userId string) error {
@@ -280,6 +230,8 @@ func CreateOrUpdateAttendance(attendance *Attendance, attendanceTime *Attendance
 	} else {
 		attendanceTime.AttendanceKindId = int64(AttendanceKindClockOut)
 	}
+
+	// TODO: すでにあるデータに対して、変更済みフラグを更新する
 
 	if err := createAttendanceTime(sess, attendanceTime); err != nil {
 		return err
