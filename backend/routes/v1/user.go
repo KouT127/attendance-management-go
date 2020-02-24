@@ -12,6 +12,6 @@ func UsersRouter(v1 *RouterGroup) {
 	}
 
 	users := v1.Group("/users", funcs...)
-	users.GET("/mine", user.V1MineHandler)
-	users.PUT("/:id", user.V1UpdateHandler)
+	users.GET("/mine", user.MineHandler)
+	users.PUT("/:id", user.UpdateHandler)
 }

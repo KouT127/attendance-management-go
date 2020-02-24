@@ -5,7 +5,6 @@ import (
 	"github.com/KouT127/attendance-management/middlewares"
 	"github.com/KouT127/attendance-management/models"
 	"github.com/KouT127/attendance-management/responses"
-	userService "github.com/KouT127/attendance-management/services/user"
 	"github.com/KouT127/attendance-management/utils/logger"
 	. "github.com/KouT127/attendance-management/validators"
 	. "github.com/gin-gonic/gin"
@@ -13,7 +12,7 @@ import (
 	"net/http"
 )
 
-func V1MineHandler(c *Context) {
+func MineHandler(c *Context) {
 	value, exists := c.Get(middlewares.AuthorizedUserIdKey)
 	if !exists {
 		c.JSON(http.StatusBadRequest, H{
@@ -23,7 +22,7 @@ func V1MineHandler(c *Context) {
 	}
 
 	userId := value.(string)
-	u, err := userService.GetOrCreateUser(userId)
+	u, err := models.GetOrCreateUser(userId)
 	if err != nil {
 		logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, err.Error())
 		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))
@@ -43,8 +42,9 @@ func V1MineHandler(c *Context) {
 	})
 }
 
-func V1UpdateHandler(c *Context) {
+func UpdateHandler(c *Context) {
 	input := new(UserInput)
+	user := new(models.User)
 
 	err := c.Bind(input)
 	if err != nil {
@@ -59,16 +59,12 @@ func V1UpdateHandler(c *Context) {
 		return
 	}
 
-	userId := value.(string)
-	user, err := models.FetchUser(userId)
-	if err != nil || user.Id == "" {
-		err := errors.New("user not found")
-		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))
-		return
-	}
+	user.Id = value.(string)
+	user.Name = input.Name
+	user.Email = input.Email
 
-	if err := userService.UpdateUser(user, input.Name); err != nil {
-		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))
+	if err := models.UpdateUser(user); err != nil {
+		c.JSON(http.StatusBadRequest, responses.NewError(err.Error()))
 		return
 	}
 

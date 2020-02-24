@@ -62,7 +62,6 @@ func V1MonthlyHandler(c *Context) {
 	s := NewSearchParams()
 
 	if err := c.Bind(s); err != nil {
-
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
 	}
