@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/KouT127/attendance-management/database"
+	"github.com/KouT127/attendance-management/utils/logger"
 	"time"
 )
 
@@ -10,8 +11,8 @@ type User struct {
 	Name      string
 	Email     string
 	ImageUrl  string
-	CreatedAt time.Time `xorm:"created_at"`
-	UpdatedAt time.Time `xorm:"updated_at"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 func (User) TableName() string {
@@ -29,24 +30,51 @@ func FetchUsers(u *User) ([]*User, error) {
 	return users, err
 }
 
-func FetchUser(userId string) (*User, error) {
+func GetUser(userId string) (*User, error) {
+	return getUser(engine, userId)
+}
+
+func getUser(eng Engine, userId string) (*User, error) {
 	u := User{Id: userId}
-	if _, err := engine.Get(&u); err != nil {
+	if _, err := eng.Get(&u); err != nil {
 		return nil, err
 	}
 	return &u, nil
 }
 
-func CreateUser(user *User) error {
-	if _, err := engine.Insert(user); err != nil {
+func createUser(eng Engine, user *User) error {
+	if _, err := eng.Insert(user); err != nil {
 		return err
 	}
 	return nil
 }
 
 func UpdateUser(user *User) error {
-	if _, err := engine.Update(user, &User{Id: user.Id}); err != nil {
+	sess := engine.NewSession()
+	if has, err := sess.Exist(user); err != nil || !has {
 		return err
 	}
+
+	if _, err := sess.Update(user, &User{Id: user.Id}); err != nil {
+		return err
+	}
+	logger.NewInfo("updated user-" + user.Id)
 	return nil
+}
+
+func GetOrCreateUser(userId string) (*User, error) {
+	sess := engine.NewSession()
+	user, err := getUser(sess, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	if user.Id == "" {
+		user.Id = userId
+		if err := createUser(sess, user); err != nil {
+			return nil, err
+		}
+	}
+
+	return user, nil
 }

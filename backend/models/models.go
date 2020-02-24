@@ -21,6 +21,7 @@ type Engine interface {
 	Decr(column string, arg ...interface{}) *xorm.Session
 	Delete(interface{}) (int64, error)
 	Exec(...interface{}) (sql.Result, error)
+	Exist(bean ...interface{}) (bool, error)
 	Find(interface{}, ...interface{}) error
 	Get(interface{}) (bool, error)
 	ID(interface{}) *xorm.Session
