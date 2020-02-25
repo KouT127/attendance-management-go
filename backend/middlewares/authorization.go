@@ -1,54 +1,27 @@
 package middlewares
 
 import (
-	"context"
 	firebase "firebase.google.com/go"
 	"fmt"
+	"github.com/KouT127/attendance-management/modules/auth"
 	"github.com/KouT127/attendance-management/utils/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"golang.org/x/oauth2/google"
-	"google.golang.org/api/option"
 	"net/http"
 	"strings"
 )
 
-const AuthorizedUserIdKey = "authorized_user_id"
-
-func loadCredFromFile(name string) *option.ClientOption {
-	filename := fmt.Sprintf(name)
-	opt := option.WithCredentialsFile(filename)
-	return &opt
-}
-
-func loadCredFromCtx() *option.ClientOption {
-	cred, err := google.FindDefaultCredentials(context.Background())
-	if err != nil {
-		return nil
-	}
-	opt := option.WithCredentials(cred)
-	return &opt
-}
-
-func NewCredential() *option.ClientOption {
-	opt := loadCredFromCtx()
-	if opt == nil {
-		opt = loadCredFromFile("./backend/configs/firebase-service-dev.json")
-	}
-	return opt
-}
-
 func AuthRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		opt := NewCredential()
-		app, err := firebase.NewApp(context.Background(), nil, *opt)
+		opt := auth.NewCredential()
+		app, err := firebase.NewApp(c, nil, *opt)
 		if err != nil {
 			logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, "error invalid credential file")
 			u := fmt.Sprintf("unauthorized")
 			c.AbortWithStatusJSON(http.StatusUnauthorized, u)
 			return
 		}
-		client, err := app.Auth(context.Background())
+		client, err := app.Auth(c)
 		if err != nil {
 			logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, "error firebase unauthorized")
 			u := fmt.Sprintf("unauthorized")
@@ -63,14 +36,14 @@ func AuthRequired() gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, u)
 			return
 		}
-		verifiedToken, err := client.VerifyIDToken(context.Background(), replacedToken)
+		verifiedToken, err := client.VerifyIDToken(c, replacedToken)
 		if err != nil {
 			logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, "error verifying id token")
 			u := fmt.Sprintf("unauthorized")
 			c.AbortWithStatusJSON(http.StatusUnauthorized, u)
 			return
 		}
-		c.Set(AuthorizedUserIdKey, verifiedToken.UID)
+		c.Set(auth.AuthorizedUserIdKey, verifiedToken.UID)
 		c.Next()
 	}
 }
