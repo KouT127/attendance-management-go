@@ -2,10 +2,10 @@ package user
 
 import (
 	"errors"
-	"github.com/KouT127/attendance-management/middlewares"
 	"github.com/KouT127/attendance-management/models"
-	"github.com/KouT127/attendance-management/responses"
-	"github.com/KouT127/attendance-management/utils/logger"
+	"github.com/KouT127/attendance-management/modules/auth"
+	"github.com/KouT127/attendance-management/modules/logger"
+	"github.com/KouT127/attendance-management/modules/responses"
 	. "github.com/KouT127/attendance-management/validators"
 	. "github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -13,7 +13,7 @@ import (
 )
 
 func MineHandler(c *Context) {
-	value, exists := c.Get(middlewares.AuthorizedUserIdKey)
+	value, exists := c.Get(auth.AuthorizedUserIdKey)
 	if !exists {
 		c.JSON(http.StatusBadRequest, H{
 			"message": "user not found",
@@ -38,7 +38,7 @@ func MineHandler(c *Context) {
 
 	c.JSON(http.StatusOK, H{
 		"user":       responses.NewUserResp(u),
-		"attendance": responses.NewAttendanceResult(attendance),
+		"attendance": responses.ToAttendanceResult(attendance),
 	})
 }
 
@@ -52,7 +52,7 @@ func UpdateHandler(c *Context) {
 		return
 	}
 
-	value, exists := c.Get(middlewares.AuthorizedUserIdKey)
+	value, exists := c.Get(auth.AuthorizedUserIdKey)
 	if !exists {
 		err := errors.New("user not found")
 		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))

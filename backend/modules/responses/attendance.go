@@ -1,7 +1,7 @@
 package responses
 
 import (
-	. "github.com/KouT127/attendance-management/models"
+	"github.com/KouT127/attendance-management/models"
 	"github.com/KouT127/attendance-management/modules/timezone"
 )
 
@@ -13,12 +13,12 @@ type AttendanceTimeResp struct {
 }
 
 type AttendanceResp struct {
-	Id             int64           `json:"id"`
-	UserId         string          `json:"userId"`
-	ClockedInTime  *AttendanceTime `json:"clockedInTime"`
-	ClockedOutTime *AttendanceTime `json:"clockedOutTime"`
-	CreatedAt      string          `json:"createdAt"`
-	UpdatedAt      string          `json:"updatedAt"`
+	Id             int64                  `json:"id"`
+	UserId         string                 `json:"userId"`
+	ClockedInTime  *models.AttendanceTime `json:"clockedInTime"`
+	ClockedOutTime *models.AttendanceTime `json:"clockedOutTime"`
+	CreatedAt      string                 `json:"createdAt"`
+	UpdatedAt      string                 `json:"updatedAt"`
 }
 
 type AttendanceResult struct {
@@ -27,18 +27,12 @@ type AttendanceResult struct {
 	IsClockedOut bool           `json:"isClockedOut"`
 }
 
-func NewAttendanceResult(attendance *Attendance) *AttendanceResult {
-	serializer := new(AttendanceResult)
-	serializer.NewAttendanceResult(true, attendance)
-	return serializer
-}
-
 type AttendancesResult struct {
 	CommonResponses
 	Attendances []*AttendanceResp `json:"attendances"`
 }
 
-func NewAttendanceResp(a *Attendance) AttendanceResp {
+func toAttendanceResp(a *models.Attendance) AttendanceResp {
 	resp := AttendanceResp{}
 	loc := timezone.NewJSTLocation()
 	resp.Id = a.Id
@@ -50,15 +44,25 @@ func NewAttendanceResp(a *Attendance) AttendanceResp {
 	return resp
 }
 
-func (s *AttendanceResult) NewAttendanceResult(isSuccessful bool, attendance *Attendance) {
-	s.IsSuccessful = true
+func ToAttendanceResult(attendance *models.Attendance) *AttendanceResult {
+	res := &AttendanceResult{}
+	res.IsSuccessful = true
 	if attendance != nil {
-		s.Attendance = NewAttendanceResp(attendance)
+		res.Attendance = toAttendanceResp(attendance)
 	}
+	return res
 }
 
-func (s *AttendancesResult) NewAttendancesResult(isSuccessful bool, hasNext bool, responses []*AttendanceResp) {
-	s.IsSuccessful = true
-	s.HasNext = hasNext
-	s.Attendances = responses
+func ToAttendancesResult(hasNext bool, attendances []*models.Attendance) *AttendancesResult {
+	res := &AttendancesResult{}
+	responses := make([]*AttendanceResp, 0)
+	for _, attendance := range attendances {
+		resp := toAttendanceResp(attendance)
+		responses = append(responses, &resp)
+	}
+
+	res.IsSuccessful = true
+	res.HasNext = hasNext
+	res.Attendances = responses
+	return res
 }

@@ -2,11 +2,10 @@ package attendance
 
 import (
 	. "github.com/KouT127/attendance-management/handlers"
-	"github.com/KouT127/attendance-management/middlewares"
 	"github.com/KouT127/attendance-management/models"
-	. "github.com/KouT127/attendance-management/responses"
-	attendanceService "github.com/KouT127/attendance-management/services/attendance"
-	"github.com/KouT127/attendance-management/utils/logger"
+	"github.com/KouT127/attendance-management/modules/auth"
+	"github.com/KouT127/attendance-management/modules/logger"
+	. "github.com/KouT127/attendance-management/modules/responses"
 	. "github.com/KouT127/attendance-management/validators"
 	. "github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -22,7 +21,7 @@ func V1ListHandler(c *Context) {
 		return
 	}
 
-	userId, err := GetIdByKey(c, middlewares.AuthorizedUserIdKey)
+	userId, err := GetIdByKey(c, auth.AuthorizedUserIdKey)
 	if err != nil {
 		logger.NewFatal(c, err.Error())
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
@@ -44,44 +43,31 @@ func V1ListHandler(c *Context) {
 		return
 	}
 
-	responses := make([]*AttendanceResp, 0)
-	for _, attendance := range attendances {
-		resp := NewAttendanceResp(attendance)
-		responses = append(responses, &resp)
-	}
-
-	res := new(AttendancesResult)
-	res.HasNext = p.HasNext(maxCnt)
-	res.IsSuccessful = true
-	res.Attendances = responses
+	hasNext := p.HasNext(maxCnt)
+	res := ToAttendancesResult(hasNext, attendances)
 	c.JSON(http.StatusOK, res)
 }
 
 func V1MonthlyHandler(c *Context) {
-	p := NewPaginatorInput(0, 31)
-	s := NewSearchParams()
+	//p := NewPaginatorInput(0, 31)
+	//s := NewSearchParams()
+	//
+	//if err := c.Bind(s); err != nil {
+	//	c.JSON(http.StatusBadRequest, NewError(BadAccessError))
+	//	return
+	//}
+	//
+	//userId, err := GetIdByKey(c, auth.AuthorizedUserIdKey)
+	//if err != nil {
+	//	c.JSON(http.StatusBadRequest, NewError(BadAccessError))
+	//	return
+	//}
+	//res, err := attendanceService.ViewAttendancesMonthly(p, q)
+	//if err != nil {
+	//	c.JSON(http.StatusBadRequest, NewError(BadAccessError))
+	//}
 
-	if err := c.Bind(s); err != nil {
-		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
-		return
-	}
-
-	userId, err := GetIdByKey(c, middlewares.AuthorizedUserIdKey)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
-		return
-	}
-
-	q := &models.Attendance{
-		UserId: userId,
-	}
-
-	res, err := attendanceService.ViewAttendancesMonthly(p, q)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
-	}
-
-	c.JSON(http.StatusOK, res)
+	c.JSON(http.StatusOK, H{})
 }
 
 func V1CreateHandler(c *Context) {
@@ -91,7 +77,7 @@ func V1CreateHandler(c *Context) {
 		return
 	}
 
-	userId, err := GetIdByKey(c, middlewares.AuthorizedUserIdKey)
+	userId, err := GetIdByKey(c, auth.AuthorizedUserIdKey)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
@@ -110,6 +96,6 @@ func V1CreateHandler(c *Context) {
 		return
 	}
 
-	res := NewAttendanceResult(attendance)
+	res := ToAttendanceResult(attendance)
 	c.JSON(http.StatusOK, res)
 }
