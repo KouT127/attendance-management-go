@@ -8,7 +8,7 @@ import (
 
 var log = logrus.New()
 
-func Init() {
+func SetUp() {
 	log.Out = os.Stdout
 }
 

@@ -6,7 +6,7 @@ var (
 	loc *time.Location
 )
 
-func Init(location string) {
+func Set(location string) {
 	l, err := time.LoadLocation(location)
 	if err != nil {
 		panic(l)

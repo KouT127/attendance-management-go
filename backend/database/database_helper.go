@@ -2,7 +2,7 @@ package database
 
 import (
 	"fmt"
-	"github.com/KouT127/attendance-management/utils/directory"
+	"github.com/KouT127/attendance-management/modules/directory"
 	"github.com/go-xorm/xorm"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/mysql"

@@ -4,7 +4,7 @@ import (
 	firebase "firebase.google.com/go"
 	"fmt"
 	"github.com/KouT127/attendance-management/modules/auth"
-	"github.com/KouT127/attendance-management/utils/logger"
+	"github.com/KouT127/attendance-management/modules/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"net/http"

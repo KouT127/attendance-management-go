@@ -2,7 +2,7 @@ package models
 
 import (
 	"github.com/KouT127/attendance-management/database"
-	"github.com/KouT127/attendance-management/utils/logger"
+	"github.com/KouT127/attendance-management/modules/logger"
 	"time"
 )
 

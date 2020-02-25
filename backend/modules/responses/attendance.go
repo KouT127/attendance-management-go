@@ -2,7 +2,7 @@ package responses
 
 import (
 	. "github.com/KouT127/attendance-management/models"
-	"github.com/KouT127/attendance-management/utils/timezone"
+	"github.com/KouT127/attendance-management/modules/timezone"
 )
 
 type AttendanceTimeResp struct {

@@ -26,7 +26,7 @@ var (
 	SOURCE     string
 )
 
-func Init() {
+func SetUp() {
 	SOURCE = loadEnv()
 	if CONNECTION == "" {
 		SOURCE = loadLocalEnv()
@@ -63,7 +63,7 @@ func loadEnv() string {
 }
 
 func loadLocalEnv() string {
-	err := godotenv.Load(fmt.Sprintf("./backend/.env.local"))
+	err := godotenv.Load(fmt.Sprintf("./backend/configs/.env.local"))
 	if err != nil {
 		panic(err)
 	}
