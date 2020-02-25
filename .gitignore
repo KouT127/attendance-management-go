@@ -14,11 +14,10 @@ frontend/build
 
 # misc
 .DS_Store
-.env.local
-.env.test
-.env.development.local
-.env.test.local
-.env.production.local
+backend/configs/*
+!backend/configs/.env.local.sample
+!backend/configs/.env.test.sample
+
 
 npm-debug.log*
 yarn-debug.log*
