@@ -4,9 +4,9 @@ import (
 	. "github.com/KouT127/attendance-management/handlers"
 	"github.com/KouT127/attendance-management/models"
 	"github.com/KouT127/attendance-management/modules/auth"
+	. "github.com/KouT127/attendance-management/modules/input"
 	"github.com/KouT127/attendance-management/modules/logger"
-	. "github.com/KouT127/attendance-management/modules/responses"
-	. "github.com/KouT127/attendance-management/validators"
+	. "github.com/KouT127/attendance-management/modules/response"
 	. "github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"net/http"
@@ -89,7 +89,7 @@ func V1CreateHandler(c *Context) {
 	}
 
 	attendance := new(models.Attendance)
-	attendanceTime := input.BuildAttendanceTime()
+	attendanceTime := input.ToAttendanceTime()
 
 	if err := models.CreateOrUpdateAttendance(attendance, attendanceTime, userId); err != nil {
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))

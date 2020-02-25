@@ -4,9 +4,9 @@ import (
 	"errors"
 	"github.com/KouT127/attendance-management/models"
 	"github.com/KouT127/attendance-management/modules/auth"
+	. "github.com/KouT127/attendance-management/modules/input"
 	"github.com/KouT127/attendance-management/modules/logger"
-	"github.com/KouT127/attendance-management/modules/responses"
-	. "github.com/KouT127/attendance-management/validators"
+	"github.com/KouT127/attendance-management/modules/response"
 	. "github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"net/http"
@@ -25,20 +25,20 @@ func MineHandler(c *Context) {
 	u, err := models.GetOrCreateUser(userId)
 	if err != nil {
 		logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, err.Error())
-		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))
+		c.JSON(http.StatusBadRequest, response.NewValidationError("user", err))
 		return
 	}
 
 	attendance, err := models.FetchLatestAttendance(userId)
 	if err != nil {
 		logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, err.Error())
-		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))
+		c.JSON(http.StatusBadRequest, response.NewValidationError("user", err))
 		return
 	}
 
 	c.JSON(http.StatusOK, H{
-		"user":       responses.NewUserResp(u),
-		"attendance": responses.ToAttendanceResult(attendance),
+		"user":       response.NewUserResp(u),
+		"attendance": response.ToAttendanceResult(attendance),
 	})
 }
 
@@ -48,14 +48,14 @@ func UpdateHandler(c *Context) {
 
 	err := c.Bind(input)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))
+		c.JSON(http.StatusBadRequest, response.NewValidationError("user", err))
 		return
 	}
 
 	value, exists := c.Get(auth.AuthorizedUserIdKey)
 	if !exists {
 		err := errors.New("user not found")
-		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))
+		c.JSON(http.StatusBadRequest, response.NewValidationError("user", err))
 		return
 	}
 
@@ -64,11 +64,11 @@ func UpdateHandler(c *Context) {
 	user.Email = input.Email
 
 	if err := models.UpdateUser(user); err != nil {
-		c.JSON(http.StatusBadRequest, responses.NewError(err.Error()))
+		c.JSON(http.StatusBadRequest, response.NewError(err.Error()))
 		return
 	}
 
 	c.JSON(http.StatusOK, H{
-		"user": responses.NewUserResp(user),
+		"user": response.NewUserResp(user),
 	})
 }

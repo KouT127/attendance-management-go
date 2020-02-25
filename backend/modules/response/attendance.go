@@ -1,4 +1,4 @@
-package responses
+package response
 
 import (
 	"github.com/KouT127/attendance-management/models"

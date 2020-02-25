@@ -9,7 +9,7 @@ type PaginatorInput struct {
 	Limit int64 `form:"limit"`
 }
 
-func (i PaginatorInput) BuildPaginator() *Paginator {
+func (i *PaginatorInput) BuildPaginator() *Paginator {
 	p := new(Paginator)
 	return p
 }
@@ -20,12 +20,12 @@ func NewPaginatorInput(page int64, limit int64) *PaginatorInput {
 	}
 }
 
-func (p PaginatorInput) CalculatePage() int64 {
-	return p.Page * p.Limit
+func (i *PaginatorInput) CalculatePage() int64 {
+	return i.Page * i.Limit
 }
 
-func (p PaginatorInput) HasNext(max int64) bool {
-	cnt := p.Page * p.Limit
+func (i *PaginatorInput) HasNext(max int64) bool {
+	cnt := i.Page * i.Limit
 	return max > cnt
 }
 
