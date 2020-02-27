@@ -10,25 +10,10 @@ import (
 	"github.com/joho/godotenv"
 	"os"
 	"time"
-	"xorm.io/core"
 )
 
 func ConnectDatabase() {
-	conn := loadTestEnv()
-	engine, err = xorm.NewEngine("mysql", conn)
-	if err != nil {
-		panic(err)
-	}
-	logger := xorm.NewSimpleLogger(os.Stdout)
-	logger.ShowSQL(false)
-	logger.SetLevel(core.LOG_INFO)
-	loc, err := time.LoadLocation("UTC")
-	if err != nil {
-		panic(err)
-	}
-	engine.SetTZLocation(loc)
-	engine.SetTZDatabase(loc)
-	engine.SetLogger(logger)
+
 }
 
 func getMigrationsPath() string {
@@ -37,7 +22,7 @@ func getMigrationsPath() string {
 
 func loadTestEnv() string {
 	r := directory.RootDir()
-	err := godotenv.Load(fmt.Sprintf(r + "/.env.test"))
+	err := godotenv.Load(fmt.Sprintf(r + "/configs/.env.test"))
 	if err != nil {
 		panic(err)
 	}
@@ -86,9 +71,28 @@ func DropTestTable() {
 	}
 }
 
-func PrepareTestDatabase() func() {
+func InitializeTestDatabase() func() {
 	CreateTestTable()
 	return func() {
 		DropTestTable()
 	}
+}
+
+func CreateTestEngine() *xorm.Engine {
+	conn := loadTestEnv()
+	engine, err = xorm.NewEngine("mysql", conn)
+	if err != nil {
+		panic(err)
+	}
+
+	loc, err := time.LoadLocation("UTC")
+	if err != nil {
+		panic(err)
+	}
+	engine.SetTZLocation(loc)
+	engine.SetTZDatabase(loc)
+
+	_ = InitializeTestDatabase()
+
+	return engine
 }
