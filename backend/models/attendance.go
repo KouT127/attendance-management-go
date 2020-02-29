@@ -9,7 +9,7 @@ type AttendanceTime struct {
 	Id               int64
 	Remark           string
 	AttendanceId     int64
-	AttendanceKindId int64
+	AttendanceKindId uint8
 	IsModified       bool
 	PushedAt         time.Time
 
@@ -160,7 +160,7 @@ func fetchAttendances(eng Engine, a *Attendance, p *Paginator) ([]*Attendance, e
 	return attendances, err
 }
 
-func updateOldAttendanceTime(eng Engine, id int64, kindId int64) error {
+func updateOldAttendanceTime(eng Engine, id int64, kindId uint8) error {
 	query := &AttendanceTime{
 		AttendanceId:     id,
 		AttendanceKindId: kindId,
@@ -219,7 +219,7 @@ func CreateOrUpdateAttendance(attendanceTime *AttendanceTime, userId string) (*A
 			return nil, err
 		}
 	} else {
-		if err := updateOldAttendanceTime(sess, attendance.Id, int64(attendance.nextKind())); err != nil {
+		if err := updateOldAttendanceTime(sess, attendance.Id, uint8(attendance.nextKind())); err != nil {
 			return nil, err
 		}
 		attendance.ClockedOut = attendanceTime
