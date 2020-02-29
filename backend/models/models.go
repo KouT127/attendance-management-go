@@ -38,3 +38,17 @@ type Engine interface {
 	Limit(limit int, start ...int) *xorm.Session
 	SumInt(bean interface{}, columnName string) (res int64, err error)
 }
+
+func SetTestDatabase() error {
+	engine = database.CreateTestEngine()
+
+	if err := database.DropTestTable(); err != nil {
+		return err
+	}
+
+	if err := database.CreateTestTable(); err != nil {
+		return err
+	}
+
+	return nil
+}

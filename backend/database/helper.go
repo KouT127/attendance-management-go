@@ -12,10 +12,6 @@ import (
 	"time"
 )
 
-func ConnectDatabase() {
-
-}
-
 func getMigrationsPath() string {
 	return "file://" + directory.RootDir() + "/database/migrations"
 }
@@ -59,23 +55,18 @@ func dropTable() error {
 	return nil
 }
 
-func CreateTestTable() {
+func CreateTestTable() error {
 	if err := migrateUp(); err != nil {
-		panic(err)
+		return err
 	}
+	return nil
 }
 
-func DropTestTable() {
+func DropTestTable() error {
 	if err := dropTable(); err != nil {
-		panic(err)
+		return err
 	}
-}
-
-func InitializeTestDatabase() func() {
-	CreateTestTable()
-	return func() {
-		DropTestTable()
-	}
+	return nil
 }
 
 func CreateTestEngine() *xorm.Engine {
@@ -91,8 +82,5 @@ func CreateTestEngine() *xorm.Engine {
 	}
 	engine.SetTZLocation(loc)
 	engine.SetTZDatabase(loc)
-
-	_ = InitializeTestDatabase()
-
 	return engine
 }
