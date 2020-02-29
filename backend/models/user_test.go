@@ -54,6 +54,7 @@ func TestUser(t *testing.T) {
 		})
 	})
 }
+
 func createTestUser() (*User, error) {
 	u := &User{
 		Id:        "asdiekawei42lasedi356ladfkjfity3",

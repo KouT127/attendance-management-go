@@ -160,14 +160,16 @@ func fetchAttendances(eng Engine, a *Attendance, p *Paginator) ([]*Attendance, e
 	return attendances, err
 }
 
-func updateOldAttendanceTime(eng Engine, attendanceTime *AttendanceTime) error {
+func updateOldAttendanceTime(eng Engine, id int64, kindId int64) error {
 	query := &AttendanceTime{
-		AttendanceId:     attendanceTime.AttendanceId,
-		AttendanceKindId: attendanceTime.AttendanceKindId,
+		AttendanceId:     id,
+		AttendanceKindId: kindId,
 		IsModified:       false,
 	}
+
 	_, err := eng.UseBool("is_modified").
 		Update(&AttendanceTime{IsModified: true, UpdatedAt: time.Now()}, query)
+
 	if err != nil {
 		return err
 	}
@@ -200,29 +202,36 @@ func FetchAttendances(a *Attendance, p *Paginator) ([]*Attendance, error) {
 	return fetchAttendances(engine, a, p)
 }
 
-func CreateOrUpdateAttendance(attendance *Attendance, attendanceTime *AttendanceTime, userId string) error {
+func CreateOrUpdateAttendance(attendanceTime *AttendanceTime, userId string) (*Attendance, error) {
 	sess := engine.NewSession()
+	defer sess.Close()
+
 	attendance, err := fetchLatestAttendance(sess, userId)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if attendance == nil {
 		attendance = new(Attendance)
 		attendance.UserId = userId
+		attendance.ClockedIn = attendanceTime
 		if err := createAttendance(sess, attendance); err != nil {
-			return err
+			return nil, err
 		}
-	}
-
-	attendanceTime.AttendanceId = attendance.Id
-	attendanceTime.AttendanceKindId = int64(attendance.nextKind())
-	if err = updateOldAttendanceTime(sess, attendanceTime); err != nil {
-		return err
+	} else {
+		if err := updateOldAttendanceTime(sess, attendance.Id, int64(attendance.nextKind())); err != nil {
+			return nil, err
+		}
+		attendance.ClockedOut = attendanceTime
 	}
 
 	if err := createAttendanceTime(sess, attendanceTime); err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+
+	if err := sess.Commit(); err != nil {
+		return nil, err
+	}
+
+	return attendance, nil
 }

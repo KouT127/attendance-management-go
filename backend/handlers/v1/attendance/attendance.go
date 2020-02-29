@@ -88,10 +88,10 @@ func V1CreateHandler(c *Context) {
 		return
 	}
 
-	attendance := new(models.Attendance)
 	attendanceTime := input.ToAttendanceTime()
 
-	if err := models.CreateOrUpdateAttendance(attendance, attendanceTime, userId); err != nil {
+	attendance, err := models.CreateOrUpdateAttendance(attendanceTime, userId)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
 	}
