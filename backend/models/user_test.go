@@ -30,7 +30,8 @@ func TestUser(t *testing.T) {
 		})
 
 		t.Run("Should update user", func(t *testing.T) {
-			user, err := createTestUser()
+			userId := "asdiekawei42lasedi356ladfkjfity3"
+			user, err := createTestUser(userId)
 			assert.Nil(t, err)
 			assert.NotNil(t, user)
 
@@ -39,7 +40,7 @@ func TestUser(t *testing.T) {
 			user.ImageUrl = "updated.com"
 			assert.Nil(t, UpdateUser(user))
 
-			gotUser, err := getUser(engine, "asdiekawei42lasedi356ladfkjfity3")
+			gotUser, err := getUser(engine, userId)
 			assert.Nil(t, err)
 			assert.Equal(t, gotUser.Name, "updated")
 			assert.Equal(t, gotUser.Email, "updated@test.com")
@@ -55,9 +56,9 @@ func TestUser(t *testing.T) {
 	})
 }
 
-func createTestUser() (*User, error) {
+func createTestUser(userId string) (*User, error) {
 	u := &User{
-		Id:        "asdiekawei42lasedi356ladfkjfity3",
+		Id:        userId,
 		Name:      "insert user",
 		Email:     "insert@test.com",
 		ImageUrl:  "insert.com",

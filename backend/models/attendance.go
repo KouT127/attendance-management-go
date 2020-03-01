@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"github.com/KouT127/attendance-management/database"
 	"time"
 )
@@ -206,6 +207,14 @@ func CreateOrUpdateAttendance(attendanceTime *AttendanceTime, userId string) (*A
 	sess := engine.NewSession()
 	defer sess.Close()
 
+	if userId == "" {
+		return nil, errors.New("userId is empty")
+	}
+
+	if attendanceTime == nil {
+		return nil, errors.New("attendance time is empty")
+	}
+
 	attendance, err := fetchLatestAttendance(sess, userId)
 	if err != nil {
 		return nil, err
@@ -215,6 +224,8 @@ func CreateOrUpdateAttendance(attendanceTime *AttendanceTime, userId string) (*A
 		attendance = new(Attendance)
 		attendance.UserId = userId
 		attendance.ClockedIn = attendanceTime
+		attendance.CreatedAt = time.Now()
+		attendance.UpdatedAt = time.Now()
 		if err := createAttendance(sess, attendance); err != nil {
 			return nil, err
 		}
