@@ -30,4 +30,4 @@ backend/configs/*.json
 backend/*.yml
 !backend/app.yml
 
-docker/sql/*
+docker/mysql/*
