@@ -4,6 +4,7 @@ go 1.11
 
 require (
 	firebase.google.com/go v3.11.1+incompatible
+	github.com/Songmu/flextime v0.0.6
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/gin-contrib/cors v1.3.0
 	github.com/gin-gonic/gin v1.5.0

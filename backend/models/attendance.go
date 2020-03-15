@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"github.com/KouT127/attendance-management/database"
+	"github.com/Songmu/flextime"
 	"time"
 )
 
@@ -13,9 +14,8 @@ type AttendanceTime struct {
 	AttendanceKindId uint8
 	IsModified       bool
 	PushedAt         time.Time
-
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
 }
 
 func (AttendanceTime) TableName() string {
@@ -115,7 +115,7 @@ func fetchAttendancesCount(eng Engine, a *Attendance) (int64, error) {
 
 func fetchLatestAttendance(eng Engine, userId string) (*Attendance, error) {
 	attendance := &AttendanceDetail{}
-	now := time.Now()
+	now := flextime.Now()
 	start := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
 	end := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 59, time.Local)
 
@@ -169,7 +169,7 @@ func updateOldAttendanceTime(eng Engine, id int64, kindId uint8) error {
 	}
 
 	_, err := eng.UseBool("is_modified").
-		Update(&AttendanceTime{IsModified: true, UpdatedAt: time.Now()}, query)
+		Update(&AttendanceTime{IsModified: true, UpdatedAt: flextime.Now()}, query)
 
 	if err != nil {
 		return err
@@ -224,8 +224,8 @@ func CreateOrUpdateAttendance(attendanceTime *AttendanceTime, userId string) (*A
 		attendance = new(Attendance)
 		attendance.UserId = userId
 		attendance.ClockedIn = attendanceTime
-		attendance.CreatedAt = time.Now()
-		attendance.UpdatedAt = time.Now()
+		attendance.CreatedAt = flextime.Now()
+		attendance.UpdatedAt = flextime.Now()
 		if err := createAttendance(sess, attendance); err != nil {
 			return nil, err
 		}

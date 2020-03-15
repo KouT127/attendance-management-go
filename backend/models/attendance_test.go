@@ -1,9 +1,9 @@
 package models
 
 import (
+	"github.com/Songmu/flextime"
 	"github.com/stretchr/testify/assert"
 	"testing"
-	"time"
 )
 
 func TestAttendance(t *testing.T) {
@@ -14,9 +14,9 @@ func TestAttendance(t *testing.T) {
 			attendanceTime := &AttendanceTime{
 				Remark:     "test",
 				IsModified: false,
-				PushedAt:   time.Now(),
-				CreatedAt:  time.Now(),
-				UpdatedAt:  time.Now(),
+				PushedAt:   flextime.Now(),
+				CreatedAt:  flextime.Now(),
+				UpdatedAt:  flextime.Now(),
 			}
 			attendance, err := CreateOrUpdateAttendance(attendanceTime, "")
 			assert.NotNil(t, err)
@@ -37,9 +37,9 @@ func TestAttendance(t *testing.T) {
 			attendanceTime := &AttendanceTime{
 				Remark:     "test",
 				IsModified: false,
-				PushedAt:   time.Now(),
-				CreatedAt:  time.Now(),
-				UpdatedAt:  time.Now(),
+				PushedAt:   flextime.Now(),
+				CreatedAt:  flextime.Now(),
+				UpdatedAt:  flextime.Now(),
 			}
 			attendance, err := CreateOrUpdateAttendance(attendanceTime, user.Id)
 			assert.Nil(t, err)
@@ -55,16 +55,16 @@ func TestAttendance(t *testing.T) {
 			attendanceTime := &AttendanceTime{
 				Remark:     "test",
 				IsModified: false,
-				PushedAt:   time.Now(),
-				CreatedAt:  time.Now(),
-				UpdatedAt:  time.Now(),
+				PushedAt:   flextime.Now(),
+				CreatedAt:  flextime.Now(),
+				UpdatedAt:  flextime.Now(),
 			}
 			attendance, err := CreateOrUpdateAttendance(attendanceTime, user.Id)
 			assert.Nil(t, err)
 			assert.NotNil(t, attendance.Id)
 			assert.Equal(t, attendance.UserId, userId)
 			assert.NotNil(t, attendance.ClockedIn)
-			now := time.Now()
+			now := flextime.Now()
 			attendanceTime2 := &AttendanceTime{
 				Remark:     "test2",
 				IsModified: false,
@@ -87,16 +87,16 @@ func TestAttendance(t *testing.T) {
 			attendanceTime := &AttendanceTime{
 				Remark:     "test",
 				IsModified: false,
-				PushedAt:   time.Now(),
-				CreatedAt:  time.Now(),
-				UpdatedAt:  time.Now(),
+				PushedAt:   flextime.Now(),
+				CreatedAt:  flextime.Now(),
+				UpdatedAt:  flextime.Now(),
 			}
 			attendance, err := CreateOrUpdateAttendance(attendanceTime, user.Id)
 			assert.Nil(t, err)
 			assert.NotNil(t, attendance.Id)
 			assert.Equal(t, attendance.UserId, userId)
 			assert.NotNil(t, attendance.ClockedIn)
-			now := time.Now()
+			now := flextime.Now()
 			attendanceTime2 := &AttendanceTime{
 				Remark:     "test2",
 				IsModified: false,

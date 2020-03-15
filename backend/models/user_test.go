@@ -1,9 +1,9 @@
 package models
 
 import (
+	"github.com/Songmu/flextime"
 	"github.com/stretchr/testify/assert"
 	"testing"
-	"time"
 )
 
 func TestUser(t *testing.T) {
@@ -62,8 +62,8 @@ func createTestUser(userId string) (*User, error) {
 		Name:      "insert user",
 		Email:     "insert@test.com",
 		ImageUrl:  "insert.com",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: flextime.Now(),
+		UpdatedAt: flextime.Now(),
 	}
 
 	if _, err := engine.Insert(u); err != nil {

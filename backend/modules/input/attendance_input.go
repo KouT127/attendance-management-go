@@ -2,8 +2,8 @@ package validators
 
 import (
 	. "github.com/KouT127/attendance-management/models"
+	"github.com/Songmu/flextime"
 	validation "github.com/go-ozzo/ozzo-validation/v3"
-	"time"
 )
 
 type AttendanceInput struct {
@@ -19,8 +19,8 @@ func (i AttendanceInput) Validate() error {
 func (i AttendanceInput) ToAttendanceTime() *AttendanceTime {
 	t := new(AttendanceTime)
 	t.Remark = i.Remark
-	t.PushedAt = time.Now()
-	t.CreatedAt = time.Now()
-	t.UpdatedAt = time.Now()
+	t.PushedAt = flextime.Now()
+	t.CreatedAt = flextime.Now()
+	t.UpdatedAt = flextime.Now()
 	return t
 }

@@ -1,6 +1,8 @@
 package timezone
 
-import "time"
+import (
+	"time"
+)
 
 var (
 	loc *time.Location
