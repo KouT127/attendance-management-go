@@ -23,8 +23,8 @@ type AttendanceResp struct {
 
 type AttendanceResult struct {
 	CommonResponse
-	Attendance   AttendanceResp `json:"attendance"`
-	IsClockedOut bool           `json:"isClockedOut"`
+	Attendance   *AttendanceResp `json:"attendance"`
+	IsClockedOut bool            `json:"isClockedOut"`
 }
 
 type AttendancesResult struct {
@@ -32,8 +32,8 @@ type AttendancesResult struct {
 	Attendances []*AttendanceResp `json:"attendances"`
 }
 
-func toAttendanceResp(a *models.Attendance) AttendanceResp {
-	resp := AttendanceResp{}
+func toAttendanceResp(a *models.Attendance) *AttendanceResp {
+	resp := &AttendanceResp{}
 	loc := timezone.NewJSTLocation()
 	resp.Id = a.Id
 	resp.UserId = a.UserId
@@ -58,7 +58,7 @@ func ToAttendancesResult(hasNext bool, attendances []*models.Attendance) *Attend
 	responses := make([]*AttendanceResp, 0)
 	for _, attendance := range attendances {
 		resp := toAttendanceResp(attendance)
-		responses = append(responses, &resp)
+		responses = append(responses, resp)
 	}
 
 	res.IsSuccessful = true

@@ -16,8 +16,8 @@ type UserResult struct {
 
 type UserMineResult struct {
 	CommonResponse
-	User       UserResp       `json:"user"`
-	Attendance AttendanceResp `json:"attendance"`
+	User       UserResp        `json:"user"`
+	Attendance *AttendanceResp `json:"attendance"`
 }
 
 func toUserResp(user *models.User) UserResp {
@@ -30,15 +30,15 @@ func toUserResp(user *models.User) UserResp {
 	return resp
 }
 
-func ToUserResult(user *models.User) UserResult {
-	res := UserResult{}
+func ToUserResult(user *models.User) *UserResult {
+	res := &UserResult{}
 	res.IsSuccessful = true
 	res.User = toUserResp(user)
 	return res
 }
 
-func ToUserMineResult(user *models.User, attendance *models.Attendance) UserMineResult {
-	res := UserMineResult{}
+func ToUserMineResult(user *models.User, attendance *models.Attendance) *UserMineResult {
+	res := &UserMineResult{}
 	res.IsSuccessful = true
 	res.User = toUserResp(user)
 	if attendance != nil {
