@@ -22,7 +22,7 @@ func MineHandler(c *Context) {
 	}
 
 	userId := value.(string)
-	u, err := models.GetOrCreateUser(userId)
+	user, err := models.GetOrCreateUser(userId)
 	if err != nil {
 		logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, err.Error())
 		c.JSON(http.StatusBadRequest, response.NewValidationError("user", err))
@@ -36,10 +36,7 @@ func MineHandler(c *Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, H{
-		"user":       response.NewUserResp(u),
-		"attendance": response.ToAttendanceResult(attendance),
-	})
+	c.JSON(http.StatusOK, response.ToUserMineResult(user, attendance))
 }
 
 func UpdateHandler(c *Context) {
@@ -68,7 +65,5 @@ func UpdateHandler(c *Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, H{
-		"user": response.NewUserResp(user),
-	})
+	c.JSON(http.StatusOK, response.ToUserResult(user))
 }
