@@ -4,8 +4,8 @@ services:
   db:
     image: mysql
     volumes:
-      - "./sql/db:/var/lib/mysql"
-      - "./sql/init:/docker-entrypoint-initdb.d"
+      - "./docker/mysql/db:/var/lib/mysql"
+      - "./docker/mysql/init:/docker-entrypoint-initdb.d"
     environment:
       MYSQL_DATABASE: attendance_management
       MYSQL_ROOT_PASSWORD: root
