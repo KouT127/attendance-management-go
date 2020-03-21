@@ -42,11 +42,11 @@ type Engine interface {
 func SetTestDatabase() error {
 	engine = database.CreateTestEngine()
 
-	if err := database.DropTestTable(); err != nil {
+	if err := database.CreateTestTable(); err != nil {
 		return err
 	}
 
-	if err := database.CreateTestTable(); err != nil {
+	if err := database.DeleteTestData(); err != nil {
 		return err
 	}
 
