@@ -40,7 +40,7 @@ func migrateUp() error {
 	return nil
 }
 
-func dropTable() error {
+func deleteData() error {
 	tables := []string{
 		AttendanceTimeTable,
 		AttendanceTable,
@@ -48,7 +48,8 @@ func dropTable() error {
 		"schema_migrations",
 	}
 	for _, table := range tables {
-		if err := engine.DropTables(table); err != nil {
+		sql := fmt.Sprintf("delete from %s", table)
+		if _, err := engine.Exec(sql); err != nil {
 			panic(err)
 		}
 	}
@@ -62,8 +63,8 @@ func CreateTestTable() error {
 	return nil
 }
 
-func DropTestTable() error {
-	if err := dropTable(); err != nil {
+func DeleteTestData() error {
+	if err := deleteData(); err != nil {
 		return err
 	}
 	return nil
