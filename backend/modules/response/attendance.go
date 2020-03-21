@@ -39,8 +39,8 @@ func toAttendanceResp(a *models.Attendance) *AttendanceResp {
 	resp.UserId = a.UserId
 	resp.ClockedInTime = a.ClockedIn
 	resp.ClockedOutTime = a.ClockedOut
-	resp.CreatedAt = a.CreatedAt.In(loc).Format("2006-01-02-15:04:05")
-	resp.UpdatedAt = a.UpdatedAt.In(loc).Format("2006-01-02-15:04:05")
+	resp.CreatedAt = a.CreatedAt.In(loc).Format("2006-01-02T15:04:05Z07:00")
+	resp.UpdatedAt = a.UpdatedAt.In(loc).Format("2006-01-02T15:04:05Z07:00")
 	return resp
 }
 
