@@ -121,8 +121,12 @@ func fetchLatestAttendance(eng Engine, userId string) (*Attendance, error) {
 
 	has, err := eng.Select("attendances.*, clocked_in_time.*, clocked_out_time.*").
 		Table(database.AttendanceTable).
-		Join("left", "attendances_time clocked_in_time", "attendances.id = clocked_in_time.attendance_id").
-		Join("left", "attendances_time clocked_out_time", "attendances.id = clocked_out_time.attendance_id").
+		Join("left outer",
+			"attendances_time clocked_in_time",
+			"attendances.id = clocked_in_time.attendance_id and clocked_in_time.attendance_kind_id = 1 and clocked_in_time.is_modified = false").
+		Join("left outer",
+			"attendances_time clocked_out_time",
+			"attendances.id = clocked_out_time.attendance_id and clocked_out_time.attendance_kind_id = 2 and clocked_out_time.is_modified = false").
 		Where("attendances.user_id = ?", userId).
 		Where("attendances.created_at Between ? and ? ", start, end).
 		Limit(1).
@@ -145,11 +149,13 @@ func fetchAttendances(eng Engine, a *Attendance, p *Paginator) ([]*Attendance, e
 	err := eng.
 		Select("attendances.*, clocked_in_time.*, clocked_out_time.*").
 		Table(database.AttendanceTable).
-		Join("left", "attendances_time clocked_in_time", "attendances.id = clocked_in_time.attendance_id and clocked_in_time.attendance_kind_id = 1").
-		Join("left", "attendances_time clocked_out_time", "attendances.id = clocked_out_time.attendance_id and clocked_out_time.attendance_kind_id = 2").
+		Join("left outer",
+			"attendances_time clocked_in_time",
+			"attendances.id = clocked_in_time.attendance_id and clocked_in_time.attendance_kind_id = 1 and clocked_in_time.is_modified = false").
+		Join("left outer",
+			"attendances_time clocked_out_time",
+			"attendances.id = clocked_out_time.attendance_id and clocked_out_time.attendance_kind_id = 2 and clocked_out_time.is_modified = false").
 		Where("attendances.user_id = ?", a.UserId).
-		And("clocked_in_time.is_modified = false").
-		And("clocked_out_time.is_modified = false").
 		Limit(int(p.Limit), int(page)).
 		OrderBy("-attendances.id").
 		Iterate(&AttendanceDetail{}, func(idx int, bean interface{}) error {
@@ -229,11 +235,15 @@ func CreateOrUpdateAttendance(attendanceTime *AttendanceTime, userId string) (*A
 		if err := createAttendance(sess, attendance); err != nil {
 			return nil, err
 		}
+		attendanceTime.AttendanceId = attendance.Id
+		attendanceTime.AttendanceKindId = uint8(AttendanceKindClockIn)
 	} else {
 		if err := updateOldAttendanceTime(sess, attendance.Id, uint8(attendance.nextKind())); err != nil {
 			return nil, err
 		}
 		attendance.ClockedOut = attendanceTime
+		attendanceTime.AttendanceId = attendance.Id
+		attendanceTime.AttendanceKindId = uint8(AttendanceKindClockOut)
 	}
 
 	if err := createAttendanceTime(sess, attendanceTime); err != nil {
