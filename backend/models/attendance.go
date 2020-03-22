@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"github.com/KouT127/attendance-management/database"
+	"github.com/KouT127/attendance-management/modules/timeutil"
 	"github.com/KouT127/attendance-management/modules/timezone"
 	"github.com/Songmu/flextime"
 	"time"
@@ -145,15 +146,6 @@ func fetchLatestAttendance(eng Engine, userId string) (*Attendance, error) {
 	return attendance.toAttendance(), nil
 }
 
-func getMonthRange(t time.Time) (time.Time, time.Time) {
-	year, month, _ := t.Date()
-	location := timezone.JSTLocation()
-
-	firstOfMonth := time.Date(year, month, 1, 0, 0, 0, 0, location)
-	lastOfMonth := firstOfMonth.AddDate(0, 1, -1)
-	return firstOfMonth, lastOfMonth
-}
-
 func fetchAttendances(eng Engine, opt *AttendanceSearchOption) ([]*Attendance, error) {
 	attendances := make([]*Attendance, 0)
 	sess := eng.Select("attendances.*, clocked_in_time.*, clocked_out_time.*").
@@ -167,7 +159,7 @@ func fetchAttendances(eng Engine, opt *AttendanceSearchOption) ([]*Attendance, e
 
 	if opt.Date != nil {
 		now := flextime.Now()
-		start, end := getMonthRange(now)
+		start, end := timeutil.GetMonthRange(now)
 		sess = sess.Where("attendances.created_at Between ? and ? ", start, end)
 	}
 
