@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/KouT127/attendance-management/modules/timezone"
 	"github.com/Songmu/flextime"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -9,6 +10,7 @@ import (
 
 func TestAttendance(t *testing.T) {
 	t.Run("Testing Attendance data access", func(t *testing.T) {
+		timezone.Set("Asia/Tokyo")
 		assert.Nil(t, SetTestDatabase())
 
 		t.Run("Should not create attendance when userId is empty", func(t *testing.T) {
@@ -201,7 +203,7 @@ func TestAttendance(t *testing.T) {
 			assert.NotNil(t, attendance2.ClockedIn)
 			assert.Nil(t, attendance2.ClockedOut)
 			assert.Nil(t, attendance.ClockedOut)
-			
+
 			attendanceTime3 := &AttendanceTime{
 				Remark:     "test3",
 				IsModified: false,

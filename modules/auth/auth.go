@@ -27,7 +27,7 @@ func loadCredFromCtx() *option.ClientOption {
 func NewCredential() *option.ClientOption {
 	opt := loadCredFromCtx()
 	if opt == nil {
-		opt = loadCredFromFile("./backend/configs/firebase-service-dev.json")
+		opt = loadCredFromFile("./configs/firebase-service-dev.json")
 	}
 	return opt
 }

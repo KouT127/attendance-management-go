@@ -63,7 +63,7 @@ func loadEnv() string {
 }
 
 func loadLocalEnv() string {
-	err := godotenv.Load(fmt.Sprintf("./backend/configs/.env.local"))
+	err := godotenv.Load("./configs/.env.local")
 	if err != nil {
 		panic(err)
 	}
