@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"github.com/KouT127/attendance-management/database"
+	"github.com/KouT127/attendance-management/modules/timezone"
 	"github.com/Songmu/flextime"
 	"time"
 )
@@ -89,7 +90,8 @@ func (d AttendanceDetail) toAttendance() *Attendance {
 	return attendance
 }
 
-type AttendanceKind int
+type AttendanceKind uint8
+type queryOption func() Engine
 
 const (
 	AttendanceKindNone AttendanceKind = iota
@@ -107,17 +109,17 @@ func (k AttendanceKind) String() string {
 	return "不明"
 }
 
-func fetchAttendancesCount(eng Engine, a *Attendance) (int64, error) {
+func fetchAttendancesCount(eng Engine, userId string) (int64, error) {
 	attendance := &Attendance{}
-	attendance.Id = a.Id
+	attendance.UserId = userId
 	return eng.Count(attendance)
 }
 
 func fetchLatestAttendance(eng Engine, userId string) (*Attendance, error) {
 	attendance := &AttendanceDetail{}
 	now := flextime.Now()
-	start := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
-	end := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 59, time.Local)
+	start := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, timezone.JSTLocation())
+	end := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 59, timezone.JSTLocation())
 
 	has, err := eng.Select("attendances.*, clocked_in_time.*, clocked_out_time.*").
 		Table(database.AttendanceTable).
@@ -143,20 +145,35 @@ func fetchLatestAttendance(eng Engine, userId string) (*Attendance, error) {
 	return attendance.toAttendance(), nil
 }
 
-func fetchAttendances(eng Engine, a *Attendance, p *Paginator) ([]*Attendance, error) {
+func getMonthRange(t time.Time) (time.Time, time.Time) {
+	year, month, _ := t.Date()
+	location := timezone.JSTLocation()
+
+	firstOfMonth := time.Date(year, month, 1, 0, 0, 0, 0, location)
+	lastOfMonth := firstOfMonth.AddDate(0, 1, -1)
+	return firstOfMonth, lastOfMonth
+}
+
+func fetchAttendances(eng Engine, opt *AttendanceSearchOption) ([]*Attendance, error) {
 	attendances := make([]*Attendance, 0)
-	page := p.CalculatePage()
-	err := eng.
-		Select("attendances.*, clocked_in_time.*, clocked_out_time.*").
+	sess := eng.Select("attendances.*, clocked_in_time.*, clocked_out_time.*").
 		Table(database.AttendanceTable).
 		Join("left outer",
 			"attendances_time clocked_in_time",
 			"attendances.id = clocked_in_time.attendance_id and clocked_in_time.attendance_kind_id = 1 and clocked_in_time.is_modified = false").
 		Join("left outer",
 			"attendances_time clocked_out_time",
-			"attendances.id = clocked_out_time.attendance_id and clocked_out_time.attendance_kind_id = 2 and clocked_out_time.is_modified = false").
-		Where("attendances.user_id = ?", a.UserId).
-		Limit(int(p.Limit), int(page)).
+			"attendances.id = clocked_out_time.attendance_id and clocked_out_time.attendance_kind_id = 2 and clocked_out_time.is_modified = false")
+
+	if opt.Date != nil {
+		now := flextime.Now()
+		start, end := getMonthRange(now)
+		sess = sess.Where("attendances.created_at Between ? and ? ", start, end)
+	}
+
+	sess = opt.setPaginatedSession(sess)
+	err := sess.
+		Where("attendances.user_id = ?", opt.UserId).
 		OrderBy("-attendances.id").
 		Iterate(&AttendanceDetail{}, func(idx int, bean interface{}) error {
 			d := bean.(*AttendanceDetail)
@@ -197,16 +214,16 @@ func createAttendanceTime(eng Engine, t *AttendanceTime) error {
 	return nil
 }
 
-func FetchAttendancesCount(a *Attendance) (int64, error) {
-	return fetchAttendancesCount(engine, a)
+func FetchAttendancesCount(userId string) (int64, error) {
+	return fetchAttendancesCount(engine, userId)
 }
 
 func FetchLatestAttendance(userId string) (*Attendance, error) {
 	return fetchLatestAttendance(engine, userId)
 }
 
-func FetchAttendances(a *Attendance, p *Paginator) ([]*Attendance, error) {
-	return fetchAttendances(engine, a, p)
+func FetchAttendances(opt *AttendanceSearchOption) ([]*Attendance, error) {
+	return fetchAttendances(engine, opt)
 }
 
 func CreateOrUpdateAttendance(attendanceTime *AttendanceTime, userId string) (*Attendance, error) {
@@ -238,7 +255,7 @@ func CreateOrUpdateAttendance(attendanceTime *AttendanceTime, userId string) (*A
 		attendanceTime.AttendanceId = attendance.Id
 		attendanceTime.AttendanceKindId = uint8(AttendanceKindClockIn)
 	} else {
-		if err := updateOldAttendanceTime(sess, attendance.Id, uint8(attendance.nextKind())); err != nil {
+		if err := updateOldAttendanceTime(sess, attendance.Id, uint8(AttendanceKindClockOut)); err != nil {
 			return nil, err
 		}
 		attendance.ClockedOut = attendanceTime

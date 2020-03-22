@@ -16,6 +16,6 @@ func Set(location string) {
 	loc = l
 }
 
-func NewJSTLocation() *time.Location {
+func JSTLocation() *time.Location {
 	return loc
 }

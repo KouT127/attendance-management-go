@@ -12,7 +12,7 @@ func AttendancesRouter(v1 *RouterGroup) {
 	}
 
 	attendances := v1.Group("/attendances", funcs...)
-	attendances.GET("", attendance.V1ListHandler)
-	attendances.POST("", attendance.V1CreateHandler)
-	attendances.GET("monthly", attendance.V1MonthlyHandler)
+	attendances.GET("", attendance.ListHandler)
+	attendances.POST("", attendance.CreateHandler)
+	attendances.GET("monthly", attendance.MonthlyHandler)
 }

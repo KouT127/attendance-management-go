@@ -34,7 +34,7 @@ type AttendancesResult struct {
 
 func toAttendanceResp(a *models.Attendance) *AttendanceResp {
 	resp := &AttendanceResp{}
-	loc := timezone.NewJSTLocation()
+	loc := timezone.JSTLocation()
 	resp.Id = a.Id
 	resp.UserId = a.UserId
 	resp.ClockedInTime = a.ClockedIn

@@ -12,31 +12,30 @@ import (
 	"net/http"
 )
 
-func V1ListHandler(c *Context) {
+func ListHandler(c *Context) {
 	p := NewPaginatorInput(0, 5)
 
 	if err := c.Bind(p); err != nil {
-		logger.NewFatal(c, err.Error())
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
 	}
 
 	userId, err := GetIdByKey(c, auth.AuthorizedUserIdKey)
 	if err != nil {
-		logger.NewFatal(c, err.Error())
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
 	}
 
-	a := &models.Attendance{UserId: userId}
-	maxCnt, err := models.FetchAttendancesCount(a)
+	maxCnt, err := models.FetchAttendancesCount(userId)
 	if err != nil {
-		logger.NewWarn(logrus.Fields{}, err.Error())
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
 	}
 
-	attendances, err := models.FetchAttendances(a, p.BuildPaginator())
+	opt := &models.AttendanceSearchOption{}
+	opt.UserId = userId
+	opt.Paginator = p.ToPaginator()
+	attendances, err := models.FetchAttendances(opt)
 	if err != nil {
 		logger.NewWarn(logrus.Fields{}, err.Error())
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
@@ -48,29 +47,47 @@ func V1ListHandler(c *Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-func V1MonthlyHandler(c *Context) {
-	//p := NewPaginatorInput(0, 31)
-	//s := NewSearchParams()
-	//
-	//if err := c.Bind(s); err != nil {
-	//	c.JSON(http.StatusBadRequest, NewError(BadAccessError))
-	//	return
-	//}
-	//
-	//userId, err := GetIdByKey(c, auth.AuthorizedUserIdKey)
-	//if err != nil {
-	//	c.JSON(http.StatusBadRequest, NewError(BadAccessError))
-	//	return
-	//}
-	//res, err := attendanceService.ViewAttendancesMonthly(p, q)
-	//if err != nil {
-	//	c.JSON(http.StatusBadRequest, NewError(BadAccessError))
-	//}
+func MonthlyHandler(c *Context) {
+	p := NewPaginatorInput(0, 31)
+	s := NewSearchParams()
 
-	c.JSON(http.StatusOK, H{})
+	if err := c.Bind(p); err != nil {
+		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
+		return
+	}
+
+	if err := c.Bind(s); err != nil {
+		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
+		return
+	}
+
+	userId, err := GetIdByKey(c, auth.AuthorizedUserIdKey)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
+		return
+	}
+
+	maxCnt, err := models.FetchAttendancesCount(userId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
+		return
+	}
+
+	opt := &models.AttendanceSearchOption{}
+	opt.UserId = userId
+	opt.Paginator = p.ToPaginator()
+	attendances, err := models.FetchAttendances(opt)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
+		return
+	}
+
+	hasNext := p.HasNext(maxCnt)
+	res := ToAttendancesResult(hasNext, attendances)
+	c.JSON(http.StatusOK, res)
 }
 
-func V1CreateHandler(c *Context) {
+func CreateHandler(c *Context) {
 	input := new(AttendanceInput)
 	if err := c.Bind(input); err != nil {
 		c.JSON(http.StatusBadRequest, NewValidationError("user", err))

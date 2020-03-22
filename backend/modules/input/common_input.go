@@ -9,8 +9,8 @@ type PaginatorInput struct {
 	Limit int64 `form:"limit"`
 }
 
-func (i *PaginatorInput) BuildPaginator() *Paginator {
-	p := new(Paginator)
+func (i *PaginatorInput) ToPaginator() *Paginator {
+	p := &Paginator{}
 	return p
 }
 
@@ -30,9 +30,9 @@ func (i *PaginatorInput) HasNext(max int64) bool {
 }
 
 type SearchParams struct {
-	Month int64 `form:"month"`
+	Date int64 `form:"date"`
 }
 
 func NewSearchParams() *SearchParams {
-	return new(SearchParams)
+	return &SearchParams{}
 }

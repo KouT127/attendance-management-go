@@ -1,6 +1,6 @@
 module github.com/KouT127/attendance-management
 
-go 1.11
+go 1.13
 
 require (
 	firebase.google.com/go v3.11.1+incompatible
