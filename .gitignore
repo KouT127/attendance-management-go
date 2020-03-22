@@ -3,6 +3,7 @@
 *.local
 *.test
 *.yml
+*.env
 !*.keep
 !*.sample
 
