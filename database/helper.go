@@ -7,7 +7,6 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/joho/godotenv"
 	"os"
 	"time"
 )
@@ -17,11 +16,6 @@ func getMigrationsPath() string {
 }
 
 func loadTestEnv() string {
-	r := directory.RootDir()
-	err := godotenv.Load(fmt.Sprintf(r + "/configs/.env.test"))
-	if err != nil {
-		panic(err)
-	}
 	CONNECTION = os.Getenv("DB_CONNECTION_NAME")
 	USER = os.Getenv("DB_USER")
 	PASS = os.Getenv("DB_PASSWORD")

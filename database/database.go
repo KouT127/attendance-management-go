@@ -4,7 +4,6 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
-	"github.com/joho/godotenv"
 	"os"
 	"time"
 	"xorm.io/core"
@@ -63,10 +62,6 @@ func loadEnv() string {
 }
 
 func loadLocalEnv() string {
-	err := godotenv.Load("./configs/.env.local")
-	if err != nil {
-		panic(err)
-	}
 	CONNECTION = os.Getenv("DB_CONNECTION_NAME")
 	USER = os.Getenv("DB_USER")
 	PASS = os.Getenv("DB_PASSWORD")

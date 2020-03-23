@@ -13,7 +13,6 @@ require (
 	github.com/go-testfixtures/testfixtures/v3 v3.1.1
 	github.com/go-xorm/xorm v0.7.9
 	github.com/golang-migrate/migrate/v4 v4.8.0
-	github.com/joho/godotenv v1.3.0
 	github.com/sirupsen/logrus v1.4.1
 	github.com/stretchr/testify v1.4.0
 	golang.org/x/crypto v0.0.0-20190617133340-57b3e21c3d56 // indirect
