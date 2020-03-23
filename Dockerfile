@@ -1,4 +1,4 @@
-FROM golang:1.13 as build
+FROM golang:1.13 as builder
 
 ENV CGO_ENABLED=0 \
     GOOS=linux \
@@ -11,12 +11,12 @@ COPY go.sum .
 
 RUN go mod download
 
-RUN go build -o /bin/attendance-management
+RUN go build -o app
 
 FROM alpine:3.11.3
 RUN apk add tzdata
-## RUN apk add --no-cache ca-certificates
 
-COPY --from=build /bin/attendance-management /bin/attendance-management
+COPY --from=builder /go/src/attendance-management/app /go/src/attendance-management/app
+COPY --from=builder /go/src/attendance-management/configs/ /go/src/attendance-management/configs/
 
-CMD ["/bin/attendance-management"]
+CMD ["/go/src/attendance-management/app"]

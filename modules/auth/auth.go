@@ -5,13 +5,19 @@ import (
 	"fmt"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
+	"os"
 )
 
 const AuthorizedUserIdKey = "authorized_user_id"
 
-func loadCredFromFile(name string) *option.ClientOption {
-	filename := fmt.Sprintf(name)
-	opt := option.WithCredentialsFile(filename)
+func loadCredFromJson() *option.ClientOption {
+	json := os.Getenv("firebase_admin_json")
+	fmt.Print(json)
+	cred, err := google.CredentialsFromJSON(context.Background(), []byte(json))
+	if err != nil {
+		return nil
+	}
+	opt := option.WithCredentials(cred)
 	return &opt
 }
 
@@ -27,7 +33,7 @@ func loadCredFromCtx() *option.ClientOption {
 func NewCredential() *option.ClientOption {
 	opt := loadCredFromCtx()
 	if opt == nil {
-		opt = loadCredFromFile("./configs/firebase-service-dev.json")
+		opt = loadCredFromJson()
 	}
 	return opt
 }
