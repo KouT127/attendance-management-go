@@ -198,8 +198,14 @@
       <module name="Attendance-management" />
       <working_directory value="$PROJECT_DIR$/" />
       <go_parameters value="-i" />
+      <envs>
+        <env name="DB_CONNECTION_NAME" value="tcp(localhost:3306)" />
+        <env name="DB_USER" value="root" />
+        <env name="DB_PASSWORD" value="root" />
+        <env name="DB_TABLE" value="attendance_management" />
+      </envs>
       <kind value="FILE" />
-      <filePath value="$PROJECT_DIR$/backend/main.go" />
+      <filePath value="$PROJECT_DIR$/main.go" />
       <directory value="$PROJECT_DIR$/" />
       <method v="2" />
     </configuration>
