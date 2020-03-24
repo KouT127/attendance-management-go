@@ -2,22 +2,24 @@ version: '3.7'
 
 services:
   app:
+    container_name: go-app
     build:
       context: ./
     depends_on:
       - mysql
     ports:
       - "127.0.0.1:8080:8080"
+    env_file:
+      - .env
     environment:
-      - DB_CONNECTION_NAME=tcp(mysql-container:3306)
-      - DB_USER=root
-      - DB_PASSWORD=root
-      - DB_TABLE=attendance_management
+      - DB_CONNECTION_NAME=${DB_CONNECTION_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_TABLE=${DB_TABLE}
       - FIREBASE_SERVICE_JSON=${FIREBASE_SERVICE}
-      #- GIN_MODE=release
 
   mysql:
-    container_name: mysql-container
+    container_name: mysql-db
     image: mysql
     volumes:
       - "./docker/mysql/db:/var/lib/mysql"
