@@ -11,8 +11,8 @@ services:
     depends_on:
       - mysql
     ports:
-      - "127.0.0.1:8080:8080"
-      - "127.0.0.1:2345:2345"
+      - 8080:8080
+      - 2345:2345
     env_file:
       - .env
     environment:

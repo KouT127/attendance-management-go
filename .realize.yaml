@@ -2,11 +2,6 @@ settings:
   legacy:
     force: false
     interval: 0s
-server:
-  status: true
-  open: false
-  port: 8080
-  host: localhost
 schema:
   - name: app
     path: .
