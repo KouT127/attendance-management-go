@@ -24,7 +24,7 @@ func AuthRequired() gin.HandlerFunc {
 		}
 		client, err := app.Auth(context.Background())
 		if err != nil {
-			logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, "error firebase unauthorized")
+			logger.NewWarn(logrus.Fields{"err": err}, "error firebase unauthorized")
 			u := fmt.Sprintf("unauthorized")
 			c.AbortWithStatusJSON(http.StatusUnauthorized, u)
 			return
@@ -32,14 +32,14 @@ func AuthRequired() gin.HandlerFunc {
 		header := c.Request.Header.Get("Authorization")
 		replacedToken := strings.Replace(header, "Bearer ", "", 1)
 		if replacedToken == "" {
-			logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, "error verifying ID token")
+			logger.NewWarn(logrus.Fields{"err": err}, "error verifying ID token")
 			u := fmt.Sprintf("unauthorized")
 			c.AbortWithStatusJSON(http.StatusUnauthorized, u)
 			return
 		}
 		verifiedToken, err := client.VerifyIDToken(context.Background(), replacedToken)
 		if err != nil {
-			logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, "error verifying id token")
+			logger.NewWarn(logrus.Fields{"err": err}, "error verifying id token")
 			u := fmt.Sprintf("unauthorized")
 			c.AbortWithStatusJSON(http.StatusUnauthorized, u)
 			return

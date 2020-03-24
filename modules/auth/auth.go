@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"fmt"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 	"os"
@@ -11,8 +10,7 @@ import (
 const AuthorizedUserIdKey = "authorized_user_id"
 
 func loadCredFromJson() *option.ClientOption {
-	json := os.Getenv("firebase_admin_json")
-	fmt.Print(json)
+	json := os.Getenv("FIREBASE_SERVICE_JSON")
 	cred, err := google.CredentialsFromJSON(context.Background(), []byte(json))
 	if err != nil {
 		return nil
