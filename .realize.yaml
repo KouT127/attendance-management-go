@@ -18,11 +18,11 @@ schema:
         status: true
         method: /go/bin/dlv
     args:
+      - exec
+      - ./attendance-management
       - --headless=true
       - --listen=:2345
       - --api-version=2
-      - exec
-      - ./attendance-management
     watcher:
       extensions:
         - go
