@@ -7,3 +7,4 @@ export FIREBASE_SERVICE="$json"
 cp ./configs/.env.local.sample .env
 
 docker-compose up
+
