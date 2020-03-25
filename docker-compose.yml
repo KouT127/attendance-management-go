@@ -6,7 +6,7 @@ services:
     build:
       context: ./
     volumes:
-      - ./:/go/app
+      - ./:/go/src
     command: realize start --run
     depends_on:
       - mysql
