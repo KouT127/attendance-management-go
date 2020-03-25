@@ -4,10 +4,11 @@ services:
   app:
     container_name: go-app
     build:
-      context: ./
+      context: .
+      dockerfile: docker/go/${DIR_ENV}/Dockerfile
     volumes:
       - ./:/go/src
-    command: realize start --run
+    command: ${DOCKER_RUN_COMMAND}
     depends_on:
       - mysql
     ports:
