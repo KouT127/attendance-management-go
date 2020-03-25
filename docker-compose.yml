@@ -4,11 +4,16 @@ services:
   app:
     container_name: go-app
     build:
-      context: ./
+      context: .
+      dockerfile: docker/go/${DIR_ENV}/Dockerfile
+    volumes:
+      - ./:/go/src
+    command: ${DOCKER_RUN_COMMAND}
     depends_on:
       - mysql
     ports:
-      - "127.0.0.1:8080:8080"
+      - 8080:8080
+      - 2345:2345
     env_file:
       - .env
     environment:
@@ -28,8 +33,9 @@ services:
       MYSQL_DATABASE: attendance_management
       MYSQL_ROOT_PASSWORD: root
     ports:
-      - "127.0.0.1:3306:3306"
+      - 3306:3306
 
 volumes:
   mysql:
+  app:
 

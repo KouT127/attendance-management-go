@@ -5,7 +5,7 @@ ENV CGO_ENABLED=0 \
     GOARCH=amd64
 
 WORKDIR /go/src/
-COPY ./ ./
+COPY .. ./
 
 ENV GO111MODULE=off
 

@@ -1,32 +1,32 @@
 settings:
   legacy:
     force: false
-    interval: 0s
-server:
-  status: true
-  open: false
-  port: 5002
-  host: localhost
+    interval: 0ms
 schema:
-  - name: attendance-management
-    path: ./
+  - name: app
+    path: .
     commands:
       install:
         status: true
-        method: go build -o bin/attendance-management ./backend/main.go
+        method: go build -o attendance-management
       run:
         status: true
-        method: bin/attendance-management
+        method: /go/bin/dlv
     args:
-      - --endpoint=app:8080
+      - exec
+      - ./attendance-management
+      - --headless=true
+      - --listen=:2345
+      - --api-version=2
     watcher:
       extensions:
         - go
       paths:
         - /
-      ignore:
-        paths:
-          - ./frontend
-          - .git
-          - .realize
-          - vendor
+      ignored_paths:
+        - ./frontend
+        - .git
+        - .realize
+        - vendor
+        - .idea
+        - ./docker
