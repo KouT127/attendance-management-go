@@ -1,11 +1,27 @@
 # Golang CircleCI 2.0 configuration file
 #
 # Check https://circleci.com/docs/2.0/language-go/ for more details
-version: 2
+version: 2.1
+
+commands:
+  go_mod_download:
+    steps:
+      - restore_cache:
+          name: Restore go modules cache
+          keys:
+            - go-modules-{{ checksum "go.sum" }}
+
+      - run: go mod download
+
+      - save_cache:
+          name: Save go modules cache
+          key: go-modules-{{ checksum "go.sum" }}
+          paths:
+            - "/go/pkg/mod"
+
 jobs:
   build:
     docker:
-      # specify the version
       - image: circleci/golang:1.13
         environment:
           DB_CONNECTION_NAME: tcp(localhost:3306)
@@ -17,14 +33,18 @@ jobs:
           MYSQL_ROOT_PASSWORD: ''
           MYSQL_DATABASE: attendance_management_test
 
-    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+
+    working_directory: /go/src/github.com/KouT127/attendance-management
     steps:
       - checkout
-
+      - go_mod_download
       - run:
-        name: Wait for DB
-        command: dockerize -wait tcp://127.0.0.1:3306 -timeout 120s
-
-      # specify any bash command here prefixed with `run: `
-      - run: go get -v -t -d ./...
-      - run: go test -v ./...
+          name: Wait for DB
+          command: dockerize -wait tcp://localhost:3306 -timeout 1m -wait-retry-interval 5s
+#
+#      - run:
+#          command: migrate -source file://database/migrations/  -database 'mysql://root:@tcp(localhost:3306)/attendance_management_test' up
+#
+#      - run:
+#          name: Run go test
+#          command: go test -v ./...

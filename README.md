@@ -70,3 +70,7 @@ make migrate
 gcloud app deploy YOUR_FILE.yml
 ```
 
+## CircleCi local test
+```bash
+circleci local execute --job build
+```
