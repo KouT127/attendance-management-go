@@ -19,6 +19,19 @@ commands:
           paths:
             - "/go/pkg/mod"
 
+  migrate_db:
+    steps:
+      - run:
+          name: Wait for DB
+          command: dockerize -wait tcp://localhost:3306 -timeout 1m -wait-retry-interval 5s
+
+      - run:
+          command: /go/migrate -source file://database/migrations/  -database 'mysql://root:@tcp(localhost:3306)/attendance_management_test' up
+
+      - run:
+          name: Run go test
+          command: go test -v ./...
+
 jobs:
   build:
     docker:
@@ -34,18 +47,18 @@ jobs:
           MYSQL_DATABASE: attendance_management_test
 
 
+
     working_directory: /go/src/github.com/KouT127/attendance-management
     steps:
       - checkout
       - go_mod_download
+      - migrate_db
 
-      - run:
-          name: Wait for DB
-          command: dockerize -wait tcp://localhost:3306 -timeout 1m -wait-retry-interval 5s
-
-      - run:
-          command: /go/migrate -source file://database/migrations/  -database 'mysql://root:@tcp(localhost:3306)/attendance_management_test' up
-
-      - run:
-          name: Run go test
-          command: go test -v ./...
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: develop
