@@ -74,3 +74,9 @@ gcloud app deploy YOUR_FILE.yml
 ```bash
 circleci local execute --job build
 ```
+
+## docker hub 登録
+```bash
+docker build -t org/name:tag
+docker push org/name:tag
+```

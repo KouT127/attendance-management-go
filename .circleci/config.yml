@@ -22,7 +22,7 @@ commands:
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.13
+      - image: kout127/golang-with-migrate:0.0.5
         environment:
           DB_CONNECTION_NAME: tcp(localhost:3306)
           DB_USER: root
@@ -38,13 +38,14 @@ jobs:
     steps:
       - checkout
       - go_mod_download
+
       - run:
           name: Wait for DB
           command: dockerize -wait tcp://localhost:3306 -timeout 1m -wait-retry-interval 5s
-#
-#      - run:
-#          command: migrate -source file://database/migrations/  -database 'mysql://root:@tcp(localhost:3306)/attendance_management_test' up
-#
-#      - run:
-#          name: Run go test
-#          command: go test -v ./...
+
+      - run:
+          command: /go/migrate -source file://database/migrations/  -database 'mysql://root:@tcp(localhost:3306)/attendance_management_test' up
+
+      - run:
+          name: Run go test
+          command: go test -v ./...
