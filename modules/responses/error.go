@@ -1,4 +1,4 @@
-package response
+package responses
 
 type CommonError struct {
 	IsSuccessful bool   `json:"is_successful"`

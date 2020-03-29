@@ -1,4 +1,4 @@
-package response
+package responses
 
 type CommonResponses struct {
 	IsSuccessful bool `json:"isSuccessful"`
