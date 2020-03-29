@@ -12,7 +12,7 @@ func (i *PaginationPayload) ToPaginator() *models.Paginator {
 	return p
 }
 
-func NewPaginatorInput(page int64, limit int64) *PaginationPayload {
+func NewPaginatorPayload(page int64, limit int64) *PaginationPayload {
 	return &PaginationPayload{
 		page, limit,
 	}

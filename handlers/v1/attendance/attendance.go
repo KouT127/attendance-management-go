@@ -13,7 +13,7 @@ import (
 )
 
 func ListHandler(c *gin.Context) {
-	p := payloads.NewPaginatorInput(0, 5)
+	p := payloads.NewPaginatorPayload(0, 5)
 
 	if err := c.Bind(p); err != nil {
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
@@ -48,7 +48,7 @@ func ListHandler(c *gin.Context) {
 }
 
 func MonthlyHandler(c *gin.Context) {
-	p := payloads.NewPaginatorInput(0, 31)
+	p := payloads.NewPaginatorPayload(0, 31)
 	s := payloads.NewSearchParams()
 
 	if err := c.Bind(p); err != nil {

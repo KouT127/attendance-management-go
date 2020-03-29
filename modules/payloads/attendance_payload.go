@@ -11,8 +11,8 @@ type AttendancePayload struct {
 }
 
 func (i *AttendancePayload) Validate() error {
-	return validation.ValidateStruct(&i,
-		validation.Field(&i.Remark, validation.Length(0, 1000)),
+	return validation.ValidateStruct(i,
+		validation.Field(&i.Remark, validation.Required, validation.Length(0, 100)),
 	)
 }
 
