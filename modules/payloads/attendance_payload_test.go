@@ -2,11 +2,15 @@ package payloads
 
 import (
 	"github.com/KouT127/attendance-management/models"
+	"github.com/Songmu/flextime"
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestAttendancePayload_ToAttendanceTime(t *testing.T) {
+	flextime.Fix(time.Date(2020, 01, 01, 1, 1, 1, 1, time.Local))
+
 	type fields struct {
 		Remark string
 	}
@@ -21,9 +25,10 @@ func TestAttendancePayload_ToAttendanceTime(t *testing.T) {
 				Remark: "remark",
 			},
 			want: &models.AttendanceTime{
-				Id:         0,
-				Remark:     "remark",
-				IsModified: false,
+				Remark:    "remark",
+				PushedAt:  flextime.Now(),
+				CreatedAt: flextime.Now(),
+				UpdatedAt: flextime.Now(),
 			},
 		},
 	}
