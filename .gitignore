@@ -31,3 +31,6 @@ yarn-error.log*
 bin/attendance-management
 !app.yml
 docker/mysql/*
+
+# golangci
+!.golangci.yml
