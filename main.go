@@ -11,7 +11,7 @@ import (
 func main() {
 	logger.SetUp()
 	timezone.Set("Asia/Tokyo")
-	database.SetUp()
+	database.InitDatabase()
 	models.SetDatabase()
 	routes.Init()
 }
