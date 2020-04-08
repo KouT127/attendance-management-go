@@ -37,7 +37,7 @@ jobs:
     docker:
       - image: kout127/golang-with-migrate:0.0.5
         environment:
-          DB_CONNECTION_NAME: tcp(localhost:3306)
+          DB_TCP_HOST: localhost:3306
           DB_USER: root
           DB_TABLE: attendance_management_test
       - image: tkuchiki/delayed-mysql
