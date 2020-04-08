@@ -1,23 +1,29 @@
 package routes
 
 import (
+	"github.com/KouT127/attendance-management/database"
 	v1 "github.com/KouT127/attendance-management/routes/v1"
 	"github.com/gin-contrib/cors"
-	. "github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"os"
 )
 
-func defaultRouter(r *Engine) {
-	r.GET("/health", func(ctx *Context) {
+func defaultRouter(r *gin.Engine) {
+	r.GET("/health", func(ctx *gin.Context) {
+		err := database.Ping()
+		if err != nil{
+			log.Printf("Don't connection: %v", err)
+			ctx.JSON(http.StatusBadRequest, "ng")
+			return
+		}
 		ctx.JSON(http.StatusOK, "ok")
-		return
 	})
 }
 
 func Init() {
-	r := Default()
+	r := gin.Default()
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"

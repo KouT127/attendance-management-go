@@ -8,10 +8,10 @@ import (
 )
 
 type User struct {
-	Id        string
+	ID        string
 	Name      string
 	Email     string
-	ImageUrl  string
+	ImageURL  string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -20,8 +20,8 @@ func (User) TableName() string {
 	return database.UserTable
 }
 
-func getUser(eng Engine, userId string) (*User, error) {
-	u := User{Id: userId}
+func getUser(eng Engine, userID string) (*User, error) {
+	u := User{ID: userID}
 	if _, err := eng.Get(&u); err != nil {
 		return nil, err
 	}
@@ -38,7 +38,7 @@ func createUser(eng Engine, user *User) error {
 func UpdateUser(user *User) error {
 	sess := engine.NewSession()
 	defer sess.Close()
-	has, err := sess.Where("id = ?", user.Id).Exist(&User{})
+	has, err := sess.Where("id = ?", user.ID).Exist(&User{})
 	if err != nil {
 		return err
 	}
@@ -46,30 +46,30 @@ func UpdateUser(user *User) error {
 		return errors.New("user is empty")
 	}
 
-	if _, err := sess.Update(user, &User{Id: user.Id}); err != nil {
+	if _, err := sess.Update(user, &User{ID: user.ID}); err != nil {
 		return err
 	}
 	if err := sess.Commit(); err != nil {
 		return err
 	}
-	logger.NewInfo("updated user_id: " + user.Id)
+	logger.NewInfo("updated user_id: " + user.ID)
 	return nil
 }
 
-func GetOrCreateUser(userId string) (*User, error) {
+func GetOrCreateUser(userID string) (*User, error) {
 	sess := engine.NewSession()
 	defer sess.Close()
-	if userId == "" {
+	if userID == "" {
 		return nil, errors.New("user id is empty")
 	}
 
-	user, err := getUser(sess, userId)
+	user, err := getUser(sess, userID)
 	if err != nil {
 		return nil, err
 	}
 
-	if user.Id == "" {
-		user.Id = userId
+	if user.ID == "" {
+		user.ID = userID
 		if err := createUser(sess, user); err != nil {
 			return nil, err
 		}

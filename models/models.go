@@ -3,7 +3,7 @@ package models
 import (
 	"database/sql"
 	"github.com/KouT127/attendance-management/database"
-	"github.com/go-xorm/xorm"
+	"xorm.io/xorm"
 )
 
 var (
@@ -40,7 +40,12 @@ type Engine interface {
 }
 
 func SetTestDatabase() error {
-	engine = database.CreateTestEngine()
+	err := database.InitTestConnection()
+	if err != nil{
+		panic(err)
+	}
+
+	engine = database.NewDB()
 
 	if err := database.CreateTestTable(); err != nil {
 		return err

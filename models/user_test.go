@@ -9,12 +9,12 @@ import (
 func TestUser(t *testing.T) {
 	t.Run("Testing User data access", func(t *testing.T) {
 		assert.Nil(t, SetTestDatabase())
-		userId := "eru4kawei42lasedi356ladfkjfity3"
+		userID := "eru4kawei42lasedi356ladfkjfity3"
 
 		t.Run("Should create user", func(t *testing.T) {
-			user, err := GetOrCreateUser(userId)
+			user, err := GetOrCreateUser(userID)
 			assert.Nil(t, err)
-			assert.Equal(t, userId, user.Id)
+			assert.Equal(t, userID, user.ID)
 		})
 
 		t.Run("Should not create user when id is empty", func(t *testing.T) {
@@ -24,44 +24,44 @@ func TestUser(t *testing.T) {
 		})
 
 		t.Run("Should get user", func(t *testing.T) {
-			user, err := GetOrCreateUser(userId)
+			user, err := GetOrCreateUser(userID)
 			assert.Nil(t, err)
-			assert.Equal(t, userId, user.Id)
+			assert.Equal(t, userID, user.ID)
 		})
 
 		t.Run("Should update user", func(t *testing.T) {
-			userId := "asdiekawei42lasedi356ladfkjfity3"
-			user, err := createTestUser(userId)
+			userID := "asdiekawei42lasedi356ladfkjfity3"
+			user, err := createTestUser(userID)
 			assert.Nil(t, err)
 			assert.NotNil(t, user)
 
 			user.Name = "updated"
 			user.Email = "updated@test.com"
-			user.ImageUrl = "updated.com"
+			user.ImageURL = "updated.com"
 			assert.Nil(t, UpdateUser(user))
 
-			gotUser, err := getUser(engine, userId)
+			gotUser, err := getUser(engine, userID)
 			assert.Nil(t, err)
 			assert.Equal(t, gotUser.Name, "updated")
 			assert.Equal(t, gotUser.Email, "updated@test.com")
-			assert.Equal(t, gotUser.ImageUrl, "updated.com")
+			assert.Equal(t, gotUser.ImageURL, "updated.com")
 		})
 
 		t.Run("Should not update user", func(t *testing.T) {
 			u := &User{
-				Id: "",
+				ID: "",
 			}
 			assert.NotNil(t, UpdateUser(u))
 		})
 	})
 }
 
-func createTestUser(userId string) (*User, error) {
+func createTestUser(userID string) (*User, error) {
 	u := &User{
-		Id:        userId,
+		ID:        userID,
 		Name:      "insert user",
 		Email:     "insert@test.com",
-		ImageUrl:  "insert.com",
+		ImageURL:  "insert.com",
 		CreatedAt: flextime.Now(),
 		UpdatedAt: flextime.Now(),
 	}

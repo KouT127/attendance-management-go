@@ -2,68 +2,29 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8a097650-c395-4786-a8da-44a8a2ed9b01" name="Default Changelist" comment="a">
-      <change afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/configs/.env.local" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/configs/.env.test" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/configs/firebase-service-dev.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/.gcloudignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gcloudignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app.yml" beforeDir="false" afterPath="$PROJECT_DIR$/app.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/configs/.env.local.sample" beforeDir="false" afterPath="$PROJECT_DIR$/configs/.env.local.sample" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/configs/.env.test.sample" beforeDir="false" afterPath="$PROJECT_DIR$/configs/.env.test.sample" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/database/database.go" beforeDir="false" afterPath="$PROJECT_DIR$/database/database.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/database/helper.go" beforeDir="false" afterPath="$PROJECT_DIR$/database/helper.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/database/migrations/201912071800_initialize.down.sql" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/201912071800_initialize.down.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/database/migrations/201912071800_initialize.up.sql" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/201912071800_initialize.up.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/database/migrations/201912121800_add_pushed_at.down.sql" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/201912121800_add_pushed_at.down.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/database/migrations/201912121800_add_pushed_at.up.sql" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/201912121800_add_pushed_at.up.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/database/migrations/201912182331_add_table_attendance_time.down.sql" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/201912182331_add_table_attendance_time.down.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/database/migrations/201912182331_add_table_attendance_time.up.sql" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/201912182331_add_table_attendance_time.up.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/database/migrations/202002151701_modify_attendance_time_pk.down.sql" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/202002151701_modify_attendance_time_pk.down.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/database/migrations/202002151701_modify_attendance_time_pk.up.sql" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/202002151701_modify_attendance_time_pk.up.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/database/migrations/202002160100_modify_add_attendance_id.down.sql" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/202002160100_modify_add_attendance_id.down.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/database/migrations/202002160100_modify_add_attendance_id.up.sql" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/202002160100_modify_add_attendance_id.up.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/database/migrations/202002232307_add_is_modified.down.sql" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/202002232307_add_is_modified.down.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/database/migrations/202002232307_add_is_modified.up.sql" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/202002232307_add_is_modified.up.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/handlers/common.go" beforeDir="false" afterPath="$PROJECT_DIR$/handlers/common.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/handlers/middlewares/authorization.go" beforeDir="false" afterPath="$PROJECT_DIR$/handlers/middlewares/authorization.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/handlers/v1/attendance/attendance.go" beforeDir="false" afterPath="$PROJECT_DIR$/handlers/v1/attendance/attendance.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/handlers/v1/user/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/handlers/v1/user/user.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/models/attendance.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/attendance.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/models/attendance_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/attendance_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/models/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/models.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/models/options.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/options.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/models/paginator.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/paginator.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/models/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/user.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/models/user_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/user_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/modules/auth/auth.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/auth/auth.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/modules/directory/directory.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/directory/directory.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/modules/input/attendance_input.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/input/attendance_input.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/modules/input/common_input.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/input/common_input.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/modules/input/user_input.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/input/user_input.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/modules/logger/logger.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/logger/logger.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/modules/response/attendance.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/response/attendance.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/modules/response/common.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/response/common.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/modules/response/error.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/response/error.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/modules/response/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/response/user.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/modules/timeutil/time.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/timeutil/time.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/modules/timezone/timezone.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/timezone/timezone.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/routes/router.go" beforeDir="false" afterPath="$PROJECT_DIR$/routes/router.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/routes/v1/attendance.go" beforeDir="false" afterPath="$PROJECT_DIR$/routes/v1/attendance.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/routes/v1/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/routes/v1/user.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/routes/v1/v1.go" beforeDir="false" afterPath="$PROJECT_DIR$/routes/v1/v1.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/services/attendance/attendance.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/attendance/attendance.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/services/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/services/user/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/user/user.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker/Dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configs/.env.local.sample" beforeDir="false" afterPath="$PROJECT_DIR$/configs/.env.local.sample" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/database.go" beforeDir="false" afterPath="$PROJECT_DIR$/database/database.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/helper.go" beforeDir="false" afterPath="$PROJECT_DIR$/database/helper.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handlers/v1/attendance/attendance.go" beforeDir="false" afterPath="$PROJECT_DIR$/handlers/v1/attendance/attendance.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handlers/v1/user/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/handlers/v1/user/user.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/attendance.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/attendance.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/attendance_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/attendance_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/models.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/options.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/options.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/user.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/user_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/user_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/responses/attendance.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/responses/attendance.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/responses/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/modules/responses/user.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/router.go" beforeDir="false" afterPath="$PROJECT_DIR$/routes/router.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/attendance/attendance.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/service.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/user/user.go" beforeDir="false" />
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -132,6 +93,11 @@
     </option>
   </component>
   <component name="ProjectId" id="1VCmi4FWCReH2Zf00EOFaBHc8QD" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
   <component name="PropertiesComponent">
     <property name="DefaultGoTemplateProperty" value="Go File" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
@@ -153,7 +119,7 @@
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="yarn" />
-    <property name="settings.editor.selected.configurable" value="go.sdk" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
     <property name="ts.external.directory.path" value="$PROJECT_DIR$/node_modules/typescript/lib" />
   </component>
   <component name="RecentsManager">
@@ -171,18 +137,6 @@
       <recent name="$PROJECT_DIR$/backend/configs" />
     </key>
   </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
-  </component>
   <component name="RunManager" selected="Go Build.go build main.go">
     <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
       <module name="Attendance-management" />
@@ -199,11 +153,21 @@
       <working_directory value="$PROJECT_DIR$/" />
       <go_parameters value="-i" />
       <envs>
-        <env name="DB_CONNECTION_NAME" value="tcp(localhost:3306)" />
+        <env name="DB_TCP_HOST" value="127.0.0.1:13306" />
         <env name="DB_USER" value="root" />
-        <env name="DB_PASSWORD" value="root" />
-        <env name="DB_TABLE" value="attendance_management" />
+        <env name="DB_PASS" value="root" />
+        <env name="DB_NAME" value="attendance_management" />
       </envs>
+      <EXTENSION ID="net.ashald.envfile">
+        <option name="IS_ENABLED" value="false" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" />
+        </ENTRIES>
+      </EXTENSION>
       <kind value="FILE" />
       <filePath value="$PROJECT_DIR$/main.go" />
       <directory value="$PROJECT_DIR$/" />
@@ -223,26 +187,37 @@
       <pattern value="^TestAttendance$" />
       <method v="2" />
     </configuration>
-    <configuration name="TestAttendance_ClockIn in github.com/KouT127/attendance-management/models" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+    <configuration name="TestAttendancePayload_ToAttendanceTime in github.com/KouT127/attendance-management/modules/payloads" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="Attendance-management" />
-      <working_directory value="$PROJECT_DIR$/backend/models" />
+      <working_directory value="$PROJECT_DIR$/modules/payloads" />
       <framework value="gotest" />
       <kind value="PACKAGE" />
-      <package value="github.com/KouT127/attendance-management/models" />
+      <package value="github.com/KouT127/attendance-management/modules/payloads" />
       <directory value="$PROJECT_DIR$/" />
       <filePath value="$PROJECT_DIR$/" />
-      <pattern value="^TestAttendance_ClockIn$" />
+      <pattern value="^TestAttendancePayload_ToAttendanceTime$" />
       <method v="2" />
     </configuration>
-    <configuration name="TestAttendance/Testing_Attendance_data_access/Should_create_clockOut_when_dates_changes in github.com/KouT127/attendance-management/models" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+    <configuration name="TestAttendancePayload_Validate in github.com/KouT127/attendance-management/modules/payloads" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="Attendance-management" />
-      <working_directory value="$PROJECT_DIR$/backend/models" />
+      <working_directory value="$PROJECT_DIR$/modules/payloads" />
       <framework value="gotest" />
       <kind value="PACKAGE" />
-      <package value="github.com/KouT127/attendance-management/models" />
+      <package value="github.com/KouT127/attendance-management/modules/payloads" />
       <directory value="$PROJECT_DIR$/" />
       <filePath value="$PROJECT_DIR$/" />
-      <pattern value="^TestAttendance$/^Testing_Attendance_data_access$/^Should_create_clockOut_when_dates_changes$" />
+      <pattern value="^TestAttendancePayload_Validate$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestUserPayload_Validate in github.com/KouT127/attendance-management/modules/payloads" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="Attendance-management" />
+      <working_directory value="$PROJECT_DIR$/modules/payloads" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="github.com/KouT127/attendance-management/modules/payloads" />
+      <directory value="$PROJECT_DIR$/" />
+      <filePath value="$PROJECT_DIR$/" />
+      <pattern value="^TestUserPayload_Validate$" />
       <method v="2" />
     </configuration>
     <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
@@ -256,12 +231,12 @@
       <filePath value="$PROJECT_DIR$/" />
       <method v="2" />
     </configuration>
-    <configuration name="go test github.com/KouT127/attendance-management/models" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+    <configuration name="go test github.com/KouT127/attendance-management/modules/payloads" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="Attendance-management" />
-      <working_directory value="$PROJECT_DIR$/backend/models" />
+      <working_directory value="$PROJECT_DIR$/modules/payloads" />
       <framework value="gotest" />
       <kind value="PACKAGE" />
-      <package value="github.com/KouT127/attendance-management/models" />
+      <package value="github.com/KouT127/attendance-management/modules/payloads" />
       <directory value="$PROJECT_DIR$/" />
       <filePath value="$PROJECT_DIR$/" />
       <method v="2" />
@@ -269,49 +244,21 @@
     <list>
       <item itemvalue="Go Build.go build main.go" />
       <item itemvalue="Go Remote.Unnamed" />
-      <item itemvalue="Go Test.go test github.com/KouT127/attendance-management/models" />
-      <item itemvalue="Go Test.TestAttendance_ClockIn in github.com/KouT127/attendance-management/models" />
-      <item itemvalue="Go Test.TestAttendance/Testing_Attendance_data_access/Should_create_clockOut_when_dates_changes in github.com/KouT127/attendance-management/models" />
       <item itemvalue="Go Test.TestAttendance in github.com/KouT127/attendance-management/models" />
+      <item itemvalue="Go Test.TestAttendancePayload_ToAttendanceTime in github.com/KouT127/attendance-management/modules/payloads" />
+      <item itemvalue="Go Test.TestAttendancePayload_Validate in github.com/KouT127/attendance-management/modules/payloads" />
+      <item itemvalue="Go Test.TestUserPayload_Validate in github.com/KouT127/attendance-management/modules/payloads" />
+      <item itemvalue="Go Test.go test github.com/KouT127/attendance-management/modules/payloads" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Go Test.TestAttendancePayload_ToAttendanceTime in github.com/KouT127/attendance-management/modules/payloads" />
+        <item itemvalue="Go Test.go test github.com/KouT127/attendance-management/modules/payloads" />
+        <item itemvalue="Go Test.TestUserPayload_Validate in github.com/KouT127/attendance-management/modules/payloads" />
+        <item itemvalue="Go Test.TestAttendancePayload_Validate in github.com/KouT127/attendance-management/modules/payloads" />
         <item itemvalue="Go Test.TestAttendance in github.com/KouT127/attendance-management/models" />
-        <item itemvalue="Go Test.go test github.com/KouT127/attendance-management/models" />
-        <item itemvalue="Go Test.TestAttendance/Testing_Attendance_data_access/Should_create_clockOut_when_dates_changes in github.com/KouT127/attendance-management/models" />
-        <item itemvalue="Go Test.TestAttendance_ClockIn in github.com/KouT127/attendance-management/models" />
       </list>
     </recent_temporary>
-  </component>
-  <component name="ServiceViewManager">
-    <option name="allServicesViewState">
-      <serviceView>
-        <treeState>
-          <expand>
-            <path>
-              <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
-              <item name="com.intellij.execution.services.ServiceModel$ServiceGroupNode@dc166bdd" type="7427dc5b:ServiceModel$ServiceGroupNode" />
-            </path>
-            <path>
-              <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
-              <item name="com.intellij.execution.services.ServiceModel$ServiceGroupNode@dc166bdd" type="7427dc5b:ServiceModel$ServiceGroupNode" />
-              <item name="com.intellij.execution.services.ServiceModel$ServiceNode@1fae400c" type="9fbbdea:ServiceModel$ServiceNode" />
-            </path>
-            <path>
-              <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
-              <item name="com.intellij.execution.services.ServiceModel$ServiceGroupNode@dc166bdd" type="7427dc5b:ServiceModel$ServiceGroupNode" />
-              <item name="com.intellij.execution.services.ServiceModel$ServiceNode@10661d63" type="9fbbdea:ServiceModel$ServiceNode" />
-            </path>
-            <path>
-              <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
-              <item name="com.intellij.execution.services.ServiceModel$ServiceGroupNode@dc166bdd" type="7427dc5b:ServiceModel$ServiceGroupNode" />
-              <item name="com.intellij.execution.services.ServiceModel$ServiceNode@3ee186f7" type="9fbbdea:ServiceModel$ServiceNode" />
-            </path>
-          </expand>
-          <select />
-        </treeState>
-      </serviceView>
-    </option>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -348,5 +295,109 @@
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="2424" y="-7" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1586356124740">
+      <screen x="1680" y="-390" width="2560" height="1440" />
+    </state>
+    <state x="2424" y="-7" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1680.1050/1680.-390.2560.1440@1680.-390.2560.1440" timestamp="1586356124740" />
+    <state x="2714" y="101" key="EnvironmentVariablesDialog" timestamp="1586355654799">
+      <screen x="1680" y="-390" width="2560" height="1440" />
+    </state>
+    <state x="2714" y="101" key="EnvironmentVariablesDialog/0.0.1680.1050/1680.-390.2560.1440@1680.-390.2560.1440" timestamp="1586355654799" />
+    <state width="1445" height="422" key="GridCell.Tab.0.bottom" timestamp="1586356149415">
+      <screen x="1680" y="-390" width="2560" height="1440" />
+    </state>
+    <state width="953" height="296" key="GridCell.Tab.0.bottom/-3840.0.1920.1080/-1920.0.1920.1080/0.0.1920.1200@-1920.0.1920.1080" timestamp="1585660733537" />
+    <state width="953" height="296" key="GridCell.Tab.0.bottom/-3840.23.1920.1057/-1920.23.1920.1057/0.23.1920.1177@-1920.23.1920.1057" timestamp="1585578707418" />
+    <state width="1445" height="422" key="GridCell.Tab.0.bottom/0.0.1680.1050/1680.-390.2560.1440@1680.-390.2560.1440" timestamp="1586356149415" />
+    <state width="1187" height="492" key="GridCell.Tab.0.bottom/0.0.1680.1050/1680.0.2560.1440@1680.0.2560.1440" timestamp="1585873753993" />
+    <state width="1187" height="492" key="GridCell.Tab.0.bottom/0.0.3008.1692@0.0.3008.1692" timestamp="1585837441221" />
+    <state width="1273" height="411" key="GridCell.Tab.0.bottom/0.23.1680.1027/1680.-367.2560.1417@1680.-367.2560.1417" timestamp="1586353785857" />
+    <state width="953" height="296" key="GridCell.Tab.0.bottom/0.23.1680.1027@0.23.1680.1027" timestamp="1585738345430" />
+    <state width="1445" height="422" key="GridCell.Tab.0.center" timestamp="1586356149414">
+      <screen x="1680" y="-390" width="2560" height="1440" />
+    </state>
+    <state width="953" height="296" key="GridCell.Tab.0.center/-3840.0.1920.1080/-1920.0.1920.1080/0.0.1920.1200@-1920.0.1920.1080" timestamp="1585660733535" />
+    <state width="953" height="296" key="GridCell.Tab.0.center/-3840.23.1920.1057/-1920.23.1920.1057/0.23.1920.1177@-1920.23.1920.1057" timestamp="1585578707416" />
+    <state width="1445" height="422" key="GridCell.Tab.0.center/0.0.1680.1050/1680.-390.2560.1440@1680.-390.2560.1440" timestamp="1586356149414" />
+    <state width="1187" height="492" key="GridCell.Tab.0.center/0.0.1680.1050/1680.0.2560.1440@1680.0.2560.1440" timestamp="1585873753991" />
+    <state width="1187" height="492" key="GridCell.Tab.0.center/0.0.3008.1692@0.0.3008.1692" timestamp="1585837441220" />
+    <state width="1273" height="411" key="GridCell.Tab.0.center/0.23.1680.1027/1680.-367.2560.1417@1680.-367.2560.1417" timestamp="1586353785855" />
+    <state width="953" height="296" key="GridCell.Tab.0.center/0.23.1680.1027@0.23.1680.1027" timestamp="1585738345429" />
+    <state width="1445" height="422" key="GridCell.Tab.0.left" timestamp="1586356149413">
+      <screen x="1680" y="-390" width="2560" height="1440" />
+    </state>
+    <state width="953" height="296" key="GridCell.Tab.0.left/-3840.0.1920.1080/-1920.0.1920.1080/0.0.1920.1200@-1920.0.1920.1080" timestamp="1585660733533" />
+    <state width="953" height="296" key="GridCell.Tab.0.left/-3840.23.1920.1057/-1920.23.1920.1057/0.23.1920.1177@-1920.23.1920.1057" timestamp="1585578707415" />
+    <state width="1445" height="422" key="GridCell.Tab.0.left/0.0.1680.1050/1680.-390.2560.1440@1680.-390.2560.1440" timestamp="1586356149413" />
+    <state width="1187" height="492" key="GridCell.Tab.0.left/0.0.1680.1050/1680.0.2560.1440@1680.0.2560.1440" timestamp="1585873753990" />
+    <state width="1187" height="492" key="GridCell.Tab.0.left/0.0.3008.1692@0.0.3008.1692" timestamp="1585837441219" />
+    <state width="1273" height="411" key="GridCell.Tab.0.left/0.23.1680.1027/1680.-367.2560.1417@1680.-367.2560.1417" timestamp="1586353785854" />
+    <state width="953" height="296" key="GridCell.Tab.0.left/0.23.1680.1027@0.23.1680.1027" timestamp="1585738345427" />
+    <state width="1445" height="422" key="GridCell.Tab.0.right" timestamp="1586356149415">
+      <screen x="1680" y="-390" width="2560" height="1440" />
+    </state>
+    <state width="953" height="296" key="GridCell.Tab.0.right/-3840.0.1920.1080/-1920.0.1920.1080/0.0.1920.1200@-1920.0.1920.1080" timestamp="1585660733536" />
+    <state width="953" height="296" key="GridCell.Tab.0.right/-3840.23.1920.1057/-1920.23.1920.1057/0.23.1920.1177@-1920.23.1920.1057" timestamp="1585578707417" />
+    <state width="1445" height="422" key="GridCell.Tab.0.right/0.0.1680.1050/1680.-390.2560.1440@1680.-390.2560.1440" timestamp="1586356149415" />
+    <state width="1187" height="492" key="GridCell.Tab.0.right/0.0.1680.1050/1680.0.2560.1440@1680.0.2560.1440" timestamp="1585873753992" />
+    <state width="1187" height="492" key="GridCell.Tab.0.right/0.0.3008.1692@0.0.3008.1692" timestamp="1585837441220" />
+    <state width="1273" height="411" key="GridCell.Tab.0.right/0.23.1680.1027/1680.-367.2560.1417@1680.-367.2560.1417" timestamp="1586353785856" />
+    <state width="953" height="296" key="GridCell.Tab.0.right/0.23.1680.1027@0.23.1680.1027" timestamp="1585738345430" />
+    <state width="1267" height="411" key="GridCell.Tab.1.bottom" timestamp="1586356084390">
+      <screen x="1680" y="-390" width="2560" height="1440" />
+    </state>
+    <state width="953" height="296" key="GridCell.Tab.1.bottom/-3840.0.1920.1080/-1920.0.1920.1080/0.0.1920.1200@-1920.0.1920.1080" timestamp="1585660733540" />
+    <state width="1267" height="411" key="GridCell.Tab.1.bottom/0.0.1680.1050/1680.-390.2560.1440@1680.-390.2560.1440" timestamp="1586356084390" />
+    <state width="1187" height="492" key="GridCell.Tab.1.bottom/0.0.1680.1050/1680.0.2560.1440@1680.0.2560.1440" timestamp="1585873753995" />
+    <state width="1187" height="492" key="GridCell.Tab.1.bottom/0.0.3008.1692@0.0.3008.1692" timestamp="1585837441223" />
+    <state width="953" height="296" key="GridCell.Tab.1.bottom/0.23.1680.1027@0.23.1680.1027" timestamp="1585738345434" />
+    <state width="1187" height="492" key="GridCell.Tab.1.bottom/0.23.3008.1669@0.23.3008.1669" timestamp="1585837399744" />
+    <state width="1267" height="411" key="GridCell.Tab.1.center" timestamp="1586356084389">
+      <screen x="1680" y="-390" width="2560" height="1440" />
+    </state>
+    <state width="953" height="296" key="GridCell.Tab.1.center/-3840.0.1920.1080/-1920.0.1920.1080/0.0.1920.1200@-1920.0.1920.1080" timestamp="1585660733538" />
+    <state width="1267" height="411" key="GridCell.Tab.1.center/0.0.1680.1050/1680.-390.2560.1440@1680.-390.2560.1440" timestamp="1586356084389" />
+    <state width="1187" height="492" key="GridCell.Tab.1.center/0.0.1680.1050/1680.0.2560.1440@1680.0.2560.1440" timestamp="1585873753994" />
+    <state width="1187" height="492" key="GridCell.Tab.1.center/0.0.3008.1692@0.0.3008.1692" timestamp="1585837441222" />
+    <state width="953" height="296" key="GridCell.Tab.1.center/0.23.1680.1027@0.23.1680.1027" timestamp="1585738345432" />
+    <state width="1187" height="492" key="GridCell.Tab.1.center/0.23.3008.1669@0.23.3008.1669" timestamp="1585837399743" />
+    <state width="1267" height="411" key="GridCell.Tab.1.left" timestamp="1586356084388">
+      <screen x="1680" y="-390" width="2560" height="1440" />
+    </state>
+    <state width="953" height="296" key="GridCell.Tab.1.left/-3840.0.1920.1080/-1920.0.1920.1080/0.0.1920.1200@-1920.0.1920.1080" timestamp="1585660733538" />
+    <state width="1267" height="411" key="GridCell.Tab.1.left/0.0.1680.1050/1680.-390.2560.1440@1680.-390.2560.1440" timestamp="1586356084388" />
+    <state width="1187" height="492" key="GridCell.Tab.1.left/0.0.1680.1050/1680.0.2560.1440@1680.0.2560.1440" timestamp="1585873753994" />
+    <state width="1187" height="492" key="GridCell.Tab.1.left/0.0.3008.1692@0.0.3008.1692" timestamp="1585837441222" />
+    <state width="953" height="296" key="GridCell.Tab.1.left/0.23.1680.1027@0.23.1680.1027" timestamp="1585738345431" />
+    <state width="1187" height="492" key="GridCell.Tab.1.left/0.23.3008.1669@0.23.3008.1669" timestamp="1585837399741" />
+    <state width="1267" height="411" key="GridCell.Tab.1.right" timestamp="1586356084390">
+      <screen x="1680" y="-390" width="2560" height="1440" />
+    </state>
+    <state width="953" height="296" key="GridCell.Tab.1.right/-3840.0.1920.1080/-1920.0.1920.1080/0.0.1920.1200@-1920.0.1920.1080" timestamp="1585660733539" />
+    <state width="1267" height="411" key="GridCell.Tab.1.right/0.0.1680.1050/1680.-390.2560.1440@1680.-390.2560.1440" timestamp="1586356084390" />
+    <state width="1187" height="492" key="GridCell.Tab.1.right/0.0.1680.1050/1680.0.2560.1440@1680.0.2560.1440" timestamp="1585873753995" />
+    <state width="1187" height="492" key="GridCell.Tab.1.right/0.0.3008.1692@0.0.3008.1692" timestamp="1585837441223" />
+    <state width="953" height="296" key="GridCell.Tab.1.right/0.23.1680.1027@0.23.1680.1027" timestamp="1585738345433" />
+    <state width="1187" height="492" key="GridCell.Tab.1.right/0.23.3008.1669@0.23.3008.1669" timestamp="1585837399743" />
+    <state x="2925" y="-127" key="SettingsEditor" timestamp="1585834650268">
+      <screen x="1920" y="-612" width="3008" height="1692" />
+    </state>
+    <state x="2925" y="-64" key="SettingsEditor/1920.-549.3008.1692/0.0.1920.1080@1920.-549.3008.1692" timestamp="1585831580465" />
+    <state x="2925" y="-127" key="SettingsEditor/1920.-612.3008.1692/0.0.1920.1080@1920.-612.3008.1692" timestamp="1585834650268" />
+    <state x="3207" y="158" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1585834617691">
+      <screen x="1920" y="-612" width="3008" height="1692" />
+    </state>
+    <state x="3207" y="158" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/1920.-612.3008.1692/0.0.1920.1080@1920.-612.3008.1692" timestamp="1585834617691" />
+    <state x="2850" y="73" key="com.intellij.tools.ToolSelectDialog.dimensionServiceKey" timestamp="1586355788140">
+      <screen x="1680" y="-390" width="2560" height="1440" />
+    </state>
+    <state x="2850" y="73" key="com.intellij.tools.ToolSelectDialog.dimensionServiceKey/0.0.1680.1050/1680.-390.2560.1440@1680.-390.2560.1440" timestamp="1586355788140" />
+    <state x="2533" y="6" width="852" height="648" key="find.popup" timestamp="1586353780749">
+      <screen x="1680" y="-390" width="2560" height="1440" />
+    </state>
+    <state x="-1280" y="297" width="639" height="486" key="find.popup/-3840.0.1920.1080/-1920.0.1920.1080/0.0.1920.1200@-1920.0.1920.1080" timestamp="1585479712324" />
+    <state x="2533" y="6" width="852" height="648" key="find.popup/0.0.1680.1050/1680.-390.2560.1440@1680.-390.2560.1440" timestamp="1586353780749" />
   </component>
 </project>

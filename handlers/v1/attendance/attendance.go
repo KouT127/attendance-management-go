@@ -33,7 +33,7 @@ func ListHandler(c *gin.Context) {
 	}
 
 	opt := &models.AttendanceSearchOption{}
-	opt.UserId = userId
+	opt.UserID = userId
 	opt.Paginator = p.ToPaginator()
 	attendances, err := models.FetchAttendances(opt)
 	if err != nil {
@@ -74,7 +74,7 @@ func MonthlyHandler(c *gin.Context) {
 	}
 
 	opt := &models.AttendanceSearchOption{}
-	opt.UserId = userId
+	opt.UserID = userId
 	opt.Paginator = p.ToPaginator()
 	attendances, err := models.FetchAttendances(opt)
 	if err != nil {

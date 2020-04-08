@@ -10,10 +10,10 @@ import (
 )
 
 type AttendanceTime struct {
-	Id               int64
+	ID               int64
 	Remark           string
-	AttendanceId     int64
-	AttendanceKindId uint8
+	AttendanceID     int64
+	AttendanceKindID uint8
 	IsModified       bool
 	PushedAt         time.Time
 	CreatedAt        time.Time
@@ -25,8 +25,8 @@ func (AttendanceTime) TableName() string {
 }
 
 type Attendance struct {
-	Id        int64
-	UserId    string
+	ID        int64
+	UserID    string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 
@@ -36,29 +36,6 @@ type Attendance struct {
 
 func (Attendance) TableName() string {
 	return database.AttendanceTable
-}
-
-func (a *Attendance) isClockedOut() bool {
-	return a.ClockedOut != nil
-}
-
-func (a *Attendance) nextKind() AttendanceKind {
-	if !a.isClockedOut() {
-		return AttendanceKindClockIn
-	} else {
-		return AttendanceKindClockOut
-	}
-}
-
-func (a *Attendance) setTimes(cit *AttendanceTime, cot *AttendanceTime) Attendance {
-	return Attendance{
-		Id:         a.Id,
-		UserId:     a.UserId,
-		ClockedIn:  cit,
-		ClockedOut: cot,
-		CreatedAt:  a.CreatedAt,
-		UpdatedAt:  a.UpdatedAt,
-	}
 }
 
 type AttendanceDetail struct {
@@ -73,16 +50,16 @@ func (d AttendanceDetail) toAttendance() *Attendance {
 		out *AttendanceTime
 	)
 	a := d.Attendance
-	if d.ClockedInTime.Id != 0 {
+	if d.ClockedInTime.ID != 0 {
 		in = d.ClockedInTime
 	}
-	if d.ClockedOutTime.Id != 0 {
+	if d.ClockedOutTime.ID != 0 {
 		out = d.ClockedOutTime
 	}
 
 	attendance := &Attendance{
-		Id:         a.Id,
-		UserId:     a.UserId,
+		ID:         a.ID,
+		UserID:     a.UserID,
 		ClockedIn:  in,
 		ClockedOut: out,
 		CreatedAt:  a.CreatedAt,
@@ -92,7 +69,6 @@ func (d AttendanceDetail) toAttendance() *Attendance {
 }
 
 type AttendanceKind uint8
-type queryOption func() Engine
 
 const (
 	AttendanceKindNone AttendanceKind = iota
@@ -110,13 +86,13 @@ func (k AttendanceKind) String() string {
 	return "不明"
 }
 
-func fetchAttendancesCount(eng Engine, userId string) (int64, error) {
+func fetchAttendancesCount(eng Engine, userID string) (int64, error) {
 	attendance := &Attendance{}
-	attendance.UserId = userId
+	attendance.UserID = userID
 	return eng.Count(attendance)
 }
 
-func fetchLatestAttendance(eng Engine, userId string) (*Attendance, error) {
+func fetchLatestAttendance(eng Engine, userID string) (*Attendance, error) {
 	attendance := &AttendanceDetail{}
 	now := flextime.Now()
 	start := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, timezone.JSTLocation())
@@ -130,7 +106,7 @@ func fetchLatestAttendance(eng Engine, userId string) (*Attendance, error) {
 		Join("left outer",
 			"attendances_time clocked_out_time",
 			"attendances.id = clocked_out_time.attendance_id and clocked_out_time.attendance_kind_id = 2 and clocked_out_time.is_modified = false").
-		Where("attendances.user_id = ?", userId).
+		Where("attendances.user_id = ?", userID).
 		Where("attendances.created_at Between ? and ? ", start, end).
 		Limit(1).
 		OrderBy("-attendances.id").
@@ -165,7 +141,7 @@ func fetchAttendances(eng Engine, opt *AttendanceSearchOption) ([]*Attendance, e
 
 	sess = opt.setPaginatedSession(sess)
 	err := sess.
-		Where("attendances.user_id = ?", opt.UserId).
+		Where("attendances.user_id = ?", opt.UserID).
 		OrderBy("-attendances.id").
 		Iterate(&AttendanceDetail{}, func(idx int, bean interface{}) error {
 			d := bean.(*AttendanceDetail)
@@ -176,10 +152,10 @@ func fetchAttendances(eng Engine, opt *AttendanceSearchOption) ([]*Attendance, e
 	return attendances, err
 }
 
-func updateOldAttendanceTime(eng Engine, id int64, kindId uint8) error {
+func updateOldAttendanceTime(eng Engine, id int64, kindID uint8) error {
 	query := &AttendanceTime{
-		AttendanceId:     id,
-		AttendanceKindId: kindId,
+		AttendanceID:     id,
+		AttendanceKindID: kindID,
 		IsModified:       false,
 	}
 
@@ -206,53 +182,53 @@ func createAttendanceTime(eng Engine, t *AttendanceTime) error {
 	return nil
 }
 
-func FetchAttendancesCount(userId string) (int64, error) {
-	return fetchAttendancesCount(engine, userId)
+func FetchAttendancesCount(userID string) (int64, error) {
+	return fetchAttendancesCount(engine, userID)
 }
 
-func FetchLatestAttendance(userId string) (*Attendance, error) {
-	return fetchLatestAttendance(engine, userId)
+func FetchLatestAttendance(userID string) (*Attendance, error) {
+	return fetchLatestAttendance(engine, userID)
 }
 
 func FetchAttendances(opt *AttendanceSearchOption) ([]*Attendance, error) {
 	return fetchAttendances(engine, opt)
 }
 
-func CreateOrUpdateAttendance(attendanceTime *AttendanceTime, userId string) (*Attendance, error) {
+func CreateOrUpdateAttendance(attendanceTime *AttendanceTime, userID string) (*Attendance, error) {
 	sess := engine.NewSession()
 	defer sess.Close()
 
-	if userId == "" {
-		return nil, errors.New("userId is empty")
+	if userID == "" {
+		return nil, errors.New("userID is empty")
 	}
 
 	if attendanceTime == nil {
 		return nil, errors.New("attendance time is empty")
 	}
 
-	attendance, err := fetchLatestAttendance(sess, userId)
+	attendance, err := fetchLatestAttendance(sess, userID)
 	if err != nil {
 		return nil, err
 	}
 
 	if attendance == nil {
 		attendance = new(Attendance)
-		attendance.UserId = userId
+		attendance.UserID = userID
 		attendance.ClockedIn = attendanceTime
 		attendance.CreatedAt = flextime.Now()
 		attendance.UpdatedAt = flextime.Now()
 		if err := createAttendance(sess, attendance); err != nil {
 			return nil, err
 		}
-		attendanceTime.AttendanceId = attendance.Id
-		attendanceTime.AttendanceKindId = uint8(AttendanceKindClockIn)
+		attendanceTime.AttendanceID = attendance.ID
+		attendanceTime.AttendanceKindID = uint8(AttendanceKindClockIn)
 	} else {
-		if err := updateOldAttendanceTime(sess, attendance.Id, uint8(AttendanceKindClockOut)); err != nil {
+		if err := updateOldAttendanceTime(sess, attendance.ID, uint8(AttendanceKindClockOut)); err != nil {
 			return nil, err
 		}
 		attendance.ClockedOut = attendanceTime
-		attendanceTime.AttendanceId = attendance.Id
-		attendanceTime.AttendanceKindId = uint8(AttendanceKindClockOut)
+		attendanceTime.AttendanceID = attendance.ID
+		attendanceTime.AttendanceKindID = uint8(AttendanceKindClockOut)
 	}
 
 	if err := createAttendanceTime(sess, attendanceTime); err != nil {

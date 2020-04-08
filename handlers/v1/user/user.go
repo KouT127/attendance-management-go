@@ -56,7 +56,7 @@ func UpdateHandler(c *gin.Context) {
 		return
 	}
 
-	user.Id = value.(string)
+	user.ID = value.(string)
 	user.Name = input.Name
 	user.Email = input.Email
 

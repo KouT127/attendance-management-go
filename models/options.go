@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/go-xorm/xorm"
+	"xorm.io/xorm"
 	"time"
 )
 
@@ -24,11 +24,6 @@ func (opt *DefaultSearchOption) setPaginatedSession(eng *xorm.Session) *xorm.Ses
 
 type AttendanceSearchOption struct {
 	DefaultSearchOption
-	UserId string
+	UserID string
 	Date   *time.Time
-}
-
-func (opt *AttendanceSearchOption) setQueriedSession(eng Engine) Engine {
-	return eng.
-		Where("attendances.user_id = ?", opt.UserId)
 }

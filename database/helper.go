@@ -3,12 +3,11 @@ package database
 import (
 	"fmt"
 	"github.com/KouT127/attendance-management/modules/directory"
-	"github.com/go-xorm/xorm"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"os"
-	"time"
+	"xorm.io/xorm"
 )
 
 func getMigrationsPath() string {
@@ -64,18 +63,25 @@ func DeleteTestData() error {
 	return nil
 }
 
-func CreateTestEngine() *xorm.Engine {
-	conn := loadTestEnv()
-	engine, err = xorm.NewEngine("mysql", conn)
+
+func InitTestConnection() error {
+	var (
+		err       error
+		dbUser    = mustGetenv("DB_USER")
+		dbPwd     = mustGetenv("DB_PASS")
+		dbTcpHost = mustGetenv("DB_TCP_HOST")
+		dbName    = mustGetenv("DB_NAME")
+	)
+
+	uri := fmt.Sprintf("%s:%s@tcp(%s)/%s", dbUser, dbPwd, dbTcpHost, dbName)
+	engine, err = xorm.NewEngine("mysql", uri)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("xorm.NewEngine: %v", err)
 	}
 
-	loc, err := time.LoadLocation("UTC")
-	if err != nil {
-		panic(err)
-	}
-	engine.SetTZLocation(loc)
-	engine.SetTZDatabase(loc)
-	return engine
+	// configure settings
+	configureConnectionPool(engine)
+	configureLogger(engine)
+	configureTimezone(engine)
+	return nil
 }
