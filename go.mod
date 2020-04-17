@@ -21,4 +21,5 @@ require (
 	google.golang.org/api v0.15.0
 	google.golang.org/grpc v1.21.0 // indirect
 	xorm.io/core v0.7.2-0.20190928055935-90aeac8d08eb
+	xorm.io/xorm v1.0.1
 )
