@@ -63,17 +63,16 @@ func DeleteTestData() error {
 	return nil
 }
 
-
 func InitTestConnection() error {
 	var (
 		err       error
 		dbUser    = mustGetenv("DB_USER")
 		dbPwd     = mustGetenv("DB_PASS")
-		dbTcpHost = mustGetenv("DB_TCP_HOST")
+		dbTCPHost = mustGetenv("DB_TCP_HOST")
 		dbName    = mustGetenv("DB_NAME")
 	)
 
-	uri := fmt.Sprintf("%s:%s@tcp(%s)/%s", dbUser, dbPwd, dbTcpHost, dbName)
+	uri := fmt.Sprintf("%s:%s@tcp(%s)/%s", dbUser, dbPwd, dbTCPHost, dbName)
 	engine, err = xorm.NewEngine("mysql", uri)
 	if err != nil {
 		return fmt.Errorf("xorm.NewEngine: %v", err)
