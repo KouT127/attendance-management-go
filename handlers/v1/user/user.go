@@ -1,7 +1,8 @@
 package user
 
 import (
-	"errors"
+	"github.com/KouT127/attendance-management/application/facades"
+	"github.com/KouT127/attendance-management/infrastructure/sqlstore"
 	"github.com/KouT127/attendance-management/models"
 	"github.com/KouT127/attendance-management/modules/auth"
 	"github.com/KouT127/attendance-management/modules/logger"
@@ -9,11 +10,14 @@ import (
 	"github.com/KouT127/attendance-management/modules/responses"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"golang.org/x/xerrors"
 	"net/http"
 )
 
 func MineHandler(c *gin.Context) {
-	value, exists := c.Get(auth.AuthorizedUserIdKey)
+	store := sqlstore.InitDatabase()
+	facade := facades.NewUserFacade(store)
+	value, exists := c.Get(auth.AuthorizedUserIDKey)
 	if !exists {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "user not found",
@@ -21,15 +25,15 @@ func MineHandler(c *gin.Context) {
 		return
 	}
 
-	userId := value.(string)
-	user, err := models.GetOrCreateUser(userId)
+	userID := value.(string)
+	user, err := facade.GetOrCreateUser(userID)
 	if err != nil {
 		logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, err.Error())
 		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))
 		return
 	}
 
-	attendance, err := models.FetchLatestAttendance(userId)
+	attendance, err := models.FetchLatestAttendance(userID)
 	if err != nil {
 		logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, err.Error())
 		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))
@@ -40,18 +44,23 @@ func MineHandler(c *gin.Context) {
 }
 
 func UpdateHandler(c *gin.Context) {
-	input := payloads.UserPayload{}
-	user := new(models.User)
+	store := sqlstore.InitDatabase()
+	facade := facades.NewUserFacade(store)
 
-	err := c.Bind(input)
+	input := payloads.UserPayload{}
+	user := &models.User{}
+
+	err := c.Bind(&input)
 	if err != nil {
+		logrus.Warnf("not exists: %s", err)
 		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))
 		return
 	}
 
-	value, exists := c.Get(auth.AuthorizedUserIdKey)
+	value, exists := c.Get(auth.AuthorizedUserIDKey)
 	if !exists {
-		err := errors.New("user not found")
+		err := xerrors.New("user not found")
+		logrus.Warnf("not exists: %s", err)
 		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))
 		return
 	}
@@ -60,7 +69,8 @@ func UpdateHandler(c *gin.Context) {
 	user.Name = input.Name
 	user.Email = input.Email
 
-	if err := models.UpdateUser(user); err != nil {
+	if err := facade.UpdateUser(user); err != nil {
+		logrus.Warnf("not exists: %s", err)
 		c.JSON(http.StatusBadRequest, responses.NewError(err.Error()))
 		return
 	}

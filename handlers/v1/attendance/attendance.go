@@ -20,7 +20,7 @@ func ListHandler(c *gin.Context) {
 		return
 	}
 
-	userId, err := handlers.GetIdByKey(c, auth.AuthorizedUserIdKey)
+	userId, err := handlers.GetIdByKey(c, auth.AuthorizedUserIDKey)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
@@ -61,7 +61,7 @@ func MonthlyHandler(c *gin.Context) {
 		return
 	}
 
-	userId, err := handlers.GetIdByKey(c, auth.AuthorizedUserIdKey)
+	userId, err := handlers.GetIdByKey(c, auth.AuthorizedUserIDKey)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
@@ -89,12 +89,12 @@ func MonthlyHandler(c *gin.Context) {
 
 func CreateHandler(c *gin.Context) {
 	input := payloads.AttendancePayload{}
-	if err := c.Bind(input); err != nil {
+	if err := c.Bind(&input); err != nil {
 		c.JSON(http.StatusBadRequest, NewValidationError("user", err))
 		return
 	}
 
-	userId, err := handlers.GetIdByKey(c, auth.AuthorizedUserIdKey)
+	userId, err := handlers.GetIdByKey(c, auth.AuthorizedUserIDKey)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return

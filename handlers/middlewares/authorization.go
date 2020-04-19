@@ -44,7 +44,7 @@ func AuthRequired() gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, u)
 			return
 		}
-		c.Set(auth.AuthorizedUserIdKey, verifiedToken.UID)
+		c.Set(auth.AuthorizedUserIDKey, verifiedToken.UID)
 		c.Next()
 	}
 }
