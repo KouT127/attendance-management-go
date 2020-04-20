@@ -1,15 +1,15 @@
 package models
 
 import (
-	"xorm.io/xorm"
 	"time"
+	"xorm.io/xorm"
 )
 
 type DefaultSearchOption struct {
 	Paginator *Paginator
 }
 
-func (opt *DefaultSearchOption) setPaginatedSession(eng *xorm.Session) *xorm.Session {
+func (opt *DefaultSearchOption) SetPaginatedSession(eng *xorm.Session) *xorm.Session {
 	p := opt.Paginator
 	if opt.Paginator == nil {
 		p = &Paginator{}
@@ -22,8 +22,13 @@ func (opt *DefaultSearchOption) setPaginatedSession(eng *xorm.Session) *xorm.Ses
 	return eng.Limit(int(p.Limit), int(page))
 }
 
-type AttendanceSearchOption struct {
-	DefaultSearchOption
-	UserID string
-	Date   *time.Time
+type GetAttendancesParameters struct {
+	UserID    string
+	Date      *time.Time
+	Paginator *Paginator
+}
+
+type GetAttendancesResults struct {
+	MaxCnt      int64
+	Attendances []*Attendance
 }

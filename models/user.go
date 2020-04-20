@@ -16,3 +16,12 @@ type User struct {
 func (User) TableName() string {
 	return "users"
 }
+
+type GetOrCreateUserParams struct {
+	UserID string
+}
+
+type GetOrCreateUserResults struct {
+	User             *User
+	LatestAttendance *Attendance
+}

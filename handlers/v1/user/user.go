@@ -26,21 +26,15 @@ func MineHandler(c *gin.Context) {
 	}
 
 	userID := value.(string)
-	user, err := facade.GetOrCreateUser(userID)
+	params := models.GetOrCreateUserParams{UserID: userID}
+	res, err := facade.GetOrCreateUser(params)
 	if err != nil {
 		logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, err.Error())
 		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))
 		return
 	}
 
-	attendance, err := models.FetchLatestAttendance(userID)
-	if err != nil {
-		logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, err.Error())
-		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))
-		return
-	}
-
-	c.JSON(http.StatusOK, responses.ToUserMineResult(user, attendance))
+	c.JSON(http.StatusOK, responses.ToUserMineResult(res.User, res.LatestAttendance))
 }
 
 func UpdateHandler(c *gin.Context) {

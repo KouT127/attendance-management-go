@@ -27,7 +27,7 @@ type AttendanceResult struct {
 	IsClockedOut bool            `json:"isClockedOut"`
 }
 
-type AttendancesResult struct {
+type AttendancesResponses struct {
 	CommonResponses
 	Attendances []*AttendanceResp `json:"attendances"`
 }
@@ -53,8 +53,8 @@ func ToAttendanceResult(attendance *models.Attendance) *AttendanceResult {
 	return res
 }
 
-func ToAttendancesResult(hasNext bool, attendances []*models.Attendance) *AttendancesResult {
-	res := &AttendancesResult{}
+func ToAttendancesResponses(hasNext bool, attendances []*models.Attendance) *AttendancesResponses {
+	res := &AttendancesResponses{}
 	responses := make([]*AttendanceResp, 0)
 	for _, attendance := range attendances {
 		resp := toAttendanceResp(attendance)

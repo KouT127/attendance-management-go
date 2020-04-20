@@ -22,23 +22,24 @@ func NewUserFacade(ss sqlstore.SQLStore) userFacade {
 	}
 }
 
-func (f *userFacade) GetOrCreateUser(userID string) (*models.User, error) {
+func (f *userFacade) GetOrCreateUser(params models.GetOrCreateUserParams) (*models.GetOrCreateUserResults, error) {
 	var (
-		user *models.User
-		err  error
+		user       *models.User
+		attendance *models.Attendance
+		err        error
 	)
-	if userID == "" {
+	if params.UserID == "" {
 		return nil, xerrors.New("user id is empty")
 	}
 
 	err = f.ss.InTransaction(context.Background(), func(ctx context.Context) error {
-		user, err = sqlstore.GetUser(ctx, userID)
+		user, err = sqlstore.GetUser(ctx, params.UserID)
 		if err != nil {
 			return err
 		}
 
 		if user.ID == "" {
-			user.ID = userID
+			user.ID = params.UserID
 			if err = sqlstore.CreateUser(ctx, user); err != nil {
 				return err
 			}
@@ -49,7 +50,16 @@ func (f *userFacade) GetOrCreateUser(userID string) (*models.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+
+	if attendance, err = sqlstore.FetchLatestAttendance(context.Background(), params.UserID); err != nil {
+		return nil, err
+	}
+
+	res := models.GetOrCreateUserResults{
+		User:             user,
+		LatestAttendance: attendance,
+	}
+	return &res, nil
 }
 
 func (f *userFacade) UpdateUser(user *models.User) error {
