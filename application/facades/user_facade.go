@@ -8,16 +8,16 @@ import (
 )
 
 type UserFacade interface {
-	GetOrCreateUser(userID string) (*models.User, error)
+	GetOrCreateUser(params models.GetOrCreateUserParams) (*models.GetOrCreateUserResults, error)
 	UpdateUser(user *models.User) error
 }
 
 type userFacade struct {
-	ss sqlstore.SQLStore
+	ss *sqlstore.SQLStore
 }
 
-func NewUserFacade(ss sqlstore.SQLStore) userFacade {
-	return userFacade{
+func NewUserFacade(ss *sqlstore.SQLStore) *userFacade {
+	return &userFacade{
 		ss: ss,
 	}
 }

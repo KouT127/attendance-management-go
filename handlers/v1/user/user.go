@@ -2,7 +2,6 @@ package user
 
 import (
 	"github.com/KouT127/attendance-management/application/facades"
-	"github.com/KouT127/attendance-management/infrastructure/sqlstore"
 	"github.com/KouT127/attendance-management/models"
 	"github.com/KouT127/attendance-management/modules/auth"
 	"github.com/KouT127/attendance-management/modules/logger"
@@ -14,9 +13,22 @@ import (
 	"net/http"
 )
 
-func MineHandler(c *gin.Context) {
-	store := sqlstore.InitDatabase()
-	facade := facades.NewUserFacade(store)
+type UserHandler interface {
+	MineHandler(c *gin.Context)
+	UpdateHandler(c *gin.Context)
+}
+
+type userHandler struct {
+	facade facades.UserFacade
+}
+
+func NewUserHandler(facade facades.UserFacade) UserHandler {
+	return userHandler{
+		facade: facade,
+	}
+}
+
+func (h userHandler) MineHandler(c *gin.Context) {
 	value, exists := c.Get(auth.AuthorizedUserIDKey)
 	if !exists {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -27,7 +39,7 @@ func MineHandler(c *gin.Context) {
 
 	userID := value.(string)
 	params := models.GetOrCreateUserParams{UserID: userID}
-	res, err := facade.GetOrCreateUser(params)
+	res, err := h.facade.GetOrCreateUser(params)
 	if err != nil {
 		logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, err.Error())
 		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))
@@ -37,10 +49,7 @@ func MineHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, responses.ToUserMineResult(res.User, res.LatestAttendance))
 }
 
-func UpdateHandler(c *gin.Context) {
-	store := sqlstore.InitDatabase()
-	facade := facades.NewUserFacade(store)
-
+func (h userHandler) UpdateHandler(c *gin.Context) {
 	input := payloads.UserPayload{}
 	user := &models.User{}
 
@@ -63,7 +72,7 @@ func UpdateHandler(c *gin.Context) {
 	user.Name = input.Name
 	user.Email = input.Email
 
-	if err := facade.UpdateUser(user); err != nil {
+	if err := h.facade.UpdateUser(user); err != nil {
 		logrus.Warnf("not exists: %s", err)
 		c.JSON(http.StatusBadRequest, responses.NewError(err.Error()))
 		return
