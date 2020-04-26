@@ -9,7 +9,7 @@ import (
 )
 
 func getMigrationsPath() string {
-	return "file://" + directory.RootDir() + "/database/migrations"
+	return "file://" + directory.RootDir() + "/infrastructure/sqlstore/migrations"
 }
 
 func loadTestEnv() string {

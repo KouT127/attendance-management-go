@@ -2,7 +2,7 @@ package sqlstore
 
 import (
 	"fmt"
-	"github.com/KouT127/attendance-management/database"
+	_ "github.com/go-sql-driver/mysql"
 	"golang.org/x/xerrors"
 	"log"
 	"os"
@@ -122,21 +122,37 @@ func initTCPConnectionPool() (*xorm.Engine, error) {
 	return engine, nil
 }
 
-func SetTestDatabase() error {
-	err := database.InitTestConnection()
+func initTestTCPConnectionPool() (*xorm.Engine, error) {
+	var (
+		err       error
+		dbUser    = mustGetenv("DB_USER")
+		dbPwd     = mustGetenv("DB_PASS")
+		dbTCPHost = mustGetenv("DB_TCP_HOST")
+		dbName    = mustGetenv("DB_NAME")
+	)
+
+	uri := fmt.Sprintf("%s:%s@tcp(%s)/%s", dbUser, dbPwd, dbTCPHost, dbName)
+	engine, err := xorm.NewEngine("mysql", uri)
 	if err != nil {
-		panic(err)
+		return nil, xerrors.Errorf("xorm.NewEngine: %v", err)
 	}
 
-	eng = database.NewDB()
+	// configure settings
+	configureConnectionPool(engine)
+	configureLogger(engine)
+	configureTimezone(engine)
+	return engine, nil
+}
 
-	if err := database.CreateTestTable(); err != nil {
-		return err
+func InitTestDatabase() SQLStore {
+	var (
+		ss  SQLStore
+		err error
+	)
+	eng, err = initTestTCPConnectionPool()
+	if err != nil {
+		log.Fatalf("Socket connection is unavailable")
 	}
-
-	if err := database.DeleteTestData(); err != nil {
-		return err
-	}
-
-	return nil
+	ss.engine = eng
+	return ss
 }

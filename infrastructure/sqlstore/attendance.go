@@ -2,7 +2,6 @@ package sqlstore
 
 import (
 	"context"
-	"github.com/KouT127/attendance-management/database"
 	"github.com/KouT127/attendance-management/domain/models"
 	"github.com/KouT127/attendance-management/modules/timeutil"
 	"github.com/KouT127/attendance-management/modules/timezone"
@@ -43,7 +42,7 @@ func FetchLatestAttendance(ctx context.Context, userId string) (*models.Attendan
 		end := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 59, timezone.JSTLocation())
 
 		has, err = sess.Select("attendances.*, clocked_in_time.*, clocked_out_time.*").
-			Table(database.AttendanceTable).
+			Table(AttendanceTable).
 			Join("left outer",
 				"attendances_time clocked_in_time",
 				"attendances.id = clocked_in_time.attendance_id and clocked_in_time.attendance_kind_id = 1 and clocked_in_time.is_modified = false").
@@ -76,7 +75,7 @@ func FetchAttendances(ctx context.Context, query *models.GetAttendancesParameter
 
 	dbErr := withDBSession(ctx, func(sess *DBSession) error {
 		dbSess := sess.Select("attendances.*, clocked_in_time.*, clocked_out_time.*").
-			Table(database.AttendanceTable).
+			Table(AttendanceTable).
 			Join("left outer",
 				"attendances_time clocked_in_time",
 				"attendances.id = clocked_in_time.attendance_id and clocked_in_time.attendance_kind_id = 1 and clocked_in_time.is_modified = false").
