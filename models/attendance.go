@@ -6,10 +6,10 @@ import (
 )
 
 type AttendanceTime struct {
-	ID               int64 `xorm:"id"`
+	Id               int64
 	Remark           string
-	AttendanceID     int64 `xorm:"attendance_id"`
-	AttendanceKindID uint8 `xorm:"attendance_kind_id"`
+	AttendanceId     int64
+	AttendanceKindId uint8
 	IsModified       bool
 	PushedAt         time.Time
 	CreatedAt        time.Time
@@ -21,8 +21,8 @@ func (AttendanceTime) TableName() string {
 }
 
 type Attendance struct {
-	ID        int64  `xorm:"id"`
-	UserID    string `xorm:"user_id"`
+	Id        int64
+	UserId    string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 
@@ -46,16 +46,16 @@ func (d AttendanceDetail) ToAttendance() *Attendance {
 		out *AttendanceTime
 	)
 	a := d.Attendance
-	if d.ClockedInTime.ID != 0 {
+	if d.ClockedInTime.Id != 0 {
 		in = d.ClockedInTime
 	}
-	if d.ClockedOutTime.ID != 0 {
+	if d.ClockedOutTime.Id != 0 {
 		out = d.ClockedOutTime
 	}
 
 	attendance := &Attendance{
-		ID:         a.ID,
-		UserID:     a.UserID,
+		Id:         a.Id,
+		UserId:     a.UserId,
 		ClockedIn:  in,
 		ClockedOut: out,
 		CreatedAt:  a.CreatedAt,

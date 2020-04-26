@@ -29,13 +29,13 @@ func ListHandler(c *gin.Context) {
 		return
 	}
 
-	if userId, err = handlers.GetIdByKey(c, auth.AuthorizedUserIDKey); err != nil {
+	if userId, err = handlers.GetIdByKey(c, auth.AuthorizedUserIdKey); err != nil {
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
 	}
 
 	params := models.GetAttendancesParameters{
-		UserID:    userId,
+		UserId:    userId,
 		Paginator: p.ToPaginator(),
 	}
 
@@ -72,13 +72,13 @@ func MonthlyHandler(c *gin.Context) {
 		return
 	}
 
-	if userId, err = handlers.GetIdByKey(c, auth.AuthorizedUserIDKey); err != nil {
+	if userId, err = handlers.GetIdByKey(c, auth.AuthorizedUserIdKey); err != nil {
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
 	}
 
 	params := models.GetAttendancesParameters{
-		UserID:    userId,
+		UserId:    userId,
 		Paginator: p.ToPaginator(),
 	}
 
@@ -102,7 +102,7 @@ func CreateHandler(c *gin.Context) {
 		return
 	}
 
-	userId, err := handlers.GetIdByKey(c, auth.AuthorizedUserIDKey)
+	userId, err := handlers.GetIdByKey(c, auth.AuthorizedUserIdKey)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return

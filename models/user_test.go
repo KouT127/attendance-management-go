@@ -9,12 +9,12 @@ import (
 func TestUser(t *testing.T) {
 	t.Run("Testing User data access", func(t *testing.T) {
 		assert.Nil(t, SetTestDatabase())
-		userID := "eru4kawei42lasedi356ladfkjfity3"
+		userId := "eru4kawei42lasedi356ladfkjfity3"
 
 		t.Run("Should create user", func(t *testing.T) {
-			user, err := GetOrCreateUser(userID)
+			user, err := GetOrCreateUser(userId)
 			assert.Nil(t, err)
-			assert.Equal(t, userID, user.ID)
+			assert.Equal(t, userId, user.Id)
 		})
 
 		t.Run("Should not create user when id is empty", func(t *testing.T) {
@@ -24,14 +24,14 @@ func TestUser(t *testing.T) {
 		})
 
 		t.Run("Should get user", func(t *testing.T) {
-			user, err := GetOrCreateUser(userID)
+			user, err := GetOrCreateUser(userId)
 			assert.Nil(t, err)
-			assert.Equal(t, userID, user.ID)
+			assert.Equal(t, userId, user.Id)
 		})
 
 		t.Run("Should update user", func(t *testing.T) {
-			userID := "asdiekawei42lasedi356ladfkjfity3"
-			user, err := createTestUser(userID)
+			userId := "asdiekawei42lasedi356ladfkjfity3"
+			user, err := createTestUser(userId)
 			assert.Nil(t, err)
 			assert.NotNil(t, user)
 
@@ -40,7 +40,7 @@ func TestUser(t *testing.T) {
 			user.ImageURL = "updated.com"
 			assert.Nil(t, UpdateUser(user))
 
-			gotUser, err := getUser(engine, userID)
+			gotUser, err := getUser(engine, userId)
 			assert.Nil(t, err)
 			assert.Equal(t, gotUser.Name, "updated")
 			assert.Equal(t, gotUser.Email, "updated@test.com")
@@ -49,16 +49,16 @@ func TestUser(t *testing.T) {
 
 		t.Run("Should not update user", func(t *testing.T) {
 			u := &User{
-				ID: "",
+				Id: "",
 			}
 			assert.NotNil(t, UpdateUser(u))
 		})
 	})
 }
 
-func createTestUser(userID string) (*User, error) {
+func createTestUser(userId string) (*User, error) {
 	u := &User{
-		ID:        userID,
+		Id:        userId,
 		Name:      "insert user",
 		Email:     "insert@test.com",
 		ImageURL:  "insert.com",

@@ -22,7 +22,7 @@ type UserMineResult struct {
 
 func toUserResp(user *models.User) UserResp {
 	resp := UserResp{
-		Id:       user.ID,
+		Id:       user.Id,
 		Name:     user.Name,
 		Email:    user.Email,
 		ImageUrl: user.ImageURL,

@@ -29,7 +29,7 @@ func NewUserHandler(facade facades.UserFacade) UserHandler {
 }
 
 func (h userHandler) MineHandler(c *gin.Context) {
-	value, exists := c.Get(auth.AuthorizedUserIDKey)
+	value, exists := c.Get(auth.AuthorizedUserIdKey)
 	if !exists {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "user not found",
@@ -37,8 +37,8 @@ func (h userHandler) MineHandler(c *gin.Context) {
 		return
 	}
 
-	userID := value.(string)
-	params := models.GetOrCreateUserParams{UserID: userID}
+	userId := value.(string)
+	params := models.GetOrCreateUserParams{UserId: userId}
 	res, err := h.facade.GetOrCreateUser(params)
 	if err != nil {
 		logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, err.Error())
@@ -60,7 +60,7 @@ func (h userHandler) UpdateHandler(c *gin.Context) {
 		return
 	}
 
-	value, exists := c.Get(auth.AuthorizedUserIDKey)
+	value, exists := c.Get(auth.AuthorizedUserIdKey)
 	if !exists {
 		err := xerrors.New("user not found")
 		logrus.Warnf("not exists: %s", err)
@@ -68,7 +68,7 @@ func (h userHandler) UpdateHandler(c *gin.Context) {
 		return
 	}
 
-	user.ID = value.(string)
+	user.Id = value.(string)
 	user.Name = input.Name
 	user.Email = input.Email
 

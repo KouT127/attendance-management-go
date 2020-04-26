@@ -7,7 +7,7 @@ import (
 	"golang.org/x/xerrors"
 )
 
-func GetUser(ctx context.Context, userID string) (*models.User, error) {
+func GetUser(ctx context.Context, userId string) (*models.User, error) {
 	var user models.User
 	err := withDBSession(ctx, func(sess *DBSession) error {
 		_, err := sess.Get(&user)
@@ -37,7 +37,7 @@ func CreateUser(ctx context.Context, user *models.User) error {
 
 func UpdateUser(ctx context.Context, user *models.User) error {
 	err := withDBSession(ctx, func(sess *DBSession) error {
-		has, err := sess.Where("id = ?", user.ID).Exist(&models.User{})
+		has, err := sess.Where("id = ?", user.Id).Exist(&models.User{})
 		if err != nil {
 			return err
 		}
@@ -45,7 +45,7 @@ func UpdateUser(ctx context.Context, user *models.User) error {
 			return xerrors.New("user is empty")
 		}
 
-		if _, err := sess.Update(user, &models.User{ID: user.ID}); err != nil {
+		if _, err := sess.Update(user, &models.User{Id: user.Id}); err != nil {
 			return err
 		}
 		return nil
@@ -53,6 +53,6 @@ func UpdateUser(ctx context.Context, user *models.User) error {
 	if err != nil {
 		return err
 	}
-	logger.NewInfo("updated user_id: " + user.ID)
+	logger.NewInfo("updated user_id: " + user.Id)
 	return nil
 }

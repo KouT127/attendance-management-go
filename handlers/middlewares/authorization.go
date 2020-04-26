@@ -32,7 +32,7 @@ func AuthRequired() gin.HandlerFunc {
 		header := c.Request.Header.Get("Authorization")
 		replacedToken := strings.Replace(header, "Bearer ", "", 1)
 		if replacedToken == "" {
-			logger.NewWarn(logrus.Fields{"err": err}, "error verifying ID token")
+			logger.NewWarn(logrus.Fields{"err": err}, "error verifying Id token")
 			u := fmt.Sprintf("unauthorized")
 			c.AbortWithStatusJSON(http.StatusUnauthorized, u)
 			return
@@ -44,7 +44,7 @@ func AuthRequired() gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, u)
 			return
 		}
-		c.Set(auth.AuthorizedUserIDKey, verifiedToken.UID)
+		c.Set(auth.AuthorizedUserIdKey, verifiedToken.UID)
 		c.Next()
 	}
 }

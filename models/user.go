@@ -5,7 +5,7 @@ import (
 )
 
 type User struct {
-	ID        string `xorm:"id"`
+	Id        string
 	Name      string
 	Email     string
 	ImageURL  string `xorm:"image_url"`
@@ -18,7 +18,7 @@ func (User) TableName() string {
 }
 
 type GetOrCreateUserParams struct {
-	UserID string
+	UserId string
 }
 
 type GetOrCreateUserResults struct {

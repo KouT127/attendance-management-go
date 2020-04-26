@@ -28,18 +28,18 @@ func (f *userFacade) GetOrCreateUser(params models.GetOrCreateUserParams) (*mode
 		attendance *models.Attendance
 		err        error
 	)
-	if params.UserID == "" {
+	if params.UserId == "" {
 		return nil, xerrors.New("user id is empty")
 	}
 
 	err = f.ss.InTransaction(context.Background(), func(ctx context.Context) error {
-		user, err = sqlstore.GetUser(ctx, params.UserID)
+		user, err = sqlstore.GetUser(ctx, params.UserId)
 		if err != nil {
 			return err
 		}
 
-		if user.ID == "" {
-			user.ID = params.UserID
+		if user.Id == "" {
+			user.Id = params.UserId
 			if err = sqlstore.CreateUser(ctx, user); err != nil {
 				return err
 			}
@@ -51,7 +51,7 @@ func (f *userFacade) GetOrCreateUser(params models.GetOrCreateUserParams) (*mode
 		return nil, err
 	}
 
-	if attendance, err = sqlstore.FetchLatestAttendance(context.Background(), params.UserID); err != nil {
+	if attendance, err = sqlstore.FetchLatestAttendance(context.Background(), params.UserId); err != nil {
 		return nil, err
 	}
 

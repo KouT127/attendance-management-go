@@ -10,13 +10,13 @@ import (
 	"time"
 )
 
-func FetchAttendancesCount(ctx context.Context, userID string) (int64, error) {
+func FetchAttendancesCount(ctx context.Context, userId string) (int64, error) {
 	var count int64
 
 	dbErr := withDBSession(ctx, func(sess *DBSession) error {
 		var err error
 		attendance := &models.Attendance{}
-		attendance.UserID = userID
+		attendance.UserId = userId
 		count, err = sess.Count(attendance)
 		if err != nil {
 			return err
@@ -30,15 +30,19 @@ func FetchAttendancesCount(ctx context.Context, userID string) (int64, error) {
 	return count, nil
 }
 
-func FetchLatestAttendance(ctx context.Context, userID string) (*models.Attendance, error) {
-	var attendance models.AttendanceDetail
+func FetchLatestAttendance(ctx context.Context, userId string) (*models.Attendance, error) {
+	var (
+		attendance models.AttendanceDetail
+		has        bool
+	)
 
 	dbErr := withDBSession(ctx, func(sess *DBSession) error {
+		var err error
 		now := flextime.Now()
 		start := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, timezone.JSTLocation())
 		end := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 59, timezone.JSTLocation())
 
-		_, err := sess.Select("attendances.*, clocked_in_time.*, clocked_out_time.*").
+		has, err = sess.Select("attendances.*, clocked_in_time.*, clocked_out_time.*").
 			Table(database.AttendanceTable).
 			Join("left outer",
 				"attendances_time clocked_in_time",
@@ -46,7 +50,7 @@ func FetchLatestAttendance(ctx context.Context, userID string) (*models.Attendan
 			Join("left outer",
 				"attendances_time clocked_out_time",
 				"attendances.id = clocked_out_time.attendance_id and clocked_out_time.attendance_kind_id = 2 and clocked_out_time.is_modified = false").
-			Where("attendances.user_id = ?", userID).
+			Where("attendances.user_id = ?", userId).
 			Where("attendances.created_at Between ? and ? ", start, end).
 			Limit(1).
 			OrderBy("-attendances.id").
@@ -60,6 +64,9 @@ func FetchLatestAttendance(ctx context.Context, userID string) (*models.Attendan
 
 	if dbErr != nil {
 		return nil, dbErr
+	}
+	if !has {
+		return nil, nil
 	}
 	return attendance.ToAttendance(), nil
 }
@@ -93,7 +100,7 @@ func FetchAttendances(ctx context.Context, query *models.GetAttendancesParameter
 		page := p.CalculatePage()
 
 		err := sess.Limit(int(p.Limit), int(page)).
-			Where("attendances.user_id = ?", query.UserID).
+			Where("attendances.user_id = ?", query.UserId).
 			OrderBy("-attendances.id").
 			Iterate(&models.AttendanceDetail{}, func(idx int, bean interface{}) error {
 				d := bean.(*models.AttendanceDetail)
@@ -110,11 +117,11 @@ func FetchAttendances(ctx context.Context, query *models.GetAttendancesParameter
 	return attendances, nil
 }
 
-func UpdateOldAttendanceTime(ctx context.Context, id int64, kindID uint8) error {
+func UpdateOldAttendanceTime(ctx context.Context, id int64, kindId uint8) error {
 	return withDBSession(ctx, func(sess *DBSession) error {
 		query := &models.AttendanceTime{
-			AttendanceID:     id,
-			AttendanceKindID: kindID,
+			AttendanceId:     id,
+			AttendanceKindId: kindId,
 			IsModified:       false,
 		}
 		_, err := sess.UseBool("is_modified").
@@ -127,18 +134,18 @@ func UpdateOldAttendanceTime(ctx context.Context, id int64, kindID uint8) error 
 	})
 }
 
-func CreateAttendance(ctx context.Context, a *models.Attendance) error {
+func CreateAttendance(ctx context.Context, attendance *models.Attendance) error {
 	return withDBSession(ctx, func(sess *DBSession) error {
-		if _, err := sess.Insert(a); err != nil {
+		if _, err := sess.Insert(attendance); err != nil {
 			return err
 		}
 		return nil
 	})
 }
 
-func CreateAttendanceTime(ctx context.Context, t *models.AttendanceTime) error {
+func CreateAttendanceTime(ctx context.Context, attendanceTime *models.AttendanceTime) error {
 	return withDBSession(ctx, func(sess *DBSession) error {
-		if _, err := sess.Insert(t); err != nil {
+		if _, err := sess.Insert(attendanceTime); err != nil {
 			return err
 		}
 		return nil

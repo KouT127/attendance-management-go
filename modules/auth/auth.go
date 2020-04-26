@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-const AuthorizedUserIDKey = "authorized_user_id"
+const AuthorizedUserIdKey = "authorized_user_id"
 
 func loadCredFromJson() (*option.ClientOption, error) {
 	json := os.Getenv("FIREBASE_SERVICE_JSON")
