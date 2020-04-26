@@ -1,8 +1,8 @@
 package v1
 
 import (
-	"github.com/KouT127/attendance-management/handlers/middlewares"
-	"github.com/KouT127/attendance-management/handlers/v1/attendance"
+	"github.com/KouT127/attendance-management/api/handler/middlewares"
+	"github.com/KouT127/attendance-management/api/handler/v1/attendance"
 	. "github.com/gin-gonic/gin"
 )
 

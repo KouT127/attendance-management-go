@@ -1,12 +1,12 @@
 package user
 
 import (
+	"github.com/KouT127/attendance-management/api/payloads"
+	"github.com/KouT127/attendance-management/api/responses"
 	"github.com/KouT127/attendance-management/application/facades"
-	"github.com/KouT127/attendance-management/models"
-	"github.com/KouT127/attendance-management/modules/auth"
+	"github.com/KouT127/attendance-management/domain/models"
+	"github.com/KouT127/attendance-management/infrastructure/auth"
 	"github.com/KouT127/attendance-management/modules/logger"
-	"github.com/KouT127/attendance-management/modules/payloads"
-	"github.com/KouT127/attendance-management/modules/responses"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/xerrors"

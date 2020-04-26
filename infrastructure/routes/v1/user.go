@@ -1,9 +1,9 @@
 package v1
 
 import (
+	"github.com/KouT127/attendance-management/api/handler/middlewares"
+	"github.com/KouT127/attendance-management/api/handler/v1/user"
 	"github.com/KouT127/attendance-management/application/facades"
-	"github.com/KouT127/attendance-management/handlers/middlewares"
-	"github.com/KouT127/attendance-management/handlers/v1/user"
 	"github.com/KouT127/attendance-management/infrastructure/sqlstore"
 	. "github.com/gin-gonic/gin"
 )

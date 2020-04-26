@@ -3,7 +3,7 @@ package sqlstore
 import (
 	"context"
 	"github.com/KouT127/attendance-management/database"
-	"github.com/KouT127/attendance-management/models"
+	"github.com/KouT127/attendance-management/domain/models"
 	"github.com/KouT127/attendance-management/modules/timeutil"
 	"github.com/KouT127/attendance-management/modules/timezone"
 	"github.com/Songmu/flextime"

@@ -1,6 +1,6 @@
 package payloads
 
-import "github.com/KouT127/attendance-management/models"
+import "github.com/KouT127/attendance-management/domain/models"
 
 type PaginationPayload struct {
 	Page  int64 `form:"page"`

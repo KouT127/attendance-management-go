@@ -1,7 +1,7 @@
 package payloads
 
 import (
-	"github.com/KouT127/attendance-management/models"
+	"github.com/KouT127/attendance-management/domain/models"
 	"reflect"
 	"testing"
 )

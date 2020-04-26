@@ -2,8 +2,8 @@ package facades
 
 import (
 	"context"
+	"github.com/KouT127/attendance-management/domain/models"
 	"github.com/KouT127/attendance-management/infrastructure/sqlstore"
-	"github.com/KouT127/attendance-management/models"
 	"golang.org/x/xerrors"
 )
 

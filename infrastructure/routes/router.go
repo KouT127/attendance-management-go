@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/KouT127/attendance-management/database"
-	v1 "github.com/KouT127/attendance-management/routes/v1"
+	v1 "github.com/KouT127/attendance-management/infrastructure/routes/v1"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -13,7 +13,7 @@ import (
 func defaultRouter(r *gin.Engine) {
 	r.GET("/health", func(ctx *gin.Context) {
 		err := database.Ping()
-		if err != nil{
+		if err != nil {
 			log.Printf("Don't connection: %v", err)
 			ctx.JSON(http.StatusBadRequest, "ng")
 			return

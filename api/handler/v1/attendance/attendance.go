@@ -1,13 +1,13 @@
 package attendance
 
 import (
+	"github.com/KouT127/attendance-management/api/handler"
+	"github.com/KouT127/attendance-management/api/payloads"
+	. "github.com/KouT127/attendance-management/api/responses"
 	"github.com/KouT127/attendance-management/application/facades"
-	"github.com/KouT127/attendance-management/handlers"
+	"github.com/KouT127/attendance-management/domain/models"
+	"github.com/KouT127/attendance-management/infrastructure/auth"
 	"github.com/KouT127/attendance-management/infrastructure/sqlstore"
-	"github.com/KouT127/attendance-management/models"
-	"github.com/KouT127/attendance-management/modules/auth"
-	"github.com/KouT127/attendance-management/modules/payloads"
-	. "github.com/KouT127/attendance-management/modules/responses"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -29,7 +29,7 @@ func ListHandler(c *gin.Context) {
 		return
 	}
 
-	if userId, err = handlers.GetIdByKey(c, auth.AuthorizedUserIdKey); err != nil {
+	if userId, err = handler.GetIdByKey(c, auth.AuthorizedUserIdKey); err != nil {
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
 	}
@@ -72,7 +72,7 @@ func MonthlyHandler(c *gin.Context) {
 		return
 	}
 
-	if userId, err = handlers.GetIdByKey(c, auth.AuthorizedUserIdKey); err != nil {
+	if userId, err = handler.GetIdByKey(c, auth.AuthorizedUserIdKey); err != nil {
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
 	}
@@ -102,7 +102,7 @@ func CreateHandler(c *gin.Context) {
 		return
 	}
 
-	userId, err := handlers.GetIdByKey(c, auth.AuthorizedUserIdKey)
+	userId, err := handler.GetIdByKey(c, auth.AuthorizedUserIdKey)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
