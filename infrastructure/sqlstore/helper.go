@@ -3,21 +3,27 @@ package sqlstore
 import (
 	"fmt"
 	"github.com/KouT127/attendance-management/modules/directory"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
-	"os"
+	_ "github.com/golang-migrate/migrate/v4/database/mysql"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"xorm.io/xorm"
 )
 
 func getMigrationsPath() string {
-	return "file://" + directory.RootDir() + "/infrastructure/sqlstore/migrations"
+	return "file://" + directory.RootDir() + "/sqlstore/migrations"
 }
 
 func loadTestEnv() string {
-	CONNECTION = os.Getenv("DB_CONNECTION_NAME")
-	USER = os.Getenv("DB_USER")
-	PASS = os.Getenv("DB_PASSWORD")
-	TABLE = os.Getenv("DB_TABLE")
-	return fmt.Sprintf("%s:%s@%s/%s?charset=utf8&parseTime=true", USER, PASS, CONNECTION, TABLE)
+	var (
+		dbUser    = mustGetenv("DB_USER")
+		dbPwd     = mustGetenv("DB_PASS")
+		dbTCPHost = mustGetenv("DB_TCP_HOST")
+		dbName    = mustGetenv("TEST_DB_NAME")
+	)
+
+	uri := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=true", dbUser, dbPwd, dbTCPHost, dbName)
+	return uri
 }
 
 func migrateUp() error {

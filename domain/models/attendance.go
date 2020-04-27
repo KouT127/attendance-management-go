@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/KouT127/attendance-management/database"
 	"time"
 )
 
@@ -17,7 +16,7 @@ type AttendanceTime struct {
 }
 
 func (AttendanceTime) TableName() string {
-	return database.AttendanceTimeTable
+	return "attendances_time"
 }
 
 type Attendance struct {
@@ -31,7 +30,7 @@ type Attendance struct {
 }
 
 func (Attendance) TableName() string {
-	return database.AttendanceTable
+	return "attendances"
 }
 
 type AttendanceDetail struct {

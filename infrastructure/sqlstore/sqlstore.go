@@ -128,7 +128,7 @@ func initTestTCPConnectionPool() (*xorm.Engine, error) {
 		dbUser    = mustGetenv("DB_USER")
 		dbPwd     = mustGetenv("DB_PASS")
 		dbTCPHost = mustGetenv("DB_TCP_HOST")
-		dbName    = mustGetenv("DB_NAME")
+		dbName    = mustGetenv("TEST_DB_NAME")
 	)
 
 	uri := fmt.Sprintf("%s:%s@tcp(%s)/%s", dbUser, dbPwd, dbTCPHost, dbName)
@@ -152,6 +152,9 @@ func InitTestDatabase() SQLStore {
 	eng, err = initTestTCPConnectionPool()
 	if err != nil {
 		log.Fatalf("Socket connection is unavailable")
+	}
+	if err = DeleteTestData(); err != nil {
+		log.Fatalf("Failed delete data %s", err)
 	}
 	ss.engine = eng
 	return ss
