@@ -3,6 +3,9 @@ package sqlstore
 import (
 	"context"
 	"github.com/KouT127/attendance-management/domain/models"
+	"github.com/KouT127/attendance-management/modules/timezone"
+	"github.com/Songmu/flextime"
+	"github.com/google/go-cmp/cmp"
 	"os"
 	"reflect"
 	"testing"
@@ -14,11 +17,21 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func TestCreateAttendanceTime(t *testing.T) {
+func TestCreateAttendance(t *testing.T) {
 	InitTestDatabase()
+
+	user := &models.User{
+		Id:   "asdiekawei42lasedi356ladfkjfity",
+		Name: "test1",
+	}
+
+	if err := CreateUser(context.Background(), user); err != nil {
+		t.Errorf("CreateAttendanceTime() failed%s", err)
+	}
+
 	type args struct {
-		ctx            context.Context
-		attendanceTime *models.AttendanceTime
+		ctx        context.Context
+		attendance *models.Attendance
 	}
 	tests := []struct {
 		name    string
@@ -26,22 +39,79 @@ func TestCreateAttendanceTime(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"Should succeed creating attendance time",
+			"Should not create attendance",
+			args{
+				ctx:        context.Background(),
+				attendance: &models.Attendance{},
+			},
+			true,
+		},
+		{
+			"Should create clocked in attendance",
+			args{
+				ctx: context.Background(),
+				attendance: &models.Attendance{
+					UserId: user.Id,
+				},
+			},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := CreateAttendance(tt.args.ctx, tt.args.attendance); (err != nil) != tt.wantErr {
+				t.Errorf("CreateAttendance() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestCreateAttendanceTime(t *testing.T) {
+	InitTestDatabase()
+	type args struct {
+		ctx            context.Context
+		attendanceTime *models.AttendanceTime
+	}
+	user := &models.User{
+		Id:   "asdiekawei42lasedi356ladfkjfity",
+		Name: "test1",
+	}
+
+	if err := CreateUser(context.Background(), user); err != nil {
+		t.Errorf("CreateAttendanceTime() failed%s", err)
+	}
+
+	attendance := &models.Attendance{
+		UserId: user.Id,
+	}
+
+	if err := CreateAttendance(context.Background(), attendance); err != nil {
+		t.Errorf("CreateAttendanceTime() failed%s", err)
+	}
+
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			"Should create attendance time",
 			args{
 				ctx: context.Background(),
 				attendanceTime: &models.AttendanceTime{
 					Remark:           "test",
 					AttendanceKindId: uint8(models.AttendanceKindClockIn),
 					IsModified:       false,
-					PushedAt:         time.Now(),
-					CreatedAt:        time.Now(),
-					UpdatedAt:        time.Now(),
+					AttendanceId:     attendance.Id,
+					PushedAt:         flextime.Now(),
+					CreatedAt:        flextime.Now(),
+					UpdatedAt:        flextime.Now(),
 				},
 			},
 			false,
 		},
 		{
-			"Should failed creating attendance time",
+			"Should not create attendance time",
 			args{
 				ctx:            context.Background(),
 				attendanceTime: &models.AttendanceTime{},
@@ -58,58 +128,46 @@ func TestCreateAttendanceTime(t *testing.T) {
 	}
 }
 
-func TestCreateAttendance(t *testing.T) {
+func TestFetchAttendances(t *testing.T) {
+	var attendances []*models.Attendance
 	InitTestDatabase()
-	time1 := &models.AttendanceTime{
-		Remark:           "test",
-		AttendanceKindId: uint8(models.AttendanceKindClockIn),
-		IsModified:       false,
-		PushedAt:         time.Now(),
-		CreatedAt:        time.Now(),
-		UpdatedAt:        time.Now(),
+	timezone.Set("Asia/Tokyo")
+
+	user := &models.User{
+		Id:   "asdiekawei42lasedi356ladfkjfity",
+		Name: "test1",
 	}
-	if err := CreateAttendanceTime(context.Background(), time1); err != nil {
+
+	if err := CreateUser(context.Background(), user); err != nil {
 		t.Errorf("CreateAttendanceTime() failed%s", err)
 	}
 
-	type args struct {
-		ctx        context.Context
-		attendance *models.Attendance
+	attendance := &models.Attendance{
+		UserId:    user.Id,
+		CreatedAt: flextime.Now().UTC().Truncate(time.Second),
+		UpdatedAt: flextime.Now().UTC().Truncate(time.Second),
 	}
-	tests := []struct {
-		name    string
-		args    args
-		wantErr bool
-	}{
-		{
-			"Should failed creating attendance",
-			args{
-				ctx:        context.Background(),
-				attendance: &models.Attendance{},
-			},
-			true,
-		},
-		{
-			"Should succeed creating attendance",
-			args{
-				ctx: context.Background(),
-				attendance: &models.Attendance{
-					ClockedIn: time1,
-				},
-			},
-			true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if err := CreateAttendance(tt.args.ctx, tt.args.attendance); (err != nil) != tt.wantErr {
-				t.Errorf("CreateAttendance() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
-}
 
-func TestFetchAttendances(t *testing.T) {
+	if err := CreateAttendance(context.Background(), attendance); err != nil {
+		t.Errorf("CreateAttendance() failed%s", err)
+	}
+
+	time := &models.AttendanceTime{
+		Remark:           "test",
+		AttendanceKindId: uint8(models.AttendanceKindClockIn),
+		IsModified:       false,
+		AttendanceId:     attendance.Id,
+		PushedAt:         flextime.Now().UTC().Truncate(time.Second),
+		CreatedAt:        flextime.Now().UTC().Truncate(time.Second),
+		UpdatedAt:        flextime.Now().UTC().Truncate(time.Second),
+	}
+
+	if err := CreateAttendanceTime(context.Background(), time); err != nil {
+		t.Errorf("CreateAttendanceTime() failed%s", err)
+	}
+
+	attendance.ClockedIn = time
+
 	type args struct {
 		ctx   context.Context
 		query *models.GetAttendancesParameters
@@ -120,8 +178,32 @@ func TestFetchAttendances(t *testing.T) {
 		want    []*models.Attendance
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Should fetch attendances",
+			args: args{
+				ctx: context.Background(),
+				query: &models.GetAttendancesParameters{
+					UserId: "",
+				},
+			},
+			want:    attendances,
+			wantErr: false,
+		},
+		{
+			name: "Should fetch attendances by user id",
+			args: args{
+				ctx: context.Background(),
+				query: &models.GetAttendancesParameters{
+					UserId: "asdiekawei42lasedi356ladfkjfity",
+				},
+			},
+			want: []*models.Attendance{
+				attendance,
+			},
+			wantErr: false,
+		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := FetchAttendances(tt.args.ctx, tt.args.query)
@@ -129,8 +211,8 @@ func TestFetchAttendances(t *testing.T) {
 				t.Errorf("FetchAttendances() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("FetchAttendances() got = %v, want %v", got, tt.want)
+			if diff := cmp.Diff(got, tt.want); diff != "" {
+				t.Errorf("FetchAttendances() diff %s", diff)
 			}
 		})
 	}
