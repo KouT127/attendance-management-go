@@ -9,21 +9,21 @@ import (
 )
 
 type AttendanceService interface {
-	GetAttendances(query models.GetAttendancesParameters) (*models.GetAttendancesResults, error)
+	GetAttendances(params models.GetAttendancesParameters) (*models.GetAttendancesResults, error)
 	CreateOrUpdateAttendance(attendanceTime *models.AttendanceTime, userId string) (*models.Attendance, error)
 }
 
 type attendanceService struct {
-	ss sqlstore.SQLStore
+	ss *sqlstore.SQLStore
 }
 
-func NewAttendanceService(ss sqlstore.SQLStore) AttendanceService {
-	return attendanceService{
+func NewAttendanceService(ss *sqlstore.SQLStore) AttendanceService {
+	return &attendanceService{
 		ss: ss,
 	}
 }
 
-func (f attendanceService) GetAttendances(params models.GetAttendancesParameters) (*models.GetAttendancesResults, error) {
+func (f *attendanceService) GetAttendances(params models.GetAttendancesParameters) (*models.GetAttendancesResults, error) {
 	ctx := context.Background()
 	maxCnt, err := sqlstore.FetchAttendancesCount(ctx, params.UserId)
 	if err != nil {
@@ -41,7 +41,7 @@ func (f attendanceService) GetAttendances(params models.GetAttendancesParameters
 	return &res, nil
 }
 
-func (f attendanceService) CreateOrUpdateAttendance(attendanceTime *models.AttendanceTime, userId string) (*models.Attendance, error) {
+func (f *attendanceService) CreateOrUpdateAttendance(attendanceTime *models.AttendanceTime, userId string) (*models.Attendance, error) {
 	var (
 		attendance *models.Attendance
 		err        error

@@ -1,7 +1,7 @@
 package routes
 
 import (
-	v1 "github.com/KouT127/attendance-management/infrastructure/routes/v1"
+	"github.com/KouT127/attendance-management/infrastructure/sqlstore"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -9,13 +9,19 @@ import (
 	"os"
 )
 
-func defaultRouter(r *gin.Engine) {
+func configureDefaultRouter(r *gin.Engine) {
 	r.GET("/health", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, "ok")
 	})
 }
 
-func Init() {
+func configureV1Router(r *gin.Engine, store *sqlstore.SQLStore) {
+	group := r.Group("/v1")
+	configureUsersRouter(group, store)
+	configureAttendancesRouter(group, store)
+}
+
+func InitRouter(store *sqlstore.SQLStore) {
 	r := gin.Default()
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -28,8 +34,8 @@ func Init() {
 	config.AllowHeaders = []string{"*"}
 	r.Use(cors.New(config))
 
-	v1.Router(r)
-	defaultRouter(r)
+	configureV1Router(r, store)
+	configureDefaultRouter(r)
 	http.Handle("/", r)
 	log.Fatal(r.Run(":" + port))
 }

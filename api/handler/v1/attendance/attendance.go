@@ -7,20 +7,32 @@ import (
 	"github.com/KouT127/attendance-management/application/services"
 	"github.com/KouT127/attendance-management/domain/models"
 	"github.com/KouT127/attendance-management/infrastructure/auth"
-	"github.com/KouT127/attendance-management/infrastructure/sqlstore"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-func ListHandler(c *gin.Context) {
+type AttendanceHandler interface {
+	ListHandler(c *gin.Context)
+	MonthlyHandler(c *gin.Context)
+	CreateHandler(c *gin.Context)
+}
+
+type attendanceService struct {
+	service services.AttendanceService
+}
+
+func NewAttendanceHandler(service services.AttendanceService) AttendanceHandler {
+	return &attendanceService{
+		service: service,
+	}
+}
+
+func (s *attendanceService) ListHandler(c *gin.Context) {
 	var (
 		userId string
 		res    *models.GetAttendancesResults
 		err    error
 	)
-
-	store := sqlstore.InitDatabase()
-	facade := services.NewAttendanceService(store)
 
 	p := payloads.NewPaginatorPayload(0, 5)
 
@@ -39,7 +51,7 @@ func ListHandler(c *gin.Context) {
 		Paginator: p.ToPaginator(),
 	}
 
-	if res, err = facade.GetAttendances(params); err != nil {
+	if res, err = s.service.GetAttendances(params); err != nil {
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
 	}
@@ -49,18 +61,15 @@ func ListHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, resps)
 }
 
-func MonthlyHandler(c *gin.Context) {
+func (s *attendanceService) MonthlyHandler(c *gin.Context) {
 	var (
 		userId string
 		res    *models.GetAttendancesResults
 		err    error
 	)
 
-	store := sqlstore.InitDatabase()
-	facade := services.NewAttendanceService(store)
-
 	p := payloads.NewPaginatorPayload(0, 31)
-	s := payloads.NewSearchParams()
+	//param := payloads.NewSearchParams()
 
 	if err := c.Bind(p); err != nil {
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
@@ -82,7 +91,7 @@ func MonthlyHandler(c *gin.Context) {
 		Paginator: p.ToPaginator(),
 	}
 
-	if res, err = facade.GetAttendances(params); err != nil {
+	if res, err = s.service.GetAttendances(params); err != nil {
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
 	}
@@ -92,10 +101,7 @@ func MonthlyHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, resps)
 }
 
-func CreateHandler(c *gin.Context) {
-	store := sqlstore.InitDatabase()
-	facade := services.NewAttendanceService(store)
-
+func (s *attendanceService) CreateHandler(c *gin.Context) {
 	input := payloads.AttendancePayload{}
 	if err := c.Bind(&input); err != nil {
 		c.JSON(http.StatusBadRequest, NewValidationError("user", err))
@@ -114,7 +120,7 @@ func CreateHandler(c *gin.Context) {
 	}
 
 	attendanceTime := input.ToAttendanceTime()
-	attendance, err := facade.CreateOrUpdateAttendance(attendanceTime, userId)
+	attendance, err := s.service.CreateOrUpdateAttendance(attendanceTime, userId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
