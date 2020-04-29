@@ -1,4 +1,4 @@
-package facades
+package services
 
 import (
 	"context"
@@ -7,22 +7,22 @@ import (
 	"golang.org/x/xerrors"
 )
 
-type UserFacade interface {
+type UserService interface {
 	GetOrCreateUser(params models.GetOrCreateUserParams) (*models.GetOrCreateUserResults, error)
 	UpdateUser(user *models.User) error
 }
 
-type userFacade struct {
+type userService struct {
 	ss *sqlstore.SQLStore
 }
 
-func NewUserFacade(ss *sqlstore.SQLStore) *userFacade {
-	return &userFacade{
+func NewUserService(ss *sqlstore.SQLStore) *userService {
+	return &userService{
 		ss: ss,
 	}
 }
 
-func (f *userFacade) GetOrCreateUser(params models.GetOrCreateUserParams) (*models.GetOrCreateUserResults, error) {
+func (f *userService) GetOrCreateUser(params models.GetOrCreateUserParams) (*models.GetOrCreateUserResults, error) {
 	var (
 		user       *models.User
 		attendance *models.Attendance
@@ -62,7 +62,7 @@ func (f *userFacade) GetOrCreateUser(params models.GetOrCreateUserParams) (*mode
 	return &res, nil
 }
 
-func (f *userFacade) UpdateUser(user *models.User) error {
+func (f *userService) UpdateUser(user *models.User) error {
 	err := f.ss.InTransaction(context.Background(), func(ctx context.Context) error {
 		return sqlstore.UpdateUser(ctx, user)
 	})

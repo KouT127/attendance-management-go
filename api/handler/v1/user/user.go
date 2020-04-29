@@ -3,7 +3,7 @@ package user
 import (
 	"github.com/KouT127/attendance-management/api/payloads"
 	"github.com/KouT127/attendance-management/api/responses"
-	"github.com/KouT127/attendance-management/application/facades"
+	"github.com/KouT127/attendance-management/application/services"
 	"github.com/KouT127/attendance-management/domain/models"
 	"github.com/KouT127/attendance-management/infrastructure/auth"
 	"github.com/KouT127/attendance-management/utilities/logger"
@@ -19,10 +19,10 @@ type UserHandler interface {
 }
 
 type userHandler struct {
-	facade facades.UserFacade
+	facade services.UserService
 }
 
-func NewUserHandler(facade facades.UserFacade) UserHandler {
+func NewUserHandler(facade services.UserService) UserHandler {
 	return userHandler{
 		facade: facade,
 	}

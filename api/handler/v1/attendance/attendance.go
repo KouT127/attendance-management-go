@@ -4,7 +4,7 @@ import (
 	"github.com/KouT127/attendance-management/api/handler"
 	"github.com/KouT127/attendance-management/api/payloads"
 	. "github.com/KouT127/attendance-management/api/responses"
-	"github.com/KouT127/attendance-management/application/facades"
+	"github.com/KouT127/attendance-management/application/services"
 	"github.com/KouT127/attendance-management/domain/models"
 	"github.com/KouT127/attendance-management/infrastructure/auth"
 	"github.com/KouT127/attendance-management/infrastructure/sqlstore"
@@ -20,7 +20,7 @@ func ListHandler(c *gin.Context) {
 	)
 
 	store := sqlstore.InitDatabase()
-	facade := facades.NewAttendanceFacade(store)
+	facade := services.NewAttendanceService(store)
 
 	p := payloads.NewPaginatorPayload(0, 5)
 
@@ -57,7 +57,7 @@ func MonthlyHandler(c *gin.Context) {
 	)
 
 	store := sqlstore.InitDatabase()
-	facade := facades.NewAttendanceFacade(store)
+	facade := services.NewAttendanceService(store)
 
 	p := payloads.NewPaginatorPayload(0, 31)
 	s := payloads.NewSearchParams()
@@ -94,7 +94,7 @@ func MonthlyHandler(c *gin.Context) {
 
 func CreateHandler(c *gin.Context) {
 	store := sqlstore.InitDatabase()
-	facade := facades.NewAttendanceFacade(store)
+	facade := services.NewAttendanceService(store)
 
 	input := payloads.AttendancePayload{}
 	if err := c.Bind(&input); err != nil {

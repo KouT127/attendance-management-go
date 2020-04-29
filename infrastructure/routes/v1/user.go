@@ -3,7 +3,7 @@ package v1
 import (
 	"github.com/KouT127/attendance-management/api/handler/middlewares"
 	"github.com/KouT127/attendance-management/api/handler/v1/user"
-	"github.com/KouT127/attendance-management/application/facades"
+	"github.com/KouT127/attendance-management/application/services"
 	"github.com/KouT127/attendance-management/infrastructure/sqlstore"
 	. "github.com/gin-gonic/gin"
 )
@@ -14,7 +14,7 @@ func UsersRouter(v1 *RouterGroup) {
 	}
 
 	store := sqlstore.InitDatabase()
-	facade := facades.NewUserFacade(&store)
+	facade := services.NewUserService(&store)
 	handler := user.NewUserHandler(facade)
 
 	users := v1.Group("/users", funcs...)
