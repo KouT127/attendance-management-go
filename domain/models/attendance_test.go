@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/KouT127/attendance-management/modules/timezone"
+	"github.com/KouT127/attendance-management/utilities/timezone"
 	"github.com/Songmu/flextime"
 	"github.com/stretchr/testify/assert"
 	"testing"

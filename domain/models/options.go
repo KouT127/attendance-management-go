@@ -6,13 +6,13 @@ import (
 )
 
 type DefaultSearchOption struct {
-	Paginator *Paginator
+	Paginator *Pagination
 }
 
 func (opt *DefaultSearchOption) SetPaginatedSession(eng *xorm.Session) *xorm.Session {
 	p := opt.Paginator
 	if opt.Paginator == nil {
-		p = &Paginator{}
+		p = &Pagination{}
 	}
 	if p.Limit == 0 {
 		p.Limit = 15
@@ -25,7 +25,7 @@ func (opt *DefaultSearchOption) SetPaginatedSession(eng *xorm.Session) *xorm.Ses
 type GetAttendancesParameters struct {
 	UserId    string
 	Date      *time.Time
-	Paginator *Paginator
+	Paginator *Pagination
 }
 
 type GetAttendancesResults struct {

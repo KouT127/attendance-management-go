@@ -3,8 +3,8 @@ package sqlstore
 import (
 	"context"
 	"github.com/KouT127/attendance-management/domain/models"
-	"github.com/KouT127/attendance-management/modules/timeutil"
-	"github.com/KouT127/attendance-management/modules/timezone"
+	"github.com/KouT127/attendance-management/utilities/timeutil"
+	"github.com/KouT127/attendance-management/utilities/timezone"
 	"github.com/Songmu/flextime"
 	"time"
 )
@@ -91,7 +91,7 @@ func FetchAttendances(ctx context.Context, query *models.GetAttendancesParameter
 
 		p := query.Paginator
 		if query.Paginator == nil {
-			p = &models.Paginator{}
+			p = &models.Pagination{}
 		}
 		if p.Limit == 0 {
 			p.Limit = 15

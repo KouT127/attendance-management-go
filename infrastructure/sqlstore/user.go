@@ -3,7 +3,7 @@ package sqlstore
 import (
 	"context"
 	"github.com/KouT127/attendance-management/domain/models"
-	"github.com/KouT127/attendance-management/modules/logger"
+	"github.com/KouT127/attendance-management/utilities/logger"
 	"golang.org/x/xerrors"
 )
 

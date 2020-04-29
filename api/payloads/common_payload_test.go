@@ -105,7 +105,7 @@ func TestPaginationPayload_ToPaginator(t *testing.T) {
 	tests := []struct {
 		name   string
 		fields fields
-		want   *models.Paginator
+		want   *models.Pagination
 	}{
 		// TODO: Add test cases.
 	}

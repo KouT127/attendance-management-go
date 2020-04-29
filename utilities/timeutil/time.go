@@ -1,7 +1,7 @@
 package timeutil
 
 import (
-	"github.com/KouT127/attendance-management/modules/timezone"
+	"github.com/KouT127/attendance-management/utilities/timezone"
 	"time"
 )
 

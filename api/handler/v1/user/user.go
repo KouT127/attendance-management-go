@@ -6,7 +6,7 @@ import (
 	"github.com/KouT127/attendance-management/application/facades"
 	"github.com/KouT127/attendance-management/domain/models"
 	"github.com/KouT127/attendance-management/infrastructure/auth"
-	"github.com/KouT127/attendance-management/modules/logger"
+	"github.com/KouT127/attendance-management/utilities/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/xerrors"

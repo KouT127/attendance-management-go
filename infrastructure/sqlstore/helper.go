@@ -2,7 +2,7 @@ package sqlstore
 
 import (
 	"fmt"
-	"github.com/KouT127/attendance-management/modules/directory"
+	"github.com/KouT127/attendance-management/utilities/directory"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/mysql"
