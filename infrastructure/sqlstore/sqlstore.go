@@ -138,8 +138,6 @@ func initTestTCPConnectionPool() (*xorm.Engine, error) {
 	}
 
 	// configure settings
-	configureConnectionPool(engine)
-	configureLogger(engine)
 	configureTimezone(engine)
 	return engine, nil
 }
