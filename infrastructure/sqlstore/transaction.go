@@ -76,3 +76,7 @@ func withDBSession(ctx context.Context, callback dbTransactionFunc) error {
 
 	return callback(sess)
 }
+
+func getDBSession(ctx context.Context) (*DBSession, error) {
+	return startSession(ctx, eng, false)
+}

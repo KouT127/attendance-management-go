@@ -8,18 +8,18 @@ import (
 )
 
 func GetUser(ctx context.Context, userId string) (*models.User, error) {
-	var user models.User
-	err := withDBSession(ctx, func(sess *DBSession) error {
-		_, err := sess.Get(&user)
-		if err != nil {
-			return err
-		}
-		return nil
-	})
+	sess, err := getDBSession(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return &user, nil
+
+	user := &models.User{Id: userId}
+	_, err = sess.Get(user)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
 func CreateUser(ctx context.Context, user *models.User) error {

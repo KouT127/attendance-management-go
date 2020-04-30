@@ -44,14 +44,15 @@ func (f *userService) GetOrCreateUser(params models.GetOrCreateUserParams) (*mod
 				return err
 			}
 		}
+
+		if attendance, err = sqlstore.FetchLatestAttendance(context.Background(), params.UserId); err != nil {
+			return err
+		}
+
 		return nil
 	})
 
 	if err != nil {
-		return nil, err
-	}
-
-	if attendance, err = sqlstore.FetchLatestAttendance(context.Background(), params.UserId); err != nil {
 		return nil, err
 	}
 
