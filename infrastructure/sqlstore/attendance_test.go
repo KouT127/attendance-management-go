@@ -206,13 +206,13 @@ func TestFetchAttendances(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := store.FetchAttendances(tt.args.ctx, tt.args.query)
+			got, err := store.GetAttendances(tt.args.ctx, tt.args.query)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("FetchAttendances() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("GetAttendances() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if diff := cmp.Diff(got, tt.want); diff != "" {
-				t.Errorf("FetchAttendances() diff %s", diff)
+				t.Errorf("GetAttendances() diff %s", diff)
 			}
 		})
 	}
@@ -235,13 +235,13 @@ func TestFetchAttendancesCount(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := store.FetchAttendancesCount(tt.args.ctx, tt.args.userId)
+			got, err := store.GetAttendancesCount(tt.args.ctx, tt.args.userId)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("FetchAttendancesCount() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("GetAttendancesCount() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if got != tt.want {
-				t.Errorf("FetchAttendancesCount() got = %v, want %v", got, tt.want)
+				t.Errorf("GetAttendancesCount() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -263,13 +263,13 @@ func TestFetchLatestAttendance(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := store.FetchLatestAttendance(tt.args.ctx, tt.args.userId)
+			got, err := store.GetLatestAttendance(tt.args.ctx, tt.args.userId)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("FetchLatestAttendance() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("GetLatestAttendance() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("FetchLatestAttendance() got = %v, want %v", got, tt.want)
+				t.Errorf("GetLatestAttendance() got = %v, want %v", got, tt.want)
 			}
 		})
 	}

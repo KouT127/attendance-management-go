@@ -25,11 +25,11 @@ func NewAttendanceService(ss sqlstore.SqlStore) AttendanceService {
 
 func (s *attendanceService) GetAttendances(params models.GetAttendancesParameters) (*models.GetAttendancesResults, error) {
 	ctx := context.Background()
-	maxCnt, err := s.store.FetchAttendancesCount(ctx, params.UserId)
+	maxCnt, err := s.store.GetAttendancesCount(ctx, params.UserId)
 	if err != nil {
 		return nil, err
 	}
-	attendances, err := s.store.FetchAttendances(ctx, &params)
+	attendances, err := s.store.GetAttendances(ctx, &params)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (s *attendanceService) CreateOrUpdateAttendance(attendanceTime *models.Atte
 	}
 
 	err = s.store.InTransaction(context.Background(), func(ctx context.Context) error {
-		attendance, err = s.store.FetchLatestAttendance(ctx, userId)
+		attendance, err = s.store.GetLatestAttendance(ctx, userId)
 		if err != nil {
 			return err
 		}

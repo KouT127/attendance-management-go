@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func (sqlStore) FetchAttendancesCount(ctx context.Context, userId string) (int64, error) {
+func (sqlStore) GetAttendancesCount(ctx context.Context, userId string) (int64, error) {
 	var count int64
 
 	sess, err := getDBSession(ctx)
@@ -27,7 +27,7 @@ func (sqlStore) FetchAttendancesCount(ctx context.Context, userId string) (int64
 	return count, nil
 }
 
-func (sqlStore) FetchLatestAttendance(ctx context.Context, userId string) (*models.Attendance, error) {
+func (sqlStore) GetLatestAttendance(ctx context.Context, userId string) (*models.Attendance, error) {
 	var (
 		attendance models.AttendanceDetail
 		has        bool
@@ -65,7 +65,7 @@ func (sqlStore) FetchLatestAttendance(ctx context.Context, userId string) (*mode
 	return attendance.ToAttendance(), nil
 }
 
-func (sqlStore) FetchAttendances(ctx context.Context, query *models.GetAttendancesParameters) ([]*models.Attendance, error) {
+func (sqlStore) GetAttendances(ctx context.Context, query *models.GetAttendancesParameters) ([]*models.Attendance, error) {
 	var attendances []*models.Attendance
 
 	sess, err := getDBSession(ctx)

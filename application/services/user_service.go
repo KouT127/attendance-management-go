@@ -45,7 +45,7 @@ func (s *userService) GetOrCreateUser(params models.GetOrCreateUserParams) (*mod
 			}
 		}
 
-		if attendance, err = s.store.FetchLatestAttendance(context.Background(), params.UserId); err != nil {
+		if attendance, err = s.store.GetLatestAttendance(context.Background(), params.UserId); err != nil {
 			return err
 		}
 
