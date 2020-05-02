@@ -13,16 +13,16 @@ type UserService interface {
 }
 
 type userService struct {
-	ss *sqlstore.SQLStore
+	store sqlstore.SqlStore
 }
 
-func NewUserService(ss *sqlstore.SQLStore) *userService {
+func NewUserService(ss sqlstore.SqlStore) *userService {
 	return &userService{
-		ss: ss,
+		store: ss,
 	}
 }
 
-func (f *userService) GetOrCreateUser(params models.GetOrCreateUserParams) (*models.GetOrCreateUserResults, error) {
+func (s *userService) GetOrCreateUser(params models.GetOrCreateUserParams) (*models.GetOrCreateUserResults, error) {
 	var (
 		user       *models.User
 		attendance *models.Attendance
@@ -32,20 +32,20 @@ func (f *userService) GetOrCreateUser(params models.GetOrCreateUserParams) (*mod
 		return nil, xerrors.New("user id is empty")
 	}
 
-	err = f.ss.InTransaction(context.Background(), func(ctx context.Context) error {
-		user, err = sqlstore.GetUser(ctx, params.UserId)
+	err = s.store.InTransaction(context.Background(), func(ctx context.Context) error {
+		user, err = s.store.GetUser(ctx, params.UserId)
 		if err != nil {
 			return err
 		}
 
 		if user.Id == "" {
 			user.Id = params.UserId
-			if err = sqlstore.CreateUser(ctx, user); err != nil {
+			if err = s.store.CreateUser(ctx, user); err != nil {
 				return err
 			}
 		}
 
-		if attendance, err = sqlstore.FetchLatestAttendance(context.Background(), params.UserId); err != nil {
+		if attendance, err = s.store.FetchLatestAttendance(context.Background(), params.UserId); err != nil {
 			return err
 		}
 
@@ -63,9 +63,9 @@ func (f *userService) GetOrCreateUser(params models.GetOrCreateUserParams) (*mod
 	return &res, nil
 }
 
-func (f *userService) UpdateUser(user *models.User) error {
-	err := f.ss.InTransaction(context.Background(), func(ctx context.Context) error {
-		return sqlstore.UpdateUser(ctx, user)
+func (s *userService) UpdateUser(user *models.User) error {
+	err := s.store.InTransaction(context.Background(), func(ctx context.Context) error {
+		return s.store.UpdateUser(ctx, user)
 	})
 
 	if err != nil {

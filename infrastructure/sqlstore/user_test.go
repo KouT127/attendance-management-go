@@ -9,7 +9,7 @@ import (
 )
 
 func TestCreateUser(t *testing.T) {
-	InitTestDatabase()
+	store := InitTestDatabase()
 	type args struct {
 		ctx  context.Context
 		user *models.User
@@ -33,7 +33,7 @@ func TestCreateUser(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := CreateUser(tt.args.ctx, tt.args.user); (err != nil) != tt.wantErr {
+			if err := store.CreateUser(tt.args.ctx, tt.args.user); (err != nil) != tt.wantErr {
 				t.Errorf("CreateUser() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -41,14 +41,14 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestUpdateUser(t *testing.T) {
-	InitTestDatabase()
+	store := InitTestDatabase()
 
 	user := &models.User{
 		Id:   "asdiekawei42lasedi356ladfkjfity",
 		Name: "test1",
 	}
 
-	if err := CreateUser(context.Background(), user); err != nil {
+	if err := store.CreateUser(context.Background(), user); err != nil {
 		t.Errorf("CreateAttendanceTime() failed%s", err)
 	}
 
@@ -89,7 +89,7 @@ func TestUpdateUser(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := UpdateUser(tt.args.ctx, tt.args.user); (err != nil) != tt.wantErr {
+			if err := store.UpdateUser(tt.args.ctx, tt.args.user); (err != nil) != tt.wantErr {
 				t.Errorf("UpdateUser() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
@@ -106,13 +106,13 @@ func TestUpdateUser(t *testing.T) {
 }
 
 func TestGetUser(t *testing.T) {
-	InitTestDatabase()
+	store := InitTestDatabase()
 	user := &models.User{
 		Id:   "asdiekawei42lasedi356ladfkjfity",
 		Name: "test1",
 	}
 
-	if err := CreateUser(context.Background(), user); err != nil {
+	if err := store.CreateUser(context.Background(), user); err != nil {
 		t.Errorf("CreateAttendanceTime() failed%s", err)
 	}
 
@@ -147,7 +147,7 @@ func TestGetUser(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := GetUser(tt.args.ctx, tt.args.userId)
+			got, err := store.GetUser(tt.args.ctx, tt.args.userId)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetUser() error = %v, wantErr %v", err, tt.wantErr)
 				return

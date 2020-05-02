@@ -61,20 +61,11 @@ func inTransactionCtx(ctx context.Context, eng *xorm.Engine, callback dbTransact
 	return nil
 }
 
-func (ss *SQLStore) InTransaction(ctx context.Context, fn func(ctx context.Context) error) error {
+func (ss *sqlStore) InTransaction(ctx context.Context, fn func(ctx context.Context) error) error {
 	return inTransactionCtx(ctx, ss.engine, func(sess *DBSession) error {
 		withValue := context.WithValue(ctx, ContextSessionKey{}, sess)
 		return fn(withValue)
 	})
-}
-
-func withDBSession(ctx context.Context, callback dbTransactionFunc) error {
-	sess, err := startSession(ctx, eng, false)
-	if err != nil {
-		return err
-	}
-
-	return callback(sess)
 }
 
 func getDBSession(ctx context.Context) (*DBSession, error) {

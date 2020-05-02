@@ -1,7 +1,9 @@
 package sqlstore
 
 import (
+	"context"
 	"fmt"
+	"github.com/KouT127/attendance-management/domain/models"
 	_ "github.com/go-sql-driver/mysql"
 	"golang.org/x/xerrors"
 	"log"
@@ -17,16 +19,25 @@ const (
 	AttendanceTimeTable = "attendances_time"
 )
 
-type SQLStore struct {
+type SqlStore interface {
+	InTransaction(ctx context.Context, fn func(ctx context.Context) error) error
+	FetchAttendancesCount(ctx context.Context, userId string) (int64, error)
+	FetchLatestAttendance(ctx context.Context, userId string) (*models.Attendance, error)
+	FetchAttendances(ctx context.Context, query *models.GetAttendancesParameters) ([]*models.Attendance, error)
+	UpdateOldAttendanceTime(ctx context.Context, id int64, kindId uint8) error
+	CreateAttendance(ctx context.Context, attendance *models.Attendance) error
+	CreateAttendanceTime(ctx context.Context, attendanceTime *models.AttendanceTime) error
+	GetUser(ctx context.Context, userId string) (*models.User, error)
+	CreateUser(ctx context.Context, user *models.User) error
+	UpdateUser(ctx context.Context, user *models.User) error
+}
+
+type sqlStore struct {
 	engine *xorm.Engine
 }
 
 var (
-	eng        *xorm.Engine
-	CONNECTION string
-	USER       string
-	PASS       string
-	TABLE      string
+	eng *xorm.Engine
 )
 
 func mustGetenv(key string) string {
@@ -58,9 +69,9 @@ func configureTimezone(engine *xorm.Engine) {
 	engine.SetTZDatabase(loc)
 }
 
-func InitDatabase() SQLStore {
+func InitDatabase() SqlStore {
 	var (
-		ss  SQLStore
+		ss  sqlStore
 		err error
 	)
 	dbHost := os.Getenv("DB_TCP_HOST")
@@ -76,7 +87,7 @@ func InitDatabase() SQLStore {
 		}
 	}
 	ss.engine = eng
-	return ss
+	return &ss
 }
 
 func initSocketConnectionPool() (*xorm.Engine, error) {
@@ -122,6 +133,22 @@ func initTCPConnectionPool() (*xorm.Engine, error) {
 	return engine, nil
 }
 
+func InitTestDatabase() SqlStore {
+	var (
+		ss  sqlStore
+		err error
+	)
+	eng, err = initTestTCPConnectionPool()
+	if err != nil {
+		log.Fatalf("Socket connection is unavailable")
+	}
+	if err = DeleteTestData(); err != nil {
+		log.Fatalf("Failed delete data %s", err)
+	}
+	ss.engine = eng
+	return &ss
+}
+
 func initTestTCPConnectionPool() (*xorm.Engine, error) {
 	var (
 		err       error
@@ -140,20 +167,4 @@ func initTestTCPConnectionPool() (*xorm.Engine, error) {
 	// configure settings
 	configureTimezone(engine)
 	return engine, nil
-}
-
-func InitTestDatabase() SQLStore {
-	var (
-		ss  SQLStore
-		err error
-	)
-	eng, err = initTestTCPConnectionPool()
-	if err != nil {
-		log.Fatalf("Socket connection is unavailable")
-	}
-	if err = DeleteTestData(); err != nil {
-		log.Fatalf("Failed delete data %s", err)
-	}
-	ss.engine = eng
-	return ss
 }

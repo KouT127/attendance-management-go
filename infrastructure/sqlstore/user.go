@@ -7,7 +7,7 @@ import (
 	"golang.org/x/xerrors"
 )
 
-func GetUser(ctx context.Context, userId string) (*models.User, error) {
+func (sqlStore) GetUser(ctx context.Context, userId string) (*models.User, error) {
 	sess, err := getDBSession(ctx)
 	if err != nil {
 		return nil, err
@@ -22,37 +22,36 @@ func GetUser(ctx context.Context, userId string) (*models.User, error) {
 	return user, nil
 }
 
-func CreateUser(ctx context.Context, user *models.User) error {
-	err := withDBSession(ctx, func(sess *DBSession) error {
-		if _, err := sess.Insert(user); err != nil {
-			return err
-		}
-		return nil
-	})
+func (sqlStore) CreateUser(ctx context.Context, user *models.User) error {
+	sess, err := getDBSession(ctx)
 	if err != nil {
+		return err
+	}
+
+	if _, err := sess.Insert(user); err != nil {
 		return err
 	}
 	return nil
 }
 
-func UpdateUser(ctx context.Context, user *models.User) error {
-	err := withDBSession(ctx, func(sess *DBSession) error {
-		has, err := sess.Where("id = ?", user.Id).Exist(&models.User{})
-		if err != nil {
-			return err
-		}
-		if !has {
-			return xerrors.New("user is empty")
-		}
-
-		if _, err := sess.Update(user, &models.User{Id: user.Id}); err != nil {
-			return err
-		}
-		return nil
-	})
+func (sqlStore) UpdateUser(ctx context.Context, user *models.User) error {
+	sess, err := getDBSession(ctx)
 	if err != nil {
 		return err
 	}
+
+	has, err := sess.Where("id = ?", user.Id).Exist(&models.User{})
+	if err != nil {
+		return err
+	}
+	if !has {
+		return xerrors.New("user is not exists")
+	}
+
+	if _, err := sess.Update(user, &models.User{Id: user.Id}); err != nil {
+		return err
+	}
 	logger.NewInfo("updated user_id: " + user.Id)
+
 	return nil
 }

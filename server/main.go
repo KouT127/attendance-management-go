@@ -8,8 +8,7 @@ import (
 )
 
 func main() {
-	store := sqlstore.InitDatabase()
 	logger.SetUp()
 	timezone.Set("Asia/Tokyo")
-	routes.InitRouter(&store)
+	routes.InitRouter(sqlstore.InitDatabase())
 }

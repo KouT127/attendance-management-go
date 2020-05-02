@@ -18,14 +18,14 @@ func TestMain(m *testing.M) {
 }
 
 func TestCreateAttendance(t *testing.T) {
-	InitTestDatabase()
+	store := InitTestDatabase()
 
 	user := &models.User{
 		Id:   "asdiekawei42lasedi356ladfkjfity",
 		Name: "test1",
 	}
 
-	if err := CreateUser(context.Background(), user); err != nil {
+	if err := store.CreateUser(context.Background(), user); err != nil {
 		t.Errorf("CreateAttendanceTime() failed%s", err)
 	}
 
@@ -59,7 +59,7 @@ func TestCreateAttendance(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := CreateAttendance(tt.args.ctx, tt.args.attendance); (err != nil) != tt.wantErr {
+			if err := store.CreateAttendance(tt.args.ctx, tt.args.attendance); (err != nil) != tt.wantErr {
 				t.Errorf("CreateAttendance() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -67,7 +67,7 @@ func TestCreateAttendance(t *testing.T) {
 }
 
 func TestCreateAttendanceTime(t *testing.T) {
-	InitTestDatabase()
+	store := InitTestDatabase()
 	type args struct {
 		ctx            context.Context
 		attendanceTime *models.AttendanceTime
@@ -77,7 +77,7 @@ func TestCreateAttendanceTime(t *testing.T) {
 		Name: "test1",
 	}
 
-	if err := CreateUser(context.Background(), user); err != nil {
+	if err := store.CreateUser(context.Background(), user); err != nil {
 		t.Errorf("CreateAttendanceTime() failed%s", err)
 	}
 
@@ -85,7 +85,7 @@ func TestCreateAttendanceTime(t *testing.T) {
 		UserId: user.Id,
 	}
 
-	if err := CreateAttendance(context.Background(), attendance); err != nil {
+	if err := store.CreateAttendance(context.Background(), attendance); err != nil {
 		t.Errorf("CreateAttendanceTime() failed%s", err)
 	}
 
@@ -121,7 +121,7 @@ func TestCreateAttendanceTime(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := CreateAttendanceTime(tt.args.ctx, tt.args.attendanceTime); (err != nil) != tt.wantErr {
+			if err := store.CreateAttendanceTime(tt.args.ctx, tt.args.attendanceTime); (err != nil) != tt.wantErr {
 				t.Errorf("CreateAttendanceTime() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -130,7 +130,7 @@ func TestCreateAttendanceTime(t *testing.T) {
 
 func TestFetchAttendances(t *testing.T) {
 	var attendances []*models.Attendance
-	InitTestDatabase()
+	store := InitTestDatabase()
 	timezone.Set("Asia/Tokyo")
 
 	user := &models.User{
@@ -138,7 +138,7 @@ func TestFetchAttendances(t *testing.T) {
 		Name: "test1",
 	}
 
-	if err := CreateUser(context.Background(), user); err != nil {
+	if err := store.CreateUser(context.Background(), user); err != nil {
 		t.Errorf("CreateAttendanceTime() failed%s", err)
 	}
 
@@ -148,7 +148,7 @@ func TestFetchAttendances(t *testing.T) {
 		UpdatedAt: flextime.Now().UTC().Truncate(time.Second),
 	}
 
-	if err := CreateAttendance(context.Background(), attendance); err != nil {
+	if err := store.CreateAttendance(context.Background(), attendance); err != nil {
 		t.Errorf("CreateAttendance() failed%s", err)
 	}
 
@@ -162,7 +162,7 @@ func TestFetchAttendances(t *testing.T) {
 		UpdatedAt:        flextime.Now().UTC().Truncate(time.Second),
 	}
 
-	if err := CreateAttendanceTime(context.Background(), time); err != nil {
+	if err := store.CreateAttendanceTime(context.Background(), time); err != nil {
 		t.Errorf("CreateAttendanceTime() failed%s", err)
 	}
 
@@ -206,7 +206,7 @@ func TestFetchAttendances(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := FetchAttendances(tt.args.ctx, tt.args.query)
+			got, err := store.FetchAttendances(tt.args.ctx, tt.args.query)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("FetchAttendances() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -219,6 +219,8 @@ func TestFetchAttendances(t *testing.T) {
 }
 
 func TestFetchAttendancesCount(t *testing.T) {
+	store := InitTestDatabase()
+
 	type args struct {
 		ctx    context.Context
 		userId string
@@ -233,7 +235,7 @@ func TestFetchAttendancesCount(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := FetchAttendancesCount(tt.args.ctx, tt.args.userId)
+			got, err := store.FetchAttendancesCount(tt.args.ctx, tt.args.userId)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("FetchAttendancesCount() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -246,6 +248,7 @@ func TestFetchAttendancesCount(t *testing.T) {
 }
 
 func TestFetchLatestAttendance(t *testing.T) {
+	store := InitTestDatabase()
 	type args struct {
 		ctx    context.Context
 		userId string
@@ -260,7 +263,7 @@ func TestFetchLatestAttendance(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := FetchLatestAttendance(tt.args.ctx, tt.args.userId)
+			got, err := store.FetchLatestAttendance(tt.args.ctx, tt.args.userId)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("FetchLatestAttendance() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -273,6 +276,7 @@ func TestFetchLatestAttendance(t *testing.T) {
 }
 
 func TestUpdateOldAttendanceTime(t *testing.T) {
+	store := InitTestDatabase()
 	type args struct {
 		ctx    context.Context
 		id     int64
@@ -287,7 +291,7 @@ func TestUpdateOldAttendanceTime(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := UpdateOldAttendanceTime(tt.args.ctx, tt.args.id, tt.args.kindId); (err != nil) != tt.wantErr {
+			if err := store.UpdateOldAttendanceTime(tt.args.ctx, tt.args.id, tt.args.kindId); (err != nil) != tt.wantErr {
 				t.Errorf("UpdateOldAttendanceTime() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

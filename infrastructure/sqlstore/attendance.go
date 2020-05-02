@@ -9,27 +9,25 @@ import (
 	"time"
 )
 
-func FetchAttendancesCount(ctx context.Context, userId string) (int64, error) {
+func (sqlStore) FetchAttendancesCount(ctx context.Context, userId string) (int64, error) {
 	var count int64
 
-	dbErr := withDBSession(ctx, func(sess *DBSession) error {
-		var err error
-		attendance := &models.Attendance{}
-		attendance.UserId = userId
-		count, err = sess.Count(attendance)
-		if err != nil {
-			return err
-		}
-		return nil
-	})
-
-	if dbErr != nil {
-		return 0, dbErr
+	sess, err := getDBSession(ctx)
+	if err != nil {
+		return 0, err
 	}
+
+	attendance := &models.Attendance{}
+	attendance.UserId = userId
+	count, err = sess.Count(attendance)
+	if err != nil {
+		return 0, err
+	}
+
 	return count, nil
 }
 
-func FetchLatestAttendance(ctx context.Context, userId string) (*models.Attendance, error) {
+func (sqlStore) FetchLatestAttendance(ctx context.Context, userId string) (*models.Attendance, error) {
 	var (
 		attendance models.AttendanceDetail
 		has        bool
@@ -67,7 +65,7 @@ func FetchLatestAttendance(ctx context.Context, userId string) (*models.Attendan
 	return attendance.ToAttendance(), nil
 }
 
-func FetchAttendances(ctx context.Context, query *models.GetAttendancesParameters) ([]*models.Attendance, error) {
+func (sqlStore) FetchAttendances(ctx context.Context, query *models.GetAttendancesParameters) ([]*models.Attendance, error) {
 	var attendances []*models.Attendance
 
 	sess, err := getDBSession(ctx)
@@ -116,7 +114,7 @@ func FetchAttendances(ctx context.Context, query *models.GetAttendancesParameter
 	return attendances, nil
 }
 
-func UpdateOldAttendanceTime(ctx context.Context, id int64, kindId uint8) error {
+func (sqlStore) UpdateOldAttendanceTime(ctx context.Context, id int64, kindId uint8) error {
 	sess, err := getDBSession(ctx)
 	if err != nil {
 		return err
@@ -135,7 +133,7 @@ func UpdateOldAttendanceTime(ctx context.Context, id int64, kindId uint8) error 
 	return nil
 }
 
-func CreateAttendance(ctx context.Context, attendance *models.Attendance) error {
+func (sqlStore) CreateAttendance(ctx context.Context, attendance *models.Attendance) error {
 	sess, err := getDBSession(ctx)
 	if err != nil {
 		return err
@@ -146,7 +144,7 @@ func CreateAttendance(ctx context.Context, attendance *models.Attendance) error 
 	return nil
 }
 
-func CreateAttendanceTime(ctx context.Context, attendanceTime *models.AttendanceTime) error {
+func (sqlStore) CreateAttendanceTime(ctx context.Context, attendanceTime *models.AttendanceTime) error {
 	sess, err := getDBSession(ctx)
 	if err != nil {
 		return err
