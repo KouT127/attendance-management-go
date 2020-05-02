@@ -7,6 +7,10 @@ import (
 	"xorm.io/xorm"
 )
 
+type Transaction interface {
+	InTransaction(ctx context.Context, fn func(ctx context.Context) error) error
+}
+
 type ContextSessionKey struct{}
 
 type DBSession struct {

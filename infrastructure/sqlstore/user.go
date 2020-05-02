@@ -7,6 +7,12 @@ import (
 	"golang.org/x/xerrors"
 )
 
+type User interface {
+	GetUser(ctx context.Context, userId string) (*models.User, error)
+	CreateUser(ctx context.Context, user *models.User) error
+	UpdateUser(ctx context.Context, user *models.User) error
+}
+
 func (sqlStore) GetUser(ctx context.Context, userId string) (*models.User, error) {
 	sess, err := getDBSession(ctx)
 	if err != nil {

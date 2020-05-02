@@ -1,9 +1,7 @@
 package sqlstore
 
 import (
-	"context"
 	"fmt"
-	"github.com/KouT127/attendance-management/domain/models"
 	_ "github.com/go-sql-driver/mysql"
 	"golang.org/x/xerrors"
 	"log"
@@ -20,16 +18,9 @@ const (
 )
 
 type SqlStore interface {
-	InTransaction(ctx context.Context, fn func(ctx context.Context) error) error
-	GetAttendancesCount(ctx context.Context, userId string) (int64, error)
-	GetLatestAttendance(ctx context.Context, userId string) (*models.Attendance, error)
-	GetAttendances(ctx context.Context, query *models.GetAttendancesParameters) ([]*models.Attendance, error)
-	UpdateOldAttendanceTime(ctx context.Context, id int64, kindId uint8) error
-	CreateAttendance(ctx context.Context, attendance *models.Attendance) error
-	CreateAttendanceTime(ctx context.Context, attendanceTime *models.AttendanceTime) error
-	GetUser(ctx context.Context, userId string) (*models.User, error)
-	CreateUser(ctx context.Context, user *models.User) error
-	UpdateUser(ctx context.Context, user *models.User) error
+	Transaction
+	User
+	Attendance
 }
 
 type sqlStore struct {

@@ -9,6 +9,15 @@ import (
 	"time"
 )
 
+type Attendance interface {
+	GetAttendancesCount(ctx context.Context, userId string) (int64, error)
+	GetLatestAttendance(ctx context.Context, userId string) (*models.Attendance, error)
+	GetAttendances(ctx context.Context, query *models.GetAttendancesParameters) ([]*models.Attendance, error)
+	UpdateOldAttendanceTime(ctx context.Context, id int64, kindId uint8) error
+	CreateAttendance(ctx context.Context, attendance *models.Attendance) error
+	CreateAttendanceTime(ctx context.Context, attendanceTime *models.AttendanceTime) error
+}
+
 func (sqlStore) GetAttendancesCount(ctx context.Context, userId string) (int64, error) {
 	var count int64
 
