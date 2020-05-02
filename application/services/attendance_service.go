@@ -67,13 +67,13 @@ func (s *attendanceService) CreateOrUpdateAttendance(attendanceTime *models.Atte
 			attendance.ClockedIn = attendanceTime
 			attendance.CreatedAt = flextime.Now()
 			attendance.UpdatedAt = flextime.Now()
-			if err := s.store.CreateAttendance(ctx, attendance); err != nil {
+			if err = s.store.CreateAttendance(ctx, attendance); err != nil {
 				return err
 			}
 			attendanceTime.AttendanceId = attendance.Id
 			attendanceTime.AttendanceKindId = uint8(models.AttendanceKindClockIn)
 		} else {
-			if err := s.store.UpdateOldAttendanceTime(ctx, attendance.Id, uint8(models.AttendanceKindClockOut)); err != nil {
+			if err = s.store.UpdateOldAttendanceTime(ctx, attendance.Id, uint8(models.AttendanceKindClockOut)); err != nil {
 				return err
 			}
 			attendance.ClockedOut = attendanceTime
@@ -81,7 +81,7 @@ func (s *attendanceService) CreateOrUpdateAttendance(attendanceTime *models.Atte
 			attendanceTime.AttendanceKindId = uint8(models.AttendanceKindClockOut)
 		}
 
-		if err := s.store.CreateAttendanceTime(ctx, attendanceTime); err != nil {
+		if err = s.store.CreateAttendanceTime(ctx, attendanceTime); err != nil {
 			return err
 		}
 		return nil

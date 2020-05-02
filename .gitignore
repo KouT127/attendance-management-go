@@ -34,3 +34,6 @@ docker/mysql/*
 
 # golangci
 !.golangci.yml
+
+# mock
+**/mock/*
