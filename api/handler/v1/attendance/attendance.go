@@ -120,7 +120,7 @@ func (s *attendanceService) CreateHandler(c *gin.Context) {
 	}
 
 	attendanceTime := input.ToAttendanceTime()
-	attendance, err := s.service.CreateOrUpdateAttendance(attendanceTime, userId)
+	attendance, err := s.service.CreateOrUpdateAttendance(c, attendanceTime, userId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return

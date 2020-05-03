@@ -32,24 +32,24 @@ func (s *userService) GetOrCreateUser(params models.GetOrCreateUserParams) (*mod
 		return nil, xerrors.New("user id is empty")
 	}
 
-	err = s.store.InTransaction(context.Background(), func(ctx context.Context) error {
+	_, err = s.store.InTransaction(context.Background(), func(ctx context.Context) (interface{}, error) {
 		user, err = s.store.GetUser(ctx, params.UserId)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		if user.Id == "" {
 			user.Id = params.UserId
 			if err = s.store.CreateUser(ctx, user); err != nil {
-				return err
+				return nil, err
 			}
 		}
 
 		if attendance, err = s.store.GetLatestAttendance(context.Background(), params.UserId); err != nil {
-			return err
+			return nil, err
 		}
 
-		return nil
+		return nil, nil
 	})
 
 	if err != nil {
@@ -64,8 +64,8 @@ func (s *userService) GetOrCreateUser(params models.GetOrCreateUserParams) (*mod
 }
 
 func (s *userService) UpdateUser(user *models.User) error {
-	err := s.store.InTransaction(context.Background(), func(ctx context.Context) error {
-		return s.store.UpdateUser(ctx, user)
+	_, err := s.store.InTransaction(context.Background(), func(ctx context.Context) (interface{}, error) {
+		return nil, s.store.UpdateUser(ctx, user)
 	})
 
 	if err != nil {

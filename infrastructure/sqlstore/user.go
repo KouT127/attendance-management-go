@@ -1,7 +1,5 @@
 package sqlstore
 
-//go:generate mockgen -source=user.go -destination=mock/mock_user.go -package=sqlstore
-
 import (
 	"context"
 	"github.com/KouT127/attendance-management/domain/models"
