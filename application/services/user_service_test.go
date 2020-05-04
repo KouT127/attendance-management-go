@@ -1,13 +1,19 @@
 package services
 
 import (
+	"context"
 	"github.com/KouT127/attendance-management/domain/models"
 	"github.com/KouT127/attendance-management/infrastructure/sqlstore"
-	"reflect"
+	"github.com/Songmu/flextime"
+	"github.com/google/go-cmp/cmp"
+	uuid "github.com/satori/go.uuid"
 	"testing"
 )
 
 func Test_userService_GetOrCreateUser(t *testing.T) {
+	store := sqlstore.InitTestDatabase()
+	userId := uuid.NewV4().String()
+
 	type fields struct {
 		store sqlstore.SqlStore
 	}
@@ -21,7 +27,55 @@ func Test_userService_GetOrCreateUser(t *testing.T) {
 		want    *models.GetOrCreateUserResults
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Should create user",
+			fields: fields{
+				store: store,
+			},
+			args: args{
+				params: models.GetOrCreateUserParams{
+					UserId: userId,
+				},
+			},
+			want: &models.GetOrCreateUserResults{
+				User: &models.User{
+					Id: userId,
+				},
+				LatestAttendance: nil,
+			},
+			wantErr: false,
+		},
+		{
+			name: "Should get user",
+			fields: fields{
+				store: store,
+			},
+			args: args{
+				params: models.GetOrCreateUserParams{
+					UserId: userId,
+				},
+			},
+			want: &models.GetOrCreateUserResults{
+				User: &models.User{
+					Id: userId,
+				},
+				LatestAttendance: nil,
+			},
+			wantErr: false,
+		},
+		{
+			name: "Should not create user when userId is empty",
+			fields: fields{
+				store: store,
+			},
+			args: args{
+				params: models.GetOrCreateUserParams{
+					UserId: "",
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -33,14 +87,21 @@ func Test_userService_GetOrCreateUser(t *testing.T) {
 				t.Errorf("GetOrCreateUser() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetOrCreateUser() got = %v, want %v", got, tt.want)
+			if diff := cmp.Diff(got, tt.want); diff != "" {
+				t.Errorf("GetOrCreateUser() diff %s", diff)
 			}
 		})
 	}
 }
 
 func Test_userService_UpdateUser(t *testing.T) {
+	store := sqlstore.InitTestDatabase()
+	userId := uuid.NewV4().String()
+	err := store.CreateUser(context.Background(), &models.User{Id: userId})
+	if err != nil {
+		t.Errorf("CreateUser() %s", err)
+	}
+
 	type fields struct {
 		store sqlstore.SqlStore
 	}
@@ -51,9 +112,45 @@ func Test_userService_UpdateUser(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
+		want    *models.User
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Should update user",
+			fields: fields{
+				store: store,
+			},
+			args: args{
+				user: &models.User{
+					Id:        userId,
+					Name:      "updated",
+					Email:     "updated",
+					ImageURL:  "updated",
+					CreatedAt: flextime.Now(),
+					UpdatedAt: flextime.Now(),
+				},
+			},
+			want: &models.User{
+				Id:        userId,
+				Name:      "updated",
+				Email:     "updated",
+				ImageURL:  "updated",
+				CreatedAt: flextime.Now(),
+				UpdatedAt: flextime.Now(),
+			},
+			wantErr: false,
+		},
+		{
+			name: "Should not update user when user is empty",
+			fields: fields{
+				store: store,
+			},
+			args: args{
+				user: &models.User{},
+			},
+			want:    nil,
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -62,6 +159,23 @@ func Test_userService_UpdateUser(t *testing.T) {
 			}
 			if err := s.UpdateUser(tt.args.user); (err != nil) != tt.wantErr {
 				t.Errorf("UpdateUser() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			got, err := s.GetOrCreateUser(models.GetOrCreateUserParams{UserId: tt.args.user.Id})
+			if got == nil {
+				// Failed用
+				return
+			}
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetOrCreateUser() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if (got.User == nil) != tt.wantErr {
+				t.Errorf("GetOrCreateUser() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if diff := cmp.Diff(got.User, tt.want); diff != "" {
+				t.Errorf("UpdateUser() diff %s", diff)
 			}
 		})
 	}

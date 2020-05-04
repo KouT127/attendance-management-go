@@ -19,12 +19,12 @@ type UserHandler interface {
 }
 
 type userHandler struct {
-	facade services.UserService
+	service services.UserService
 }
 
-func NewUserHandler(facade services.UserService) UserHandler {
+func NewUserHandler(service services.UserService) UserHandler {
 	return userHandler{
-		facade: facade,
+		service: service,
 	}
 }
 
@@ -39,7 +39,7 @@ func (h userHandler) MineHandler(c *gin.Context) {
 
 	userId := value.(string)
 	params := models.GetOrCreateUserParams{UserId: userId}
-	res, err := h.facade.GetOrCreateUser(params)
+	res, err := h.service.GetOrCreateUser(params)
 	if err != nil {
 		logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, err.Error())
 		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))
@@ -72,7 +72,7 @@ func (h userHandler) UpdateHandler(c *gin.Context) {
 	user.Name = input.Name
 	user.Email = input.Email
 
-	if err := h.facade.UpdateUser(user); err != nil {
+	if err := h.service.UpdateUser(user); err != nil {
 		logrus.Warnf("not exists: %s", err)
 		c.JSON(http.StatusBadRequest, responses.NewError(err.Error()))
 		return

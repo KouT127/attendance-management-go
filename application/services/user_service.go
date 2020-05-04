@@ -64,6 +64,9 @@ func (s *userService) GetOrCreateUser(params models.GetOrCreateUserParams) (*mod
 }
 
 func (s *userService) UpdateUser(user *models.User) error {
+	if user == nil {
+		return xerrors.New("user pointer is empty")
+	}
 	_, err := s.store.InTransaction(context.Background(), func(ctx context.Context) (interface{}, error) {
 		return nil, s.store.UpdateUser(ctx, user)
 	})
