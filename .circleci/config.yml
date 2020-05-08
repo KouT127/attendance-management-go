@@ -26,7 +26,7 @@ commands:
           command: dockerize -wait tcp://localhost:3306 -timeout 1m -wait-retry-interval 5s
 
       - run:
-          command: /go/migrate -source file://database/migrations/  -database 'mysql://root:root@tcp(localhost:3306)/test_attendance_management' up
+          command: /go/migrate -source file://infrastructure/sqlstore/migrations/  -database 'mysql://root:root@tcp(localhost:3306)/test_attendance_management' up
 
       - run:
           name: Run go test
@@ -39,12 +39,14 @@ jobs:
         environment:
           DB_TCP_HOST: localhost:3306
           DB_USER: root
-          DB_NAME: attendance_management_test
+          DB_PASS: root
+          DB_NAME: test_attendance_management
+          TEST_DB_NAME: test_attendance_management
       - image: tkuchiki/delayed-mysql
         environment:
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
           MYSQL_ROOT_PASSWORD: 'root'
-          MYSQL_DATABASE: attendance_management_test
+          MYSQL_DATABASE: test_attendance_management
 
 
 
