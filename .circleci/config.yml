@@ -26,7 +26,7 @@ commands:
           command: dockerize -wait tcp://localhost:3306 -timeout 1m -wait-retry-interval 5s
 
       - run:
-          command: /go/migrate -source file://database/migrations/  -database 'mysql://root:@tcp(localhost:3306)/attendance_management_test' up
+          command: /go/migrate -source file://database/migrations/  -database 'mysql://root:root@tcp(localhost:3306)/test_attendance_management' up
 
       - run:
           name: Run go test
