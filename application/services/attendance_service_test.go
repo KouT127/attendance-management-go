@@ -22,7 +22,7 @@ func Test_attendanceService_CreateOrUpdateAttendance(t *testing.T) {
 		cmpopts.IgnoreFields(models.Attendance{}, "Id"),
 		cmpopts.IgnoreFields(models.AttendanceTime{}, "Id", "AttendanceId"),
 	}
-	
+
 	userId := uuid.NewV4().String()
 	if err := store.CreateUser(context.Background(), &models.User{
 		Id:        userId,
@@ -51,35 +51,6 @@ func Test_attendanceService_CreateOrUpdateAttendance(t *testing.T) {
 		shouldChangeDate bool
 		wantErr          bool
 	}{
-		{
-			name: "Should not create attendance when userId is empty",
-			fields: fields{
-				store: store,
-			},
-			args: args{
-				ctx: context.Background(),
-				attendanceTime: &models.AttendanceTime{
-					Remark:     "test",
-					IsModified: false,
-				},
-				userId: "",
-			},
-			want:    nil,
-			wantErr: true,
-		},
-		{
-			name: "Should not create attendance when time is empty",
-			fields: fields{
-				store: store,
-			},
-			args: args{
-				ctx:            context.Background(),
-				attendanceTime: nil,
-				userId:         userId,
-			},
-			want:    nil,
-			wantErr: true,
-		},
 		{
 			name: "Should check in",
 			fields: fields{
@@ -210,6 +181,35 @@ func Test_attendanceService_CreateOrUpdateAttendance(t *testing.T) {
 			},
 			shouldChangeDate: true,
 			wantErr:          false,
+		},
+		{
+			name: "Should not create attendance when userId is empty",
+			fields: fields{
+				store: store,
+			},
+			args: args{
+				ctx: context.Background(),
+				attendanceTime: &models.AttendanceTime{
+					Remark:     "test",
+					IsModified: false,
+				},
+				userId: "",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "Should not create attendance when time is empty",
+			fields: fields{
+				store: store,
+			},
+			args: args{
+				ctx:            context.Background(),
+				attendanceTime: nil,
+				userId:         userId,
+			},
+			want:    nil,
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
