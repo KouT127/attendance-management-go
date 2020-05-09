@@ -34,6 +34,7 @@ commands:
 
 jobs:
   build:
+    parallelism: 1
     docker:
       - image: kout127/golang-with-migrate:0.0.5
         environment:
