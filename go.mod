@@ -11,8 +11,10 @@ require (
 	github.com/go-ozzo/ozzo-validation/v3 v3.8.1
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/golang-migrate/migrate/v4 v4.8.0
+	github.com/golang/mock v1.2.0
 	github.com/google/go-cmp v0.3.0
 	github.com/mattn/go-sqlite3 v1.10.0
+	github.com/satori/go.uuid v1.2.0
 	github.com/sirupsen/logrus v1.4.1
 	github.com/stretchr/testify v1.4.0
 	golang.org/x/crypto v0.0.0-20190617133340-57b3e21c3d56 // indirect
