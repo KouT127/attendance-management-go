@@ -30,7 +30,7 @@ commands:
 
       - run:
           name: Run go test
-          command: go test -v ./...
+          command: go test -v ./... -p 1
 
 jobs:
   build:
