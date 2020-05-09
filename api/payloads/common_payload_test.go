@@ -115,8 +115,8 @@ func TestPaginationPayload_ToPaginator(t *testing.T) {
 				Page:  tt.fields.Page,
 				Limit: tt.fields.Limit,
 			}
-			if got := i.ToPaginator(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ToPaginator() = %v, want %v", got, tt.want)
+			if got := i.ToPagination(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ToPagination() = %v, want %v", got, tt.want)
 			}
 		})
 	}

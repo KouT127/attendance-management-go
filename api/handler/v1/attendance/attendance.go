@@ -47,8 +47,8 @@ func (s *attendanceService) ListHandler(c *gin.Context) {
 	}
 
 	params := models.GetAttendancesParameters{
-		UserID:    userID,
-		Paginator: p.ToPaginator(),
+		UserID:     userID,
+		Pagination: p.ToPagination(),
 	}
 
 	if res, err = s.service.GetAttendances(params); err != nil {
@@ -87,8 +87,8 @@ func (s *attendanceService) MonthlyHandler(c *gin.Context) {
 	}
 
 	params := models.GetAttendancesParameters{
-		UserID:    userID,
-		Paginator: p.ToPaginator(),
+		UserID:     userID,
+		Pagination: p.ToPagination(),
 	}
 
 	if res, err = s.service.GetAttendances(params); err != nil {

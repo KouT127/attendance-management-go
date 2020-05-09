@@ -7,7 +7,7 @@ type PaginationPayload struct {
 	Limit int64 `form:"limit"`
 }
 
-func (i *PaginationPayload) ToPaginator() *models.Pagination {
+func (i *PaginationPayload) ToPagination() *models.Pagination {
 	p := &models.Pagination{}
 	return p
 }

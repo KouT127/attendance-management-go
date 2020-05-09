@@ -6,8 +6,9 @@ import (
 )
 
 type UserPayload struct {
-	Name  string
-	Email string
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	ImageURL string `json:"image_url"`
 }
 
 func (u *UserPayload) Validate() error {

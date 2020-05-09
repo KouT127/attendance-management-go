@@ -70,6 +70,7 @@ func (h userHandler) UpdateHandler(c *gin.Context) {
 	user.ID = value.(string)
 	user.Name = input.Name
 	user.Email = input.Email
+	user.ImageURL = input.ImageURL
 
 	if err := h.service.UpdateUser(user); err != nil {
 		logrus.Warnf("not exists: %s", err)

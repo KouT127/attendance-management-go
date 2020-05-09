@@ -54,10 +54,9 @@ func (sqlStore) UpdateUser(ctx context.Context, user *models.User) error {
 		return xerrors.New("user is not exists")
 	}
 
-	if _, err := sess.Update(user, &models.User{ID: user.ID}); err != nil {
+	if _, err := sess.Where("id = ?", user.ID).Update(user); err != nil {
 		return err
 	}
 	logger.NewInfo("updated user_id: " + user.ID)
-
 	return nil
 }

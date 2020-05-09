@@ -97,8 +97,8 @@ func (sqlStore) GetAttendances(ctx context.Context, query *models.GetAttendances
 		dbSess = dbSess.Where("attendances.created_at Between ? and ? ", start, end)
 	}
 
-	p := query.Paginator
-	if query.Paginator == nil {
+	p := query.Pagination
+	if query.Pagination == nil {
 		p = &models.Pagination{}
 	}
 	if p.Limit == 0 {

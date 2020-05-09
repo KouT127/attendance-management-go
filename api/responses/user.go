@@ -16,8 +16,7 @@ type UserResult struct {
 
 type UserMineResult struct {
 	CommonResponse
-	User       UserResp        `json:"user"`
-	Attendance *AttendanceResp `json:"attendance"`
+	User UserResp `json:"user"`
 }
 
 func toUserResp(user *models.User) UserResp {
