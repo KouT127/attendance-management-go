@@ -2,10 +2,10 @@ package handler
 
 import (
 	"errors"
-	. "github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 )
 
-func GetIDByKey(ctx *Context, key string) (string, error) {
+func GetIDByKey(ctx *gin.Context, key string) (string, error) {
 	value, exists := ctx.Get(key)
 	if !exists {
 		return "", errors.New("user not found")
