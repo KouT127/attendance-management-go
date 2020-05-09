@@ -6,6 +6,7 @@
 *.env
 !*.keep
 !*.sample
+!http-client.env.json
 
 
 # dependencies
