@@ -15,13 +15,13 @@ func configureDefaultRouter(r *gin.Engine) {
 	})
 }
 
-func configureV1Router(r *gin.Engine, store sqlstore.SqlStore) {
+func configureV1Router(r *gin.Engine, store sqlstore.SQLStore) {
 	group := r.Group("/v1")
 	configureUsersRouter(group, store)
 	configureAttendancesRouter(group, store)
 }
 
-func InitRouter(store sqlstore.SqlStore) {
+func InitRouter(store sqlstore.SQLStore) {
 	r := gin.Default()
 	port := os.Getenv("PORT")
 	if port == "" {

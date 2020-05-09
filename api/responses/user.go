@@ -6,7 +6,7 @@ type UserResp struct {
 	ID       string `json:"id"`
 	Name     string `json:"name"`
 	Email    string `json:"email"`
-	ImageUrl string `json:"imageUrl"`
+	ImageURL string `json:"image_url"`
 }
 
 type UserResult struct {
@@ -24,7 +24,7 @@ func toUserResp(user *models.User) UserResp {
 		ID:       user.ID,
 		Name:     user.Name,
 		Email:    user.Email,
-		ImageUrl: user.ImageURL,
+		ImageURL: user.ImageURL,
 	}
 	return resp
 }

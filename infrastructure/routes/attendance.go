@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func configureAttendancesRouter(v1 *gin.RouterGroup, store sqlstore.SqlStore) {
+func configureAttendancesRouter(v1 *gin.RouterGroup, store sqlstore.SQLStore) {
 	attendanceService := services.NewAttendanceService(store)
 	handler := attendance.NewAttendanceHandler(attendanceService)
 

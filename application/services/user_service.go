@@ -13,10 +13,10 @@ type UserService interface {
 }
 
 type userService struct {
-	store sqlstore.SqlStore
+	store sqlstore.SQLStore
 }
 
-func NewUserService(ss sqlstore.SqlStore) *userService {
+func NewUserService(ss sqlstore.SQLStore) UserService {
 	return &userService{
 		store: ss,
 	}

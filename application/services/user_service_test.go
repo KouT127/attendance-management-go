@@ -15,7 +15,7 @@ func Test_userService_GetOrCreateUser(t *testing.T) {
 	userID := uuid.NewV4().String()
 
 	type fields struct {
-		store sqlstore.SqlStore
+		store sqlstore.SQLStore
 	}
 	type args struct {
 		params models.GetOrCreateUserParams
@@ -101,7 +101,7 @@ func Test_userService_UpdateUser(t *testing.T) {
 	}
 
 	type fields struct {
-		store sqlstore.SqlStore
+		store sqlstore.SQLStore
 	}
 	type args struct {
 		user *models.User

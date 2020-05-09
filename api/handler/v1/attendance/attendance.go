@@ -3,7 +3,7 @@ package attendance
 import (
 	"github.com/KouT127/attendance-management/api/handler"
 	"github.com/KouT127/attendance-management/api/payloads"
-	. "github.com/KouT127/attendance-management/api/responses"
+	"github.com/KouT127/attendance-management/api/responses"
 	"github.com/KouT127/attendance-management/application/services"
 	"github.com/KouT127/attendance-management/domain/models"
 	"github.com/KouT127/attendance-management/infrastructure/auth"
@@ -11,7 +11,7 @@ import (
 	"net/http"
 )
 
-type AttendanceHandler interface {
+type Handler interface {
 	ListHandler(c *gin.Context)
 	MonthlyHandler(c *gin.Context)
 	CreateHandler(c *gin.Context)
@@ -21,7 +21,7 @@ type attendanceService struct {
 	service services.AttendanceService
 }
 
-func NewAttendanceHandler(service services.AttendanceService) AttendanceHandler {
+func NewAttendanceHandler(service services.AttendanceService) Handler {
 	return &attendanceService{
 		service: service,
 	}
@@ -36,13 +36,13 @@ func (s *attendanceService) ListHandler(c *gin.Context) {
 
 	p := payloads.NewPaginatorPayload(0, 5)
 
-	if err := c.Bind(p); err != nil {
-		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
+	if err = c.Bind(p); err != nil {
+		c.JSON(http.StatusBadRequest, responses.NewError(responses.BadAccessError))
 		return
 	}
 
 	if userID, err = handler.GetIDByKey(c, auth.AuthorizedUserIDKey); err != nil {
-		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
+		c.JSON(http.StatusBadRequest, responses.NewError(responses.BadAccessError))
 		return
 	}
 
@@ -52,12 +52,12 @@ func (s *attendanceService) ListHandler(c *gin.Context) {
 	}
 
 	if res, err = s.service.GetAttendances(params); err != nil {
-		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
+		c.JSON(http.StatusBadRequest, responses.NewError(responses.BadAccessError))
 		return
 	}
 
 	hasNext := p.HasNext(res.MaxCnt)
-	resps := ToAttendancesResponses(hasNext, res.Attendances)
+	resps := responses.ToAttendancesResponses(hasNext, res.Attendances)
 	c.JSON(http.StatusOK, resps)
 }
 
@@ -71,18 +71,18 @@ func (s *attendanceService) MonthlyHandler(c *gin.Context) {
 	p := payloads.NewPaginatorPayload(0, 31)
 	//param := payloads.NewSearchParams()
 
-	if err := c.Bind(p); err != nil {
-		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
+	if err = c.Bind(p); err != nil {
+		c.JSON(http.StatusBadRequest, responses.NewError(responses.BadAccessError))
 		return
 	}
 
-	if err := c.Bind(s); err != nil {
-		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
+	if err = c.Bind(s); err != nil {
+		c.JSON(http.StatusBadRequest, responses.NewError(responses.BadAccessError))
 		return
 	}
 
 	if userID, err = handler.GetIDByKey(c, auth.AuthorizedUserIDKey); err != nil {
-		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
+		c.JSON(http.StatusBadRequest, responses.NewError(responses.BadAccessError))
 		return
 	}
 
@@ -92,40 +92,40 @@ func (s *attendanceService) MonthlyHandler(c *gin.Context) {
 	}
 
 	if res, err = s.service.GetAttendances(params); err != nil {
-		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
+		c.JSON(http.StatusBadRequest, responses.NewError(responses.BadAccessError))
 		return
 	}
 
 	hasNext := p.HasNext(res.MaxCnt)
-	resps := ToAttendancesResponses(hasNext, res.Attendances)
+	resps := responses.ToAttendancesResponses(hasNext, res.Attendances)
 	c.JSON(http.StatusOK, resps)
 }
 
 func (s *attendanceService) CreateHandler(c *gin.Context) {
 	input := payloads.AttendancePayload{}
 	if err := c.Bind(&input); err != nil {
-		c.JSON(http.StatusBadRequest, NewValidationError("user", err))
+		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))
 		return
 	}
 
 	userID, err := handler.GetIDByKey(c, auth.AuthorizedUserIDKey)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
+		c.JSON(http.StatusBadRequest, responses.NewError(responses.BadAccessError))
 		return
 	}
 
-	if err := input.Validate(); err != nil {
-		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
+	if err = input.Validate(); err != nil {
+		c.JSON(http.StatusBadRequest, responses.NewError(responses.BadAccessError))
 		return
 	}
 
 	attendanceTime := input.ToAttendanceTime()
 	attendance, err := s.service.CreateOrUpdateAttendance(c, attendanceTime, userID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
+		c.JSON(http.StatusBadRequest, responses.NewError(responses.BadAccessError))
 		return
 	}
 
-	res := ToAttendanceResult(attendance)
+	res := responses.ToAttendanceResult(attendance)
 	c.JSON(http.StatusOK, res)
 }

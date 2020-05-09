@@ -13,7 +13,7 @@ import (
 	"net/http"
 )
 
-type UserHandler interface {
+type Handler interface {
 	MineHandler(c *gin.Context)
 	UpdateHandler(c *gin.Context)
 }
@@ -22,7 +22,7 @@ type userHandler struct {
 	service services.UserService
 }
 
-func NewUserHandler(service services.UserService) UserHandler {
+func NewUserHandler(service services.UserService) Handler {
 	return userHandler{
 		service: service,
 	}

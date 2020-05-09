@@ -36,7 +36,7 @@ func Test_attendanceService_CreateOrUpdateAttendance(t *testing.T) {
 	}
 
 	type fields struct {
-		store sqlstore.SqlStore
+		store sqlstore.SQLStore
 	}
 	type args struct {
 		ctx            context.Context
@@ -234,7 +234,7 @@ func Test_attendanceService_CreateOrUpdateAttendance(t *testing.T) {
 
 func Test_attendanceService_GetAttendances(t *testing.T) {
 	type fields struct {
-		store sqlstore.SqlStore
+		store sqlstore.SQLStore
 	}
 	type args struct {
 		params models.GetAttendancesParameters

@@ -3,7 +3,6 @@ package sqlstore
 //go:generate mockgen -source=sqlstore.go -destination=mock/mock_sqlstore.go -package=sqlstore -aux_files github.com/KouT127/attendance-management/infrastructure/sqlstore=user.go,github.com/KouT127/attendance-management/infrastructure/sqlstore=attendance.go,github.com/KouT127/attendance-management/infrastructure/sqlstore=transaction.go
 import (
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
 	"golang.org/x/xerrors"
 	"log"
 	"os"
@@ -19,7 +18,7 @@ const (
 	AttendanceTimeTable = "attendances_time"
 )
 
-type SqlStore interface {
+type SQLStore interface {
 	Transaction
 	User
 	Attendance
@@ -66,7 +65,7 @@ func configureTimezone(engine *xorm.Engine) {
 	engine.SetTZDatabase(loc)
 }
 
-func InitDatabase() SqlStore {
+func InitDatabase() SQLStore {
 	var (
 		ss  sqlStore
 		err error
@@ -132,7 +131,7 @@ func initTCPConnectionPool() (*xorm.Engine, error) {
 	return engine, nil
 }
 
-func InitTestDatabase() SqlStore {
+func InitTestDatabase() SQLStore {
 	var (
 		ss  sqlStore
 		err error

@@ -106,7 +106,7 @@ func (sqlStore) GetAttendances(ctx context.Context, query *models.GetAttendances
 	}
 	page := p.CalculatePage()
 
-	err = sess.Limit(int(p.Limit), int(page)).
+	err = dbSess.Limit(int(p.Limit), int(page)).
 		Where("attendances.user_id = ?", query.UserID).
 		OrderBy("-attendances.id").
 		Iterate(&models.AttendanceDetail{}, func(idx int, bean interface{}) error {

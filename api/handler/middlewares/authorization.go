@@ -18,7 +18,13 @@ func AuthRequired() gin.HandlerFunc {
 			app *firebase.App
 			err error
 		)
-		opt := auth.NewCredential()
+		opt, err := auth.NewCredential()
+		if err != nil {
+			logger.NewWarn(logrus.Fields{"err": err}, "error credential is not exists")
+			err = fmt.Errorf("unauthorized")
+			c.AbortWithStatusJSON(http.StatusUnauthorized, err)
+			return
+		}
 		app, err = firebase.NewApp(context.Background(), nil, *opt)
 		if err != nil {
 			logger.NewWarn(logrus.Fields{"err": err}, "error invalid credential file")

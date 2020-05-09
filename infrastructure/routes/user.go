@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func configureUsersRouter(v1 *gin.RouterGroup, store sqlstore.SqlStore) {
+func configureUsersRouter(v1 *gin.RouterGroup, store sqlstore.SQLStore) {
 	userService := services.NewUserService(store)
 	handler := user.NewUserHandler(userService)
 

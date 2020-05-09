@@ -14,10 +14,10 @@ type AttendanceService interface {
 }
 
 type attendanceService struct {
-	store sqlstore.SqlStore
+	store sqlstore.SQLStore
 }
 
-func NewAttendanceService(ss sqlstore.SqlStore) AttendanceService {
+func NewAttendanceService(ss sqlstore.SQLStore) AttendanceService {
 	return &attendanceService{
 		store: ss,
 	}
