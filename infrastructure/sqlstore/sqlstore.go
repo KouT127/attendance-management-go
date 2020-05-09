@@ -41,11 +41,14 @@ func mustGetenv(key string) string {
 	return v
 }
 
+func configureMapper(engine *xorm.Engine) {
+	engine.SetMapper(names.GonicMapper{})
+}
+
 func configureConnectionPool(engine *xorm.Engine) {
 	engine.SetMaxIdleConns(5)
 	engine.SetMaxOpenConns(7)
 	engine.SetConnMaxLifetime(1800)
-	engine.SetMapper(names.GonicMapper{})
 }
 
 func configureLogger(engine *xorm.Engine) {
@@ -102,6 +105,7 @@ func initSocketConnectionPool() (*xorm.Engine, error) {
 	// configure settings
 	configureConnectionPool(engine)
 	configureTimezone(engine)
+	configureMapper(engine)
 	return engine, nil
 }
 
@@ -124,6 +128,7 @@ func initTCPConnectionPool() (*xorm.Engine, error) {
 	configureConnectionPool(engine)
 	configureLogger(engine)
 	configureTimezone(engine)
+	configureMapper(engine)
 	return engine, nil
 }
 
@@ -160,5 +165,6 @@ func initTestTCPConnectionPool() (*xorm.Engine, error) {
 
 	// configure settings
 	configureTimezone(engine)
+	configureMapper(engine)
 	return engine, nil
 }
