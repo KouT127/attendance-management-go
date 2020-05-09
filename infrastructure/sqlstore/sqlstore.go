@@ -138,7 +138,7 @@ func InitTestDatabase() SQLStore {
 	)
 	eng, err = initTestTCPConnectionPool()
 	if err != nil {
-		log.Fatalf("Socket connection is unavailable")
+		log.Fatalf("%s", err)
 	}
 	if err = DeleteTestData(); err != nil {
 		log.Fatalf("Failed delete data %s", err)

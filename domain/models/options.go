@@ -1,7 +1,7 @@
 package models
 
 import (
-	"time"
+	"golang.org/x/xerrors"
 	"xorm.io/xorm"
 )
 
@@ -23,9 +23,18 @@ func (opt *DefaultSearchOption) SetPaginatedSession(eng *xorm.Session) *xorm.Ses
 }
 
 type GetAttendancesParameters struct {
-	UserID     string
-	Date       *time.Time
-	Pagination *Pagination
+	UserID string
+	Month  int
+}
+
+func (p GetAttendancesParameters) Validate() error {
+	if p.UserID == "" {
+		return xerrors.New("user id is empty")
+	}
+	if p.Month == 0 {
+		return xerrors.New("month is zero")
+	}
+	return nil
 }
 
 type GetAttendancesResults struct {

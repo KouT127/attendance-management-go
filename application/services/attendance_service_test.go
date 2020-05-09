@@ -3,13 +3,13 @@ package services
 import (
 	"context"
 	"github.com/KouT127/attendance-management/domain/models"
-	sqlstore "github.com/KouT127/attendance-management/infrastructure/sqlstore"
+	"github.com/KouT127/attendance-management/infrastructure/sqlstore"
 	"github.com/KouT127/attendance-management/utilities/timezone"
 	"github.com/Songmu/flextime"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	uuid "github.com/satori/go.uuid"
-	"reflect"
 	"testing"
 	"time"
 )
@@ -233,10 +233,49 @@ func Test_attendanceService_CreateOrUpdateAttendance(t *testing.T) {
 }
 
 func Test_attendanceService_GetAttendances(t *testing.T) {
+	store := sqlstore.InitTestDatabase()
+	timezone.Set("Asia/Tokyo")
+	userID := uuid.NewV4().String()
+
+	user := &models.User{
+		ID:   userID,
+		Name: "test1",
+	}
+
+	if err := store.CreateUser(context.Background(), user); err != nil {
+		t.Errorf("CreateAttendanceTime() failed%s", err)
+	}
+
+	attendance := &models.Attendance{
+		UserID:    user.ID,
+		CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).Truncate(time.Second),
+		UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).Truncate(time.Second),
+	}
+
+	if err := store.CreateAttendance(context.Background(), attendance); err != nil {
+		t.Errorf("CreateAttendance() failed%s", err)
+	}
+
+	time := &models.AttendanceTime{
+		Remark:           "test",
+		AttendanceKindID: uint8(models.AttendanceKindClockIn),
+		IsModified:       false,
+		AttendanceID:     attendance.ID,
+		PushedAt:         time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).Truncate(time.Second),
+		CreatedAt:        time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).Truncate(time.Second),
+		UpdatedAt:        time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).Truncate(time.Second),
+	}
+
+	if err := store.CreateAttendanceTime(context.Background(), time); err != nil {
+		t.Errorf("CreateAttendanceTime() failed%s", err)
+	}
+
+	attendance.ClockedIn = time
 	type fields struct {
 		store sqlstore.SQLStore
 	}
 	type args struct {
+		ctx    context.Context
 		params models.GetAttendancesParameters
 	}
 	tests := []struct {
@@ -246,20 +285,72 @@ func Test_attendanceService_GetAttendances(t *testing.T) {
 		want    *models.GetAttendancesResults
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Should get attendances",
+			fields: fields{
+				store: store,
+			},
+			args: args{
+				ctx: context.Background(),
+				params: models.GetAttendancesParameters{
+					UserID: userID,
+					Month:  202001,
+				},
+			},
+			want: &models.GetAttendancesResults{
+				MaxCnt: 1,
+				Attendances: []*models.Attendance{
+					attendance,
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "Should not equal max count",
+			fields: fields{
+				store: store,
+			},
+			args: args{
+				ctx: context.Background(),
+				params: models.GetAttendancesParameters{
+					UserID: userID,
+					Month:  202002,
+				},
+			},
+			want: &models.GetAttendancesResults{
+				MaxCnt:      0,
+				Attendances: []*models.Attendance{},
+			},
+			wantErr: false,
+		},
+		{
+			name: "Should not get attendances",
+			fields: fields{
+				store: store,
+			},
+			args: args{
+				ctx: context.Background(),
+				params: models.GetAttendancesParameters{
+					UserID: "",
+					Month:  0,
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := &attendanceService{
 				store: tt.fields.store,
 			}
-			got, err := s.GetAttendances(tt.args.params)
+			got, err := s.GetAttendances(tt.args.ctx, tt.args.params)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetAttendances() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetAttendances() got = %v, want %v", got, tt.want)
+			if diff := cmp.Diff(got, tt.want); diff != "" {
+				t.Errorf("GetAttendances() diff %s", diff)
 			}
 		})
 	}

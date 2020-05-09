@@ -32,7 +32,7 @@ type AttendanceResult struct {
 }
 
 type AttendancesResponses struct {
-	CommonResponses
+	CommonResponse
 	Attendances []*AttendanceResp `json:"attendances"`
 }
 
@@ -82,7 +82,6 @@ func ToAttendancesResponses(hasNext bool, attendances []*models.Attendance) *Att
 	}
 
 	res.IsSuccessful = true
-	res.HasNext = hasNext
 	res.Attendances = responses
 	return res
 }

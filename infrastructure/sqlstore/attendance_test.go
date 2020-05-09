@@ -5,17 +5,13 @@ import (
 	"github.com/KouT127/attendance-management/domain/models"
 	"github.com/KouT127/attendance-management/utilities/timezone"
 	"github.com/Songmu/flextime"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/go-cmp/cmp"
-	"os"
+	uuid "github.com/satori/go.uuid"
 	"reflect"
 	"testing"
 	"time"
 )
-
-func TestMain(m *testing.M) {
-
-	os.Exit(m.Run())
-}
 
 func TestCreateAttendance(t *testing.T) {
 	store := InitTestDatabase()
@@ -129,12 +125,12 @@ func TestCreateAttendanceTime(t *testing.T) {
 }
 
 func TestFetchAttendances(t *testing.T) {
-	var attendances []*models.Attendance
 	store := InitTestDatabase()
 	timezone.Set("Asia/Tokyo")
+	userID := uuid.NewV4().String()
 
 	user := &models.User{
-		ID:   "asdiekawei42lasedi356ladfkjfity",
+		ID:   userID,
 		Name: "test1",
 	}
 
@@ -144,8 +140,8 @@ func TestFetchAttendances(t *testing.T) {
 
 	attendance := &models.Attendance{
 		UserID:    user.ID,
-		CreatedAt: flextime.Now().UTC().Truncate(time.Second),
-		UpdatedAt: flextime.Now().UTC().Truncate(time.Second),
+		CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).Truncate(time.Second),
+		UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).Truncate(time.Second),
 	}
 
 	if err := store.CreateAttendance(context.Background(), attendance); err != nil {
@@ -157,9 +153,9 @@ func TestFetchAttendances(t *testing.T) {
 		AttendanceKindID: uint8(models.AttendanceKindClockIn),
 		IsModified:       false,
 		AttendanceID:     attendance.ID,
-		PushedAt:         flextime.Now().UTC().Truncate(time.Second),
-		CreatedAt:        flextime.Now().UTC().Truncate(time.Second),
-		UpdatedAt:        flextime.Now().UTC().Truncate(time.Second),
+		PushedAt:         time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).Truncate(time.Second),
+		CreatedAt:        time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).Truncate(time.Second),
+		UpdatedAt:        time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).Truncate(time.Second),
 	}
 
 	if err := store.CreateAttendanceTime(context.Background(), time); err != nil {
@@ -179,27 +175,53 @@ func TestFetchAttendances(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "Should fetch attendances",
+			name: "Should get attendances",
+			args: args{
+				ctx: context.Background(),
+				query: &models.GetAttendancesParameters{
+					UserID: userID,
+					Month:  0,
+				},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "Should get attendances",
 			args: args{
 				ctx: context.Background(),
 				query: &models.GetAttendancesParameters{
 					UserID: "",
+					Month:  202001,
 				},
 			},
-			want:    attendances,
+			want:    []*models.Attendance{},
 			wantErr: false,
 		},
 		{
-			name: "Should fetch attendances by user id",
+			name: "Should get attendances by params",
 			args: args{
 				ctx: context.Background(),
 				query: &models.GetAttendancesParameters{
-					UserID: "asdiekawei42lasedi356ladfkjfity",
+					UserID: userID,
+					Month:  202001,
 				},
 			},
 			want: []*models.Attendance{
 				attendance,
 			},
+			wantErr: false,
+		},
+		{
+			name: "Should get attendances by params",
+			args: args{
+				ctx: context.Background(),
+				query: &models.GetAttendancesParameters{
+					UserID: userID,
+					Month:  202002,
+				},
+			},
+			want:    []*models.Attendance{},
 			wantErr: false,
 		},
 	}
@@ -222,8 +244,8 @@ func TestFetchAttendancesCount(t *testing.T) {
 	store := InitTestDatabase()
 
 	type args struct {
-		ctx    context.Context
-		userID string
+		ctx   context.Context
+		query *models.GetAttendancesParameters
 	}
 	tests := []struct {
 		name    string
@@ -235,7 +257,7 @@ func TestFetchAttendancesCount(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := store.GetAttendancesCount(tt.args.ctx, tt.args.userID)
+			got, err := store.GetAttendancesCount(tt.args.ctx, tt.args.query)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetAttendancesCount() error = %v, wantErr %v", err, tt.wantErr)
 				return

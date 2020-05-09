@@ -1,36 +1,45 @@
 package payloads
 
-import "github.com/KouT127/attendance-management/domain/models"
+import (
+	"github.com/KouT127/attendance-management/domain/models"
+)
 
-type PaginationPayload struct {
-	Page  int64 `form:"page"`
-	Limit int64 `form:"limit"`
+type QueryParam struct {
+	Page  int `form:"page"`
+	Limit int `form:"limit"`
 }
 
-func (i *PaginationPayload) ToPagination() *models.Pagination {
+func (i *QueryParam) ToPagination() *models.Pagination {
 	p := &models.Pagination{}
 	return p
 }
 
-func NewPaginatorPayload(page int64, limit int64) *PaginationPayload {
-	return &PaginationPayload{
+func NewPaginatorPayload(page, limit int) *QueryParam {
+	return &QueryParam{
 		page, limit,
 	}
 }
 
-func (i *PaginationPayload) CalculatePage() int64 {
+func (i *QueryParam) CalculatePage() int {
 	return i.Page * i.Limit
 }
 
-func (i *PaginationPayload) HasNext(max int64) bool {
+func (i *QueryParam) HasNext(max int) bool {
 	cnt := i.Page * i.Limit
 	return max > cnt
 }
 
-type SearchParams struct {
-	Date int64 `form:"date"`
+type AttendancesQueryParam struct {
+	QueryParam
+	Month int `form:"month"`
 }
 
-func NewSearchParams() *SearchParams {
-	return &SearchParams{}
+func NewAttendancesQueryParam(month int) AttendancesQueryParam {
+	return AttendancesQueryParam{
+		QueryParam{
+			Page:  1,
+			Limit: 31,
+		},
+		month,
+	}
 }

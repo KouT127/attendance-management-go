@@ -8,13 +8,13 @@ import (
 
 func TestNewPaginatorPayload(t *testing.T) {
 	type args struct {
-		page  int64
-		limit int64
+		page  int
+		limit int
 	}
 	tests := []struct {
 		name string
 		args args
-		want *PaginationPayload
+		want *QueryParam
 	}{
 		// TODO: Add test cases.
 	}
@@ -30,14 +30,14 @@ func TestNewPaginatorPayload(t *testing.T) {
 func TestNewSearchParams(t *testing.T) {
 	tests := []struct {
 		name string
-		want *SearchParams
+		want *AttendancesQueryParam
 	}{
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewSearchParams(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewSearchParams() = %v, want %v", got, tt.want)
+			if got := NewAttendancesQueryParam(202001); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewAttendancesQueryParam() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -45,19 +45,19 @@ func TestNewSearchParams(t *testing.T) {
 
 func TestPaginationPayload_CalculatePage(t *testing.T) {
 	type fields struct {
-		Page  int64
-		Limit int64
+		Page  int
+		Limit int
 	}
 	tests := []struct {
 		name   string
 		fields fields
-		want   int64
+		want   int
 	}{
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			i := &PaginationPayload{
+			i := &QueryParam{
 				Page:  tt.fields.Page,
 				Limit: tt.fields.Limit,
 			}
@@ -70,11 +70,11 @@ func TestPaginationPayload_CalculatePage(t *testing.T) {
 
 func TestPaginationPayload_HasNext(t *testing.T) {
 	type fields struct {
-		Page  int64
-		Limit int64
+		Page  int
+		Limit int
 	}
 	type args struct {
-		max int64
+		max int
 	}
 	tests := []struct {
 		name   string
@@ -86,7 +86,7 @@ func TestPaginationPayload_HasNext(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			i := &PaginationPayload{
+			i := &QueryParam{
 				Page:  tt.fields.Page,
 				Limit: tt.fields.Limit,
 			}
@@ -99,8 +99,8 @@ func TestPaginationPayload_HasNext(t *testing.T) {
 
 func TestPaginationPayload_ToPaginator(t *testing.T) {
 	type fields struct {
-		Page  int64
-		Limit int64
+		Page  int
+		Limit int
 	}
 	tests := []struct {
 		name   string
@@ -111,7 +111,7 @@ func TestPaginationPayload_ToPaginator(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			i := &PaginationPayload{
+			i := &QueryParam{
 				Page:  tt.fields.Page,
 				Limit: tt.fields.Limit,
 			}

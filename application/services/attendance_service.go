@@ -9,7 +9,7 @@ import (
 )
 
 type AttendanceService interface {
-	GetAttendances(params models.GetAttendancesParameters) (*models.GetAttendancesResults, error)
+	GetAttendances(ctx context.Context, params models.GetAttendancesParameters) (*models.GetAttendancesResults, error)
 	CreateOrUpdateAttendance(ctx context.Context, attendanceTime *models.AttendanceTime, userID string) (*models.Attendance, error)
 }
 
@@ -23,9 +23,11 @@ func NewAttendanceService(ss sqlstore.SQLStore) AttendanceService {
 	}
 }
 
-func (s *attendanceService) GetAttendances(params models.GetAttendancesParameters) (*models.GetAttendancesResults, error) {
-	ctx := context.Background()
-	maxCnt, err := s.store.GetAttendancesCount(ctx, params.UserID)
+func (s *attendanceService) GetAttendances(ctx context.Context, params models.GetAttendancesParameters) (*models.GetAttendancesResults, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	maxCnt, err := s.store.GetAttendancesCount(ctx, &params)
 	if err != nil {
 		return nil, err
 	}

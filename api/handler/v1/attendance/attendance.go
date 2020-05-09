@@ -7,13 +7,15 @@ import (
 	"github.com/KouT127/attendance-management/application/services"
 	"github.com/KouT127/attendance-management/domain/models"
 	"github.com/KouT127/attendance-management/infrastructure/auth"
+	"github.com/KouT127/attendance-management/utilities/logger"
+	"github.com/KouT127/attendance-management/utilities/timeutil"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"net/http"
 )
 
 type Handler interface {
 	ListHandler(c *gin.Context)
-	MonthlyHandler(c *gin.Context)
 	CreateHandler(c *gin.Context)
 }
 
@@ -34,9 +36,15 @@ func (s *attendanceService) ListHandler(c *gin.Context) {
 		err    error
 	)
 
-	p := payloads.NewPaginatorPayload(0, 5)
+	month, err := timeutil.GetDefaultMonth()
+	if err != nil {
+		logger.NewWarn(logrus.Fields{}, err.Error())
+		c.JSON(http.StatusBadRequest, responses.NewError(responses.BadAccessError))
+		return
+	}
 
-	if err = c.Bind(p); err != nil {
+	query := payloads.NewAttendancesQueryParam(month)
+	if err = c.BindQuery(&query); err != nil {
 		c.JSON(http.StatusBadRequest, responses.NewError(responses.BadAccessError))
 		return
 	}
@@ -47,56 +55,16 @@ func (s *attendanceService) ListHandler(c *gin.Context) {
 	}
 
 	params := models.GetAttendancesParameters{
-		UserID:     userID,
-		Pagination: p.ToPagination(),
+		UserID: userID,
+		Month:  query.Month,
 	}
 
-	if res, err = s.service.GetAttendances(params); err != nil {
+	if res, err = s.service.GetAttendances(c, params); err != nil {
 		c.JSON(http.StatusBadRequest, responses.NewError(responses.BadAccessError))
 		return
 	}
 
-	hasNext := p.HasNext(res.MaxCnt)
-	resps := responses.ToAttendancesResponses(hasNext, res.Attendances)
-	c.JSON(http.StatusOK, resps)
-}
-
-func (s *attendanceService) MonthlyHandler(c *gin.Context) {
-	var (
-		userID string
-		res    *models.GetAttendancesResults
-		err    error
-	)
-
-	p := payloads.NewPaginatorPayload(0, 31)
-	//param := payloads.NewSearchParams()
-
-	if err = c.Bind(p); err != nil {
-		c.JSON(http.StatusBadRequest, responses.NewError(responses.BadAccessError))
-		return
-	}
-
-	if err = c.Bind(s); err != nil {
-		c.JSON(http.StatusBadRequest, responses.NewError(responses.BadAccessError))
-		return
-	}
-
-	if userID, err = handler.GetIDByKey(c, auth.AuthorizedUserIDKey); err != nil {
-		c.JSON(http.StatusBadRequest, responses.NewError(responses.BadAccessError))
-		return
-	}
-
-	params := models.GetAttendancesParameters{
-		UserID:     userID,
-		Pagination: p.ToPagination(),
-	}
-
-	if res, err = s.service.GetAttendances(params); err != nil {
-		c.JSON(http.StatusBadRequest, responses.NewError(responses.BadAccessError))
-		return
-	}
-
-	hasNext := p.HasNext(res.MaxCnt)
+	hasNext := query.HasNext(int(res.MaxCnt))
 	resps := responses.ToAttendancesResponses(hasNext, res.Attendances)
 	c.JSON(http.StatusOK, resps)
 }

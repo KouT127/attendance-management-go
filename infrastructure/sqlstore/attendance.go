@@ -6,11 +6,12 @@ import (
 	"github.com/KouT127/attendance-management/utilities/timeutil"
 	"github.com/KouT127/attendance-management/utilities/timezone"
 	"github.com/Songmu/flextime"
+	"golang.org/x/xerrors"
 	"time"
 )
 
 type Attendance interface {
-	GetAttendancesCount(ctx context.Context, userID string) (int64, error)
+	GetAttendancesCount(ctx context.Context, query *models.GetAttendancesParameters) (int64, error)
 	GetLatestAttendance(ctx context.Context, userID string) (*models.Attendance, error)
 	GetAttendances(ctx context.Context, query *models.GetAttendancesParameters) ([]*models.Attendance, error)
 	UpdateOldAttendanceTime(ctx context.Context, id int64, kindID uint8) error
@@ -18,7 +19,7 @@ type Attendance interface {
 	CreateAttendanceTime(ctx context.Context, attendanceTime *models.AttendanceTime) error
 }
 
-func (sqlStore) GetAttendancesCount(ctx context.Context, userID string) (int64, error) {
+func (sqlStore) GetAttendancesCount(ctx context.Context, query *models.GetAttendancesParameters) (int64, error) {
 	var count int64
 
 	sess, err := getDBSession(ctx)
@@ -26,9 +27,17 @@ func (sqlStore) GetAttendancesCount(ctx context.Context, userID string) (int64, 
 		return 0, err
 	}
 
+	if query.Month == 0 {
+		return 0, xerrors.New("month is empty")
+	}
+
+	start, end, err := timeutil.GetMonthRange(query.Month)
+	if err != nil {
+		return 0, err
+	}
 	attendance := &models.Attendance{}
-	attendance.UserID = userID
-	count, err = sess.Count(attendance)
+	attendance.UserID = query.UserID
+	count, err = sess.Where("attendances.created_at Between ? and ? ", start, end).Count(attendance)
 	if err != nil {
 		return 0, err
 	}
@@ -75,38 +84,30 @@ func (sqlStore) GetLatestAttendance(ctx context.Context, userID string) (*models
 }
 
 func (sqlStore) GetAttendances(ctx context.Context, query *models.GetAttendancesParameters) ([]*models.Attendance, error) {
-	var attendances []*models.Attendance
+	attendances := make([]*models.Attendance, 0)
 
 	sess, err := getDBSession(ctx)
 	if err != nil {
 		return nil, err
 	}
+	if query.Month == 0 {
+		return nil, xerrors.New("month is empty")
+	}
 
-	dbSess := sess.Select("attendances.*, clocked_in_time.*, clocked_out_time.*").
+	start, end, err := timeutil.GetMonthRange(query.Month)
+	if err != nil {
+		return nil, err
+	}
+
+	err = sess.Select("attendances.*, clocked_in_time.*, clocked_out_time.*").
 		Table(AttendanceTable).
 		Join("left outer",
 			"attendances_time clocked_in_time",
 			"attendances.id = clocked_in_time.attendance_id and clocked_in_time.attendance_kind_id = 1 and clocked_in_time.is_modified = false").
 		Join("left outer",
 			"attendances_time clocked_out_time",
-			"attendances.id = clocked_out_time.attendance_id and clocked_out_time.attendance_kind_id = 2 and clocked_out_time.is_modified = false")
-
-	if query.Date != nil {
-		now := flextime.Now()
-		start, end := timeutil.GetMonthRange(now)
-		dbSess = dbSess.Where("attendances.created_at Between ? and ? ", start, end)
-	}
-
-	p := query.Pagination
-	if query.Pagination == nil {
-		p = &models.Pagination{}
-	}
-	if p.Limit == 0 {
-		p.Limit = 15
-	}
-	page := p.CalculatePage()
-
-	err = dbSess.Limit(int(p.Limit), int(page)).
+			"attendances.id = clocked_out_time.attendance_id and clocked_out_time.attendance_kind_id = 2 and clocked_out_time.is_modified = false").
+		Where("attendances.created_at Between ? and ? ", start, end).
 		Where("attendances.user_id = ?", query.UserID).
 		OrderBy("-attendances.id").
 		Iterate(&models.AttendanceDetail{}, func(idx int, bean interface{}) error {
