@@ -20,6 +20,7 @@ go get -u github.com/oxequa/realize
 ```bash
 cd backend
 cp .env.local.sample .env.local
+cp http-client.env.json http-client.private.env.json
 ```
 
 ## hot reload
