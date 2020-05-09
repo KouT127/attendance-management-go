@@ -41,7 +41,6 @@ func Test_userService_GetOrCreateUser(t *testing.T) {
 				User: &models.User{
 					ID: userID,
 				},
-				LatestAttendance: nil,
 			},
 			wantErr: false,
 		},
@@ -59,7 +58,6 @@ func Test_userService_GetOrCreateUser(t *testing.T) {
 				User: &models.User{
 					ID: userID,
 				},
-				LatestAttendance: nil,
 			},
 			wantErr: false,
 		},
@@ -159,6 +157,7 @@ func Test_userService_UpdateUser(t *testing.T) {
 			}
 			if err := s.UpdateUser(tt.args.user); (err != nil) != tt.wantErr {
 				t.Errorf("UpdateUser() error = %v, wantErr %v", err, tt.wantErr)
+				return
 			}
 
 			got, err := s.GetOrCreateUser(models.GetOrCreateUserParams{UserID: tt.args.user.ID})

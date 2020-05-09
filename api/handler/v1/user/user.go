@@ -46,7 +46,7 @@ func (h userHandler) MineHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, responses.ToUserMineResult(res.User, res.LatestAttendance))
+	c.JSON(http.StatusOK, responses.ToUserMineResult(res.User))
 }
 
 func (h userHandler) UpdateHandler(c *gin.Context) {

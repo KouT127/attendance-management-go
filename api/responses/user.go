@@ -37,12 +37,9 @@ func ToUserResult(user *models.User) *UserResult {
 	return res
 }
 
-func ToUserMineResult(user *models.User, attendance *models.Attendance) *UserMineResult {
+func ToUserMineResult(user *models.User) *UserMineResult {
 	res := &UserMineResult{}
 	res.IsSuccessful = true
 	res.User = toUserResp(user)
-	if attendance != nil {
-		res.Attendance = toAttendanceResp(attendance)
-	}
 	return res
 }

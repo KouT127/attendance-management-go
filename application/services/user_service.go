@@ -24,9 +24,8 @@ func NewUserService(ss sqlstore.SqlStore) *userService {
 
 func (s *userService) GetOrCreateUser(params models.GetOrCreateUserParams) (*models.GetOrCreateUserResults, error) {
 	var (
-		user       *models.User
-		attendance *models.Attendance
-		err        error
+		user *models.User
+		err  error
 	)
 	if params.UserID == "" {
 		return nil, xerrors.New("user id is empty")
@@ -44,11 +43,6 @@ func (s *userService) GetOrCreateUser(params models.GetOrCreateUserParams) (*mod
 				return nil, err
 			}
 		}
-
-		if attendance, err = s.store.GetLatestAttendance(context.Background(), params.UserID); err != nil {
-			return nil, err
-		}
-
 		return nil, nil
 	})
 
@@ -57,8 +51,7 @@ func (s *userService) GetOrCreateUser(params models.GetOrCreateUserParams) (*mod
 	}
 
 	res := models.GetOrCreateUserResults{
-		User:             user,
-		LatestAttendance: attendance,
+		User: user,
 	}
 	return &res, nil
 }

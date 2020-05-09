@@ -22,6 +22,5 @@ type GetOrCreateUserParams struct {
 }
 
 type GetOrCreateUserResults struct {
-	User             *User
-	LatestAttendance *Attendance
+	User *User
 }
