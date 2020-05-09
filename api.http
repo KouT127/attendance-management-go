@@ -31,3 +31,17 @@ Authorization: Bearer {{token}}
   "email": "updated",
   "image_url": "updated"
 }
+
+### 勤怠情報を取得する。
+GET http://{{endpoint}}/v1/attendances
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### 勤怠情報を取得する。
+POST http://{{endpoint}}/v1/attendances
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "remark": "test"
+}
