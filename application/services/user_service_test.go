@@ -57,7 +57,7 @@ func Test_userService_GetOrCreateUser(t *testing.T) {
 			},
 			want: &models.GetOrCreateUserResults{
 				User: &models.User{
-					ID: userId,
+					ID: userID,
 				},
 				LatestAttendance: nil,
 			},
@@ -96,8 +96,8 @@ func Test_userService_GetOrCreateUser(t *testing.T) {
 
 func Test_userService_UpdateUser(t *testing.T) {
 	store := sqlstore.InitTestDatabase()
-	userId := uuid.NewV4().String()
-	err := store.CreateUser(context.Background(), &models.User{ID: userId})
+	userID := uuid.NewV4().String()
+	err := store.CreateUser(context.Background(), &models.User{ID: userID})
 	if err != nil {
 		t.Errorf("CreateUser() %s", err)
 	}
@@ -122,7 +122,7 @@ func Test_userService_UpdateUser(t *testing.T) {
 			},
 			args: args{
 				user: &models.User{
-					ID:        userId,
+					ID:        userID,
 					Name:      "updated",
 					Email:     "updated",
 					ImageURL:  "updated",
@@ -131,7 +131,7 @@ func Test_userService_UpdateUser(t *testing.T) {
 				},
 			},
 			want: &models.User{
-				ID:        userId,
+				ID:        userID,
 				Name:      "updated",
 				Email:     "updated",
 				ImageURL:  "updated",
