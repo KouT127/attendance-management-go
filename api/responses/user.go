@@ -3,7 +3,7 @@ package responses
 import "github.com/KouT127/attendance-management/domain/models"
 
 type UserResp struct {
-	Id       string `json:"id"`
+	ID       string `json:"id"`
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	ImageUrl string `json:"imageUrl"`
@@ -22,7 +22,7 @@ type UserMineResult struct {
 
 func toUserResp(user *models.User) UserResp {
 	resp := UserResp{
-		Id:       user.Id,
+		ID:       user.ID,
 		Name:     user.Name,
 		Email:    user.Email,
 		ImageUrl: user.ImageURL,

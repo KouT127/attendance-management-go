@@ -29,7 +29,7 @@ func NewUserHandler(service services.UserService) UserHandler {
 }
 
 func (h userHandler) MineHandler(c *gin.Context) {
-	value, exists := c.Get(auth.AuthorizedUserIdKey)
+	value, exists := c.Get(auth.AuthorizedUserIDKey)
 	if !exists {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "user not found",
@@ -37,8 +37,8 @@ func (h userHandler) MineHandler(c *gin.Context) {
 		return
 	}
 
-	userId := value.(string)
-	params := models.GetOrCreateUserParams{UserId: userId}
+	userID := value.(string)
+	params := models.GetOrCreateUserParams{UserID: userID}
 	res, err := h.service.GetOrCreateUser(params)
 	if err != nil {
 		logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, err.Error())
@@ -53,14 +53,13 @@ func (h userHandler) UpdateHandler(c *gin.Context) {
 	input := payloads.UserPayload{}
 	user := &models.User{}
 
-	err := c.Bind(&input)
-	if err != nil {
+	if err := c.Bind(&input); err != nil {
 		logrus.Warnf("not exists: %s", err)
 		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))
 		return
 	}
 
-	value, exists := c.Get(auth.AuthorizedUserIdKey)
+	value, exists := c.Get(auth.AuthorizedUserIDKey)
 	if !exists {
 		err := xerrors.New("user not found")
 		logrus.Warnf("not exists: %s", err)
@@ -68,7 +67,7 @@ func (h userHandler) UpdateHandler(c *gin.Context) {
 		return
 	}
 
-	user.Id = value.(string)
+	user.ID = value.(string)
 	user.Name = input.Name
 	user.Email = input.Email
 

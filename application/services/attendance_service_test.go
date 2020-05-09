@@ -19,13 +19,13 @@ func Test_attendanceService_CreateOrUpdateAttendance(t *testing.T) {
 	timezone.Set("Asia/Tokyo")
 	flextime.Fix(time.Date(2020, 1, 1, 0, 0, 0, 0, timezone.JSTLocation()))
 	options := cmp.Options{
-		cmpopts.IgnoreFields(models.Attendance{}, "Id"),
-		cmpopts.IgnoreFields(models.AttendanceTime{}, "Id", "AttendanceId"),
+		cmpopts.IgnoreFields(models.Attendance{}, "ID"),
+		cmpopts.IgnoreFields(models.AttendanceTime{}, "ID", "AttendanceID"),
 	}
 
-	userId := uuid.NewV4().String()
+	userID := uuid.NewV4().String()
 	if err := store.CreateUser(context.Background(), &models.User{
-		Id:        userId,
+		ID:        userID,
 		Name:      "insert user",
 		Email:     "insert",
 		ImageURL:  "insert",
@@ -41,7 +41,7 @@ func Test_attendanceService_CreateOrUpdateAttendance(t *testing.T) {
 	type args struct {
 		ctx            context.Context
 		attendanceTime *models.AttendanceTime
-		userId         string
+		userID         string
 	}
 	tests := []struct {
 		name             string
@@ -62,16 +62,16 @@ func Test_attendanceService_CreateOrUpdateAttendance(t *testing.T) {
 					Remark:     "test",
 					IsModified: false,
 				},
-				userId: userId,
+				userID: userID,
 			},
 			want: &models.Attendance{
-				UserId:    userId,
+				UserID:    userID,
 				CreatedAt: flextime.Now(),
 				UpdatedAt: flextime.Now(),
 				ClockedIn: &models.AttendanceTime{
 					Remark:           "test",
 					IsModified:       false,
-					AttendanceKindId: uint8(models.AttendanceKindClockIn),
+					AttendanceKindID: uint8(models.AttendanceKindClockIn),
 					PushedAt:         flextime.Now(),
 					CreatedAt:        flextime.Now(),
 					UpdatedAt:        flextime.Now(),
@@ -91,16 +91,16 @@ func Test_attendanceService_CreateOrUpdateAttendance(t *testing.T) {
 					Remark:     "test1",
 					IsModified: false,
 				},
-				userId: userId,
+				userID: userID,
 			},
 			want: &models.Attendance{
-				UserId:    userId,
+				UserID:    userID,
 				CreatedAt: flextime.Now(),
 				UpdatedAt: flextime.Now(),
 				ClockedIn: &models.AttendanceTime{
 					Remark:           "test",
 					IsModified:       false,
-					AttendanceKindId: uint8(models.AttendanceKindClockIn),
+					AttendanceKindID: uint8(models.AttendanceKindClockIn),
 					PushedAt:         flextime.Now(),
 					CreatedAt:        flextime.Now(),
 					UpdatedAt:        flextime.Now(),
@@ -108,7 +108,7 @@ func Test_attendanceService_CreateOrUpdateAttendance(t *testing.T) {
 				ClockedOut: &models.AttendanceTime{
 					Remark:           "test1",
 					IsModified:       false,
-					AttendanceKindId: uint8(models.AttendanceKindClockOut),
+					AttendanceKindID: uint8(models.AttendanceKindClockOut),
 					PushedAt:         flextime.Now(),
 					CreatedAt:        flextime.Now(),
 					UpdatedAt:        flextime.Now(),
@@ -127,16 +127,16 @@ func Test_attendanceService_CreateOrUpdateAttendance(t *testing.T) {
 					Remark:     "test2",
 					IsModified: false,
 				},
-				userId: userId,
+				userID: userID,
 			},
 			want: &models.Attendance{
-				UserId:    userId,
+				UserID:    userID,
 				CreatedAt: flextime.Now(),
 				UpdatedAt: flextime.Now(),
 				ClockedIn: &models.AttendanceTime{
 					Remark:           "test",
 					IsModified:       false,
-					AttendanceKindId: uint8(models.AttendanceKindClockIn),
+					AttendanceKindID: uint8(models.AttendanceKindClockIn),
 					PushedAt:         flextime.Now(),
 					CreatedAt:        flextime.Now(),
 					UpdatedAt:        flextime.Now(),
@@ -144,7 +144,7 @@ func Test_attendanceService_CreateOrUpdateAttendance(t *testing.T) {
 				ClockedOut: &models.AttendanceTime{
 					Remark:           "test2",
 					IsModified:       false,
-					AttendanceKindId: uint8(models.AttendanceKindClockOut),
+					AttendanceKindID: uint8(models.AttendanceKindClockOut),
 					PushedAt:         flextime.Now(),
 					CreatedAt:        flextime.Now(),
 					UpdatedAt:        flextime.Now(),
@@ -163,16 +163,16 @@ func Test_attendanceService_CreateOrUpdateAttendance(t *testing.T) {
 					Remark:     "test",
 					IsModified: false,
 				},
-				userId: userId,
+				userID: userID,
 			},
 			want: &models.Attendance{
-				UserId:    userId,
+				UserID:    userID,
 				CreatedAt: time.Date(2020, 1, 2, 0, 0, 0, 0, timezone.JSTLocation()),
 				UpdatedAt: time.Date(2020, 1, 2, 0, 0, 0, 0, timezone.JSTLocation()),
 				ClockedIn: &models.AttendanceTime{
 					Remark:           "test",
 					IsModified:       false,
-					AttendanceKindId: uint8(models.AttendanceKindClockIn),
+					AttendanceKindID: uint8(models.AttendanceKindClockIn),
 					PushedAt:         time.Date(2020, 1, 2, 0, 0, 0, 0, timezone.JSTLocation()),
 					CreatedAt:        time.Date(2020, 1, 2, 0, 0, 0, 0, timezone.JSTLocation()),
 					UpdatedAt:        time.Date(2020, 1, 2, 0, 0, 0, 0, timezone.JSTLocation()),
@@ -183,7 +183,7 @@ func Test_attendanceService_CreateOrUpdateAttendance(t *testing.T) {
 			wantErr:          false,
 		},
 		{
-			name: "Should not create attendance when userId is empty",
+			name: "Should not create attendance when userID is empty",
 			fields: fields{
 				store: store,
 			},
@@ -193,7 +193,7 @@ func Test_attendanceService_CreateOrUpdateAttendance(t *testing.T) {
 					Remark:     "test",
 					IsModified: false,
 				},
-				userId: "",
+				userID: "",
 			},
 			want:    nil,
 			wantErr: true,
@@ -206,7 +206,7 @@ func Test_attendanceService_CreateOrUpdateAttendance(t *testing.T) {
 			args: args{
 				ctx:            context.Background(),
 				attendanceTime: nil,
-				userId:         userId,
+				userID:         userID,
 			},
 			want:    nil,
 			wantErr: true,
@@ -220,7 +220,7 @@ func Test_attendanceService_CreateOrUpdateAttendance(t *testing.T) {
 			if tt.shouldChangeDate {
 				flextime.Fix(time.Date(2020, 1, 2, 0, 0, 0, 0, timezone.JSTLocation()))
 			}
-			got, err := s.CreateOrUpdateAttendance(tt.args.ctx, tt.args.attendanceTime, tt.args.userId)
+			got, err := s.CreateOrUpdateAttendance(tt.args.ctx, tt.args.attendanceTime, tt.args.userID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("CreateOrUpdateAttendance() error = %v, wantErr %v", err, tt.wantErr)
 				return

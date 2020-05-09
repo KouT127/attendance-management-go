@@ -1,10 +1,10 @@
 package responses
 
 type CommonResponses struct {
-	IsSuccessful bool `json:"isSuccessful"`
-	HasNext      bool `json:"hasNext"`
+	IsSuccessful bool `json:"is_successful"`
+	HasNext      bool `json:"has_next"`
 }
 
 type CommonResponse struct {
-	IsSuccessful bool `json:"isSuccessful"`
+	IsSuccessful bool `json:"is_successful"`
 }

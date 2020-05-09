@@ -23,7 +23,7 @@ func (opt *DefaultSearchOption) SetPaginatedSession(eng *xorm.Session) *xorm.Ses
 }
 
 type GetAttendancesParameters struct {
-	UserId    string
+	UserID    string
 	Date      *time.Time
 	Paginator *Pagination
 }

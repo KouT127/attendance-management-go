@@ -29,7 +29,7 @@ func NewAttendanceHandler(service services.AttendanceService) AttendanceHandler 
 
 func (s *attendanceService) ListHandler(c *gin.Context) {
 	var (
-		userId string
+		userID string
 		res    *models.GetAttendancesResults
 		err    error
 	)
@@ -41,13 +41,13 @@ func (s *attendanceService) ListHandler(c *gin.Context) {
 		return
 	}
 
-	if userId, err = handler.GetIdByKey(c, auth.AuthorizedUserIdKey); err != nil {
+	if userID, err = handler.GetIDByKey(c, auth.AuthorizedUserIDKey); err != nil {
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
 	}
 
 	params := models.GetAttendancesParameters{
-		UserId:    userId,
+		UserID:    userID,
 		Paginator: p.ToPaginator(),
 	}
 
@@ -63,7 +63,7 @@ func (s *attendanceService) ListHandler(c *gin.Context) {
 
 func (s *attendanceService) MonthlyHandler(c *gin.Context) {
 	var (
-		userId string
+		userID string
 		res    *models.GetAttendancesResults
 		err    error
 	)
@@ -81,13 +81,13 @@ func (s *attendanceService) MonthlyHandler(c *gin.Context) {
 		return
 	}
 
-	if userId, err = handler.GetIdByKey(c, auth.AuthorizedUserIdKey); err != nil {
+	if userID, err = handler.GetIDByKey(c, auth.AuthorizedUserIDKey); err != nil {
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
 	}
 
 	params := models.GetAttendancesParameters{
-		UserId:    userId,
+		UserID:    userID,
 		Paginator: p.ToPaginator(),
 	}
 
@@ -108,7 +108,7 @@ func (s *attendanceService) CreateHandler(c *gin.Context) {
 		return
 	}
 
-	userId, err := handler.GetIdByKey(c, auth.AuthorizedUserIdKey)
+	userID, err := handler.GetIDByKey(c, auth.AuthorizedUserIDKey)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return
@@ -120,7 +120,7 @@ func (s *attendanceService) CreateHandler(c *gin.Context) {
 	}
 
 	attendanceTime := input.ToAttendanceTime()
-	attendance, err := s.service.CreateOrUpdateAttendance(c, attendanceTime, userId)
+	attendance, err := s.service.CreateOrUpdateAttendance(c, attendanceTime, userID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, NewError(BadAccessError))
 		return

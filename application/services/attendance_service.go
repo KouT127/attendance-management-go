@@ -10,7 +10,7 @@ import (
 
 type AttendanceService interface {
 	GetAttendances(params models.GetAttendancesParameters) (*models.GetAttendancesResults, error)
-	CreateOrUpdateAttendance(ctx context.Context, attendanceTime *models.AttendanceTime, userId string) (*models.Attendance, error)
+	CreateOrUpdateAttendance(ctx context.Context, attendanceTime *models.AttendanceTime, userID string) (*models.Attendance, error)
 }
 
 type attendanceService struct {
@@ -25,7 +25,7 @@ func NewAttendanceService(ss sqlstore.SqlStore) AttendanceService {
 
 func (s *attendanceService) GetAttendances(params models.GetAttendancesParameters) (*models.GetAttendancesResults, error) {
 	ctx := context.Background()
-	maxCnt, err := s.store.GetAttendancesCount(ctx, params.UserId)
+	maxCnt, err := s.store.GetAttendancesCount(ctx, params.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -41,9 +41,9 @@ func (s *attendanceService) GetAttendances(params models.GetAttendancesParameter
 	return &res, nil
 }
 
-func (s *attendanceService) CreateOrUpdateAttendance(ctx context.Context, attendanceTime *models.AttendanceTime, userId string) (*models.Attendance, error) {
-	if userId == "" {
-		return nil, xerrors.New("userId is empty")
+func (s *attendanceService) CreateOrUpdateAttendance(ctx context.Context, attendanceTime *models.AttendanceTime, userID string) (*models.Attendance, error) {
+	if userID == "" {
+		return nil, xerrors.New("userID is empty")
 	}
 	if attendanceTime == nil {
 		return nil, xerrors.New("attendance time is empty")
@@ -55,32 +55,32 @@ func (s *attendanceService) CreateOrUpdateAttendance(ctx context.Context, attend
 	}
 	defer s.store.Close(ctx)
 
-	attendance, err := s.store.GetLatestAttendance(ctx, userId)
+	attendance, err := s.store.GetLatestAttendance(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
 
 	if attendance == nil {
 		attendance = &models.Attendance{}
-		attendance.UserId = userId
+		attendance.UserID = userID
 		attendance.ClockedIn = attendanceTime
 		attendance.CreatedAt = flextime.Now()
 		attendance.UpdatedAt = flextime.Now()
 		if err = s.store.CreateAttendance(ctx, attendance); err != nil {
 			return nil, err
 		}
-		attendanceTime.AttendanceKindId = uint8(models.AttendanceKindClockIn)
+		attendanceTime.AttendanceKindID = uint8(models.AttendanceKindClockIn)
 	} else {
-		if err = s.store.UpdateOldAttendanceTime(ctx, attendance.Id, uint8(models.AttendanceKindClockOut)); err != nil {
+		if err = s.store.UpdateOldAttendanceTime(ctx, attendance.ID, uint8(models.AttendanceKindClockOut)); err != nil {
 			return nil, err
 		}
 		attendance.ClockedOut = attendanceTime
-		attendanceTime.AttendanceKindId = uint8(models.AttendanceKindClockOut)
+		attendanceTime.AttendanceKindID = uint8(models.AttendanceKindClockOut)
 	}
 	attendanceTime.PushedAt = flextime.Now()
 	attendanceTime.CreatedAt = flextime.Now()
 	attendanceTime.UpdatedAt = flextime.Now()
-	attendanceTime.AttendanceId = attendance.Id
+	attendanceTime.AttendanceID = attendance.ID
 
 	if err = s.store.CreateAttendanceTime(ctx, attendanceTime); err != nil {
 		return nil, err

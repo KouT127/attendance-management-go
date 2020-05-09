@@ -28,24 +28,24 @@ func (s *userService) GetOrCreateUser(params models.GetOrCreateUserParams) (*mod
 		attendance *models.Attendance
 		err        error
 	)
-	if params.UserId == "" {
+	if params.UserID == "" {
 		return nil, xerrors.New("user id is empty")
 	}
 
 	_, err = s.store.InTransaction(context.Background(), func(ctx context.Context) (interface{}, error) {
-		user, err = s.store.GetUser(ctx, params.UserId)
+		user, err = s.store.GetUser(ctx, params.UserID)
 		if err != nil {
 			return nil, err
 		}
 
-		if user.Id == "" {
-			user.Id = params.UserId
+		if user.ID == "" {
+			user.ID = params.UserID
 			if err = s.store.CreateUser(ctx, user); err != nil {
 				return nil, err
 			}
 		}
 
-		if attendance, err = s.store.GetLatestAttendance(context.Background(), params.UserId); err != nil {
+		if attendance, err = s.store.GetLatestAttendance(context.Background(), params.UserID); err != nil {
 			return nil, err
 		}
 

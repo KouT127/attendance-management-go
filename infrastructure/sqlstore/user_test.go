@@ -24,7 +24,7 @@ func TestCreateUser(t *testing.T) {
 			args{
 				ctx: context.Background(),
 				user: &models.User{
-					Id:   "asdiekawei42lasedi356ladfkjfity",
+					ID:   "asdiekawei42lasedi356ladfkjfity",
 					Name: "test1",
 				},
 			},
@@ -44,7 +44,7 @@ func TestUpdateUser(t *testing.T) {
 	store := InitTestDatabase()
 
 	user := &models.User{
-		Id:   "asdiekawei42lasedi356ladfkjfity",
+		ID:   "asdiekawei42lasedi356ladfkjfity",
 		Name: "test1",
 	}
 
@@ -67,7 +67,7 @@ func TestUpdateUser(t *testing.T) {
 			args{
 				ctx: context.Background(),
 				user: &models.User{
-					Id:   "qawsedreftgyhujuiqadnsrt2376sd",
+					ID:   "qawsedreftgyhujuiqadnsrt2376sd",
 					Name: "test1",
 				},
 			},
@@ -78,7 +78,7 @@ func TestUpdateUser(t *testing.T) {
 			args{
 				ctx: context.Background(),
 				user: &models.User{
-					Id:       "asdiekawei42lasedi356ladfkjfity",
+					ID:       "asdiekawei42lasedi356ladfkjfity",
 					Name:     "updatedName",
 					Email:    "updatedEmail",
 					ImageURL: "updatedImage",
@@ -108,7 +108,7 @@ func TestUpdateUser(t *testing.T) {
 func TestGetUser(t *testing.T) {
 	store := InitTestDatabase()
 	user := &models.User{
-		Id:   "asdiekawei42lasedi356ladfkjfity",
+		ID:   "asdiekawei42lasedi356ladfkjfity",
 		Name: "test1",
 	}
 
@@ -118,7 +118,7 @@ func TestGetUser(t *testing.T) {
 
 	type args struct {
 		ctx    context.Context
-		userId string
+		userID string
 	}
 	tests := []struct {
 		name    string
@@ -130,7 +130,7 @@ func TestGetUser(t *testing.T) {
 			"Should get user",
 			args{
 				ctx:    context.Background(),
-				userId: "asdiekawei42lasedi356ladfkjfity",
+				userID: "asdiekawei42lasedi356ladfkjfity",
 			},
 			user,
 			false,
@@ -139,7 +139,7 @@ func TestGetUser(t *testing.T) {
 			"Should not get user",
 			args{
 				ctx:    context.Background(),
-				userId: "asdiekawei42lasedi356ladfkjfity",
+				userID: "asdiekawei42lasedi356ladfkjfity",
 			},
 			user,
 			false,
@@ -147,7 +147,7 @@ func TestGetUser(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := store.GetUser(tt.args.ctx, tt.args.userId)
+			got, err := store.GetUser(tt.args.ctx, tt.args.userID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetUser() error = %v, wantErr %v", err, tt.wantErr)
 				return

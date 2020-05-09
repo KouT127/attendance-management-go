@@ -5,10 +5,10 @@ import (
 )
 
 type AttendanceTime struct {
-	Id               int64
+	ID               int64
 	Remark           string
-	AttendanceId     int64
-	AttendanceKindId uint8
+	AttendanceID     int64
+	AttendanceKindID uint8
 	IsModified       bool
 	PushedAt         time.Time
 	CreatedAt        time.Time
@@ -20,8 +20,8 @@ func (AttendanceTime) TableName() string {
 }
 
 type Attendance struct {
-	Id        int64
-	UserId    string
+	ID        int64
+	UserID    string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 
@@ -45,16 +45,16 @@ func (d AttendanceDetail) ToAttendance() *Attendance {
 		out *AttendanceTime
 	)
 	a := d.Attendance
-	if d.ClockedInTime.Id != 0 {
+	if d.ClockedInTime.ID != 0 {
 		in = d.ClockedInTime
 	}
-	if d.ClockedOutTime.Id != 0 {
+	if d.ClockedOutTime.ID != 0 {
 		out = d.ClockedOutTime
 	}
 
 	attendance := &Attendance{
-		Id:         a.Id,
-		UserId:     a.UserId,
+		ID:         a.ID,
+		UserID:     a.UserID,
 		ClockedIn:  in,
 		ClockedOut: out,
 		CreatedAt:  a.CreatedAt,

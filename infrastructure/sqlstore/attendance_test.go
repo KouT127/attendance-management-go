@@ -21,7 +21,7 @@ func TestCreateAttendance(t *testing.T) {
 	store := InitTestDatabase()
 
 	user := &models.User{
-		Id:   "asdiekawei42lasedi356ladfkjfity",
+		ID:   "asdiekawei42lasedi356ladfkjfity",
 		Name: "test1",
 	}
 
@@ -51,7 +51,7 @@ func TestCreateAttendance(t *testing.T) {
 			args{
 				ctx: context.Background(),
 				attendance: &models.Attendance{
-					UserId: user.Id,
+					UserID: user.ID,
 				},
 			},
 			false,
@@ -73,7 +73,7 @@ func TestCreateAttendanceTime(t *testing.T) {
 		attendanceTime *models.AttendanceTime
 	}
 	user := &models.User{
-		Id:   "asdiekawei42lasedi356ladfkjfity",
+		ID:   "asdiekawei42lasedi356ladfkjfity",
 		Name: "test1",
 	}
 
@@ -82,7 +82,7 @@ func TestCreateAttendanceTime(t *testing.T) {
 	}
 
 	attendance := &models.Attendance{
-		UserId: user.Id,
+		UserID: user.ID,
 	}
 
 	if err := store.CreateAttendance(context.Background(), attendance); err != nil {
@@ -100,9 +100,9 @@ func TestCreateAttendanceTime(t *testing.T) {
 				ctx: context.Background(),
 				attendanceTime: &models.AttendanceTime{
 					Remark:           "test",
-					AttendanceKindId: uint8(models.AttendanceKindClockIn),
+					AttendanceKindID: uint8(models.AttendanceKindClockIn),
 					IsModified:       false,
-					AttendanceId:     attendance.Id,
+					AttendanceID:     attendance.ID,
 					PushedAt:         flextime.Now(),
 					CreatedAt:        flextime.Now(),
 					UpdatedAt:        flextime.Now(),
@@ -134,7 +134,7 @@ func TestFetchAttendances(t *testing.T) {
 	timezone.Set("Asia/Tokyo")
 
 	user := &models.User{
-		Id:   "asdiekawei42lasedi356ladfkjfity",
+		ID:   "asdiekawei42lasedi356ladfkjfity",
 		Name: "test1",
 	}
 
@@ -143,7 +143,7 @@ func TestFetchAttendances(t *testing.T) {
 	}
 
 	attendance := &models.Attendance{
-		UserId:    user.Id,
+		UserID:    user.ID,
 		CreatedAt: flextime.Now().UTC().Truncate(time.Second),
 		UpdatedAt: flextime.Now().UTC().Truncate(time.Second),
 	}
@@ -154,9 +154,9 @@ func TestFetchAttendances(t *testing.T) {
 
 	time := &models.AttendanceTime{
 		Remark:           "test",
-		AttendanceKindId: uint8(models.AttendanceKindClockIn),
+		AttendanceKindID: uint8(models.AttendanceKindClockIn),
 		IsModified:       false,
-		AttendanceId:     attendance.Id,
+		AttendanceID:     attendance.ID,
 		PushedAt:         flextime.Now().UTC().Truncate(time.Second),
 		CreatedAt:        flextime.Now().UTC().Truncate(time.Second),
 		UpdatedAt:        flextime.Now().UTC().Truncate(time.Second),
@@ -183,7 +183,7 @@ func TestFetchAttendances(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				query: &models.GetAttendancesParameters{
-					UserId: "",
+					UserID: "",
 				},
 			},
 			want:    attendances,
@@ -194,7 +194,7 @@ func TestFetchAttendances(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				query: &models.GetAttendancesParameters{
-					UserId: "asdiekawei42lasedi356ladfkjfity",
+					UserID: "asdiekawei42lasedi356ladfkjfity",
 				},
 			},
 			want: []*models.Attendance{
@@ -223,7 +223,7 @@ func TestFetchAttendancesCount(t *testing.T) {
 
 	type args struct {
 		ctx    context.Context
-		userId string
+		userID string
 	}
 	tests := []struct {
 		name    string
@@ -235,7 +235,7 @@ func TestFetchAttendancesCount(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := store.GetAttendancesCount(tt.args.ctx, tt.args.userId)
+			got, err := store.GetAttendancesCount(tt.args.ctx, tt.args.userID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetAttendancesCount() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -251,7 +251,7 @@ func TestFetchLatestAttendance(t *testing.T) {
 	store := InitTestDatabase()
 	type args struct {
 		ctx    context.Context
-		userId string
+		userID string
 	}
 	tests := []struct {
 		name    string
@@ -263,7 +263,7 @@ func TestFetchLatestAttendance(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := store.GetLatestAttendance(tt.args.ctx, tt.args.userId)
+			got, err := store.GetLatestAttendance(tt.args.ctx, tt.args.userID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetLatestAttendance() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -280,7 +280,7 @@ func TestUpdateOldAttendanceTime(t *testing.T) {
 	type args struct {
 		ctx    context.Context
 		id     int64
-		kindId uint8
+		kindID uint8
 	}
 	tests := []struct {
 		name    string
@@ -291,7 +291,7 @@ func TestUpdateOldAttendanceTime(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := store.UpdateOldAttendanceTime(tt.args.ctx, tt.args.id, tt.args.kindId); (err != nil) != tt.wantErr {
+			if err := store.UpdateOldAttendanceTime(tt.args.ctx, tt.args.id, tt.args.kindID); (err != nil) != tt.wantErr {
 				t.Errorf("UpdateOldAttendanceTime() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

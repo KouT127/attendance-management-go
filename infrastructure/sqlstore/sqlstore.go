@@ -10,6 +10,7 @@ import (
 	"time"
 	"xorm.io/xorm"
 	xlog "xorm.io/xorm/log"
+	"xorm.io/xorm/names"
 )
 
 const (
@@ -44,6 +45,7 @@ func configureConnectionPool(engine *xorm.Engine) {
 	engine.SetMaxIdleConns(5)
 	engine.SetMaxOpenConns(7)
 	engine.SetConnMaxLifetime(1800)
+	engine.SetMapper(names.GonicMapper{})
 }
 
 func configureLogger(engine *xorm.Engine) {

@@ -10,15 +10,15 @@ import (
 )
 
 type Attendance interface {
-	GetAttendancesCount(ctx context.Context, userId string) (int64, error)
-	GetLatestAttendance(ctx context.Context, userId string) (*models.Attendance, error)
+	GetAttendancesCount(ctx context.Context, userID string) (int64, error)
+	GetLatestAttendance(ctx context.Context, userID string) (*models.Attendance, error)
 	GetAttendances(ctx context.Context, query *models.GetAttendancesParameters) ([]*models.Attendance, error)
-	UpdateOldAttendanceTime(ctx context.Context, id int64, kindId uint8) error
+	UpdateOldAttendanceTime(ctx context.Context, id int64, kindID uint8) error
 	CreateAttendance(ctx context.Context, attendance *models.Attendance) error
 	CreateAttendanceTime(ctx context.Context, attendanceTime *models.AttendanceTime) error
 }
 
-func (sqlStore) GetAttendancesCount(ctx context.Context, userId string) (int64, error) {
+func (sqlStore) GetAttendancesCount(ctx context.Context, userID string) (int64, error) {
 	var count int64
 
 	sess, err := getDBSession(ctx)
@@ -27,7 +27,7 @@ func (sqlStore) GetAttendancesCount(ctx context.Context, userId string) (int64, 
 	}
 
 	attendance := &models.Attendance{}
-	attendance.UserId = userId
+	attendance.UserID = userID
 	count, err = sess.Count(attendance)
 	if err != nil {
 		return 0, err
@@ -36,7 +36,7 @@ func (sqlStore) GetAttendancesCount(ctx context.Context, userId string) (int64, 
 	return count, nil
 }
 
-func (sqlStore) GetLatestAttendance(ctx context.Context, userId string) (*models.Attendance, error) {
+func (sqlStore) GetLatestAttendance(ctx context.Context, userID string) (*models.Attendance, error) {
 	var (
 		attendance models.AttendanceDetail
 		has        bool
@@ -58,7 +58,7 @@ func (sqlStore) GetLatestAttendance(ctx context.Context, userId string) (*models
 		Join("left outer",
 			"attendances_time clocked_out_time",
 			"attendances.id = clocked_out_time.attendance_id and clocked_out_time.attendance_kind_id = 2 and clocked_out_time.is_modified = false").
-		Where("attendances.user_id = ?", userId).
+		Where("attendances.user_id = ?", userID).
 		Where("attendances.created_at Between ? and ? ", start, end).
 		Limit(1).
 		OrderBy("-attendances.id").
@@ -107,7 +107,7 @@ func (sqlStore) GetAttendances(ctx context.Context, query *models.GetAttendances
 	page := p.CalculatePage()
 
 	err = sess.Limit(int(p.Limit), int(page)).
-		Where("attendances.user_id = ?", query.UserId).
+		Where("attendances.user_id = ?", query.UserID).
 		OrderBy("-attendances.id").
 		Iterate(&models.AttendanceDetail{}, func(idx int, bean interface{}) error {
 			d := bean.(*models.AttendanceDetail)
@@ -123,14 +123,14 @@ func (sqlStore) GetAttendances(ctx context.Context, query *models.GetAttendances
 	return attendances, nil
 }
 
-func (sqlStore) UpdateOldAttendanceTime(ctx context.Context, id int64, kindId uint8) error {
+func (sqlStore) UpdateOldAttendanceTime(ctx context.Context, id int64, kindID uint8) error {
 	sess, err := getDBSession(ctx)
 	if err != nil {
 		return err
 	}
 	query := &models.AttendanceTime{
-		AttendanceId:     id,
-		AttendanceKindId: kindId,
+		AttendanceID:     id,
+		AttendanceKindID: kindID,
 		IsModified:       false,
 	}
 	_, err = sess.UseBool("is_modified").

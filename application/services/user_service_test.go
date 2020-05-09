@@ -12,7 +12,7 @@ import (
 
 func Test_userService_GetOrCreateUser(t *testing.T) {
 	store := sqlstore.InitTestDatabase()
-	userId := uuid.NewV4().String()
+	userID := uuid.NewV4().String()
 
 	type fields struct {
 		store sqlstore.SqlStore
@@ -34,12 +34,12 @@ func Test_userService_GetOrCreateUser(t *testing.T) {
 			},
 			args: args{
 				params: models.GetOrCreateUserParams{
-					UserId: userId,
+					UserID: userID,
 				},
 			},
 			want: &models.GetOrCreateUserResults{
 				User: &models.User{
-					Id: userId,
+					ID: userID,
 				},
 				LatestAttendance: nil,
 			},
@@ -52,12 +52,12 @@ func Test_userService_GetOrCreateUser(t *testing.T) {
 			},
 			args: args{
 				params: models.GetOrCreateUserParams{
-					UserId: userId,
+					UserID: userID,
 				},
 			},
 			want: &models.GetOrCreateUserResults{
 				User: &models.User{
-					Id: userId,
+					ID: userId,
 				},
 				LatestAttendance: nil,
 			},
@@ -70,7 +70,7 @@ func Test_userService_GetOrCreateUser(t *testing.T) {
 			},
 			args: args{
 				params: models.GetOrCreateUserParams{
-					UserId: "",
+					UserID: "",
 				},
 			},
 			want:    nil,
@@ -97,7 +97,7 @@ func Test_userService_GetOrCreateUser(t *testing.T) {
 func Test_userService_UpdateUser(t *testing.T) {
 	store := sqlstore.InitTestDatabase()
 	userId := uuid.NewV4().String()
-	err := store.CreateUser(context.Background(), &models.User{Id: userId})
+	err := store.CreateUser(context.Background(), &models.User{ID: userId})
 	if err != nil {
 		t.Errorf("CreateUser() %s", err)
 	}
@@ -122,7 +122,7 @@ func Test_userService_UpdateUser(t *testing.T) {
 			},
 			args: args{
 				user: &models.User{
-					Id:        userId,
+					ID:        userId,
 					Name:      "updated",
 					Email:     "updated",
 					ImageURL:  "updated",
@@ -131,7 +131,7 @@ func Test_userService_UpdateUser(t *testing.T) {
 				},
 			},
 			want: &models.User{
-				Id:        userId,
+				ID:        userId,
 				Name:      "updated",
 				Email:     "updated",
 				ImageURL:  "updated",
@@ -161,7 +161,7 @@ func Test_userService_UpdateUser(t *testing.T) {
 				t.Errorf("UpdateUser() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			got, err := s.GetOrCreateUser(models.GetOrCreateUserParams{UserId: tt.args.user.Id})
+			got, err := s.GetOrCreateUser(models.GetOrCreateUserParams{UserID: tt.args.user.ID})
 			if got == nil {
 				// Failed用
 				return
