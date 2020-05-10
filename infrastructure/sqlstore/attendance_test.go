@@ -165,8 +165,9 @@ func TestFetchAttendances(t *testing.T) {
 	attendance.ClockedIn = time
 
 	type args struct {
-		ctx   context.Context
-		query *models.GetAttendancesParameters
+		ctx    context.Context
+		userID string
+		month  int
 	}
 	tests := []struct {
 		name    string
@@ -177,11 +178,9 @@ func TestFetchAttendances(t *testing.T) {
 		{
 			name: "Should get attendances",
 			args: args{
-				ctx: context.Background(),
-				query: &models.GetAttendancesParameters{
-					UserID: userID,
-					Month:  0,
-				},
+				ctx:    context.Background(),
+				userID: userID,
+				month:  0,
 			},
 			want:    nil,
 			wantErr: true,
@@ -189,11 +188,9 @@ func TestFetchAttendances(t *testing.T) {
 		{
 			name: "Should get attendances",
 			args: args{
-				ctx: context.Background(),
-				query: &models.GetAttendancesParameters{
-					UserID: "",
-					Month:  202001,
-				},
+				ctx:    context.Background(),
+				userID: "",
+				month:  202001,
 			},
 			want:    []*models.Attendance{},
 			wantErr: false,
@@ -201,11 +198,9 @@ func TestFetchAttendances(t *testing.T) {
 		{
 			name: "Should get attendances by params",
 			args: args{
-				ctx: context.Background(),
-				query: &models.GetAttendancesParameters{
-					UserID: userID,
-					Month:  202001,
-				},
+				ctx:    context.Background(),
+				userID: userID,
+				month:  202001,
 			},
 			want: []*models.Attendance{
 				attendance,
@@ -215,11 +210,9 @@ func TestFetchAttendances(t *testing.T) {
 		{
 			name: "Should get attendances by params",
 			args: args{
-				ctx: context.Background(),
-				query: &models.GetAttendancesParameters{
-					UserID: userID,
-					Month:  202002,
-				},
+				ctx:    context.Background(),
+				userID: userID,
+				month:  202002,
 			},
 			want:    []*models.Attendance{},
 			wantErr: false,
@@ -228,7 +221,7 @@ func TestFetchAttendances(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := store.GetAttendances(tt.args.ctx, tt.args.query)
+			got, err := store.GetAttendances(tt.args.ctx, tt.args.userID, tt.args.month)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetAttendances() error = %v, wantErr %v", err, tt.wantErr)
 				return

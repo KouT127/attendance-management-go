@@ -13,7 +13,7 @@ import (
 type Attendance interface {
 	GetAttendancesCount(ctx context.Context, query *models.GetAttendancesParameters) (int64, error)
 	GetLatestAttendance(ctx context.Context, userID string) (*models.Attendance, error)
-	GetAttendances(ctx context.Context, query *models.GetAttendancesParameters) ([]*models.Attendance, error)
+	GetAttendances(ctx context.Context, userID string, month int) (models.Attendances, error)
 	UpdateOldAttendanceTime(ctx context.Context, id int64, kindID uint8) error
 	CreateAttendance(ctx context.Context, attendance *models.Attendance) error
 	CreateAttendanceTime(ctx context.Context, attendanceTime *models.AttendanceTime) error
@@ -83,18 +83,18 @@ func (sqlStore) GetLatestAttendance(ctx context.Context, userID string) (*models
 	return attendance.ToAttendance(), nil
 }
 
-func (sqlStore) GetAttendances(ctx context.Context, query *models.GetAttendancesParameters) ([]*models.Attendance, error) {
-	attendances := make([]*models.Attendance, 0)
+func (sqlStore) GetAttendances(ctx context.Context, userID string, month int) (models.Attendances, error) {
+	attendances := make(models.Attendances, 0)
 
 	sess, err := getDBSession(ctx)
 	if err != nil {
 		return nil, err
 	}
-	if query.Month == 0 {
+	if month == 0 {
 		return nil, xerrors.New("month is empty")
 	}
 
-	start, end, err := timeutil.GetMonthRange(query.Month)
+	start, end, err := timeutil.GetMonthRange(month)
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +108,7 @@ func (sqlStore) GetAttendances(ctx context.Context, query *models.GetAttendances
 			"attendances_time clocked_out_time",
 			"attendances.id = clocked_out_time.attendance_id and clocked_out_time.attendance_kind_id = 2 and clocked_out_time.is_modified = false").
 		Where("attendances.created_at Between ? and ? ", start, end).
-		Where("attendances.user_id = ?", query.UserID).
+		Where("attendances.user_id = ?", userID).
 		OrderBy("-attendances.id").
 		Iterate(&models.AttendanceDetail{}, func(idx int, bean interface{}) error {
 			d := bean.(*models.AttendanceDetail)

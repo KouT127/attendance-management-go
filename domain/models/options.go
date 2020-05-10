@@ -37,7 +37,17 @@ func (p GetAttendancesParameters) Validate() error {
 	return nil
 }
 
+type GetAttendanceSummaryParameters struct {
+	UserID string
+}
+
 type GetAttendancesResults struct {
 	MaxCnt      int64
 	Attendances []*Attendance
+}
+
+type GetAttendanceSummaryResults struct {
+	LatestAttendance Attendance
+	TotalTime        float64
+	RequiredTime     float64
 }

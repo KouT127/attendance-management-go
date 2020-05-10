@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/KouT127/attendance-management/domain/models"
 	"github.com/KouT127/attendance-management/infrastructure/sqlstore"
+	"github.com/KouT127/attendance-management/utilities/timeutil"
 	"github.com/Songmu/flextime"
 	"golang.org/x/xerrors"
 )
@@ -11,6 +12,7 @@ import (
 type AttendanceService interface {
 	GetAttendances(ctx context.Context, params models.GetAttendancesParameters) (*models.GetAttendancesResults, error)
 	CreateOrUpdateAttendance(ctx context.Context, attendanceTime *models.AttendanceTime, userID string) (*models.Attendance, error)
+	GetAttendanceSummary(ctx context.Context, params models.GetAttendanceSummaryParameters) (*models.GetAttendanceSummaryResults, error)
 }
 
 type attendanceService struct {
@@ -31,7 +33,7 @@ func (s *attendanceService) GetAttendances(ctx context.Context, params models.Ge
 	if err != nil {
 		return nil, err
 	}
-	attendances, err := s.store.GetAttendances(ctx, &params)
+	attendances, err := s.store.GetAttendances(ctx, params.UserID, params.Month)
 	if err != nil {
 		return nil, err
 	}
@@ -92,4 +94,34 @@ func (s *attendanceService) CreateOrUpdateAttendance(ctx context.Context, attend
 		return nil, err
 	}
 	return attendance, nil
+}
+func (s *attendanceService) GetAttendanceSummary(ctx context.Context, params models.GetAttendanceSummaryParameters) (*models.GetAttendanceSummaryResults, error) {
+	var (
+		res models.GetAttendanceSummaryResults
+	)
+
+	month, err := timeutil.GetDefaultMonth()
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO: 規定時間マスタを作成する
+	res.RequiredTime = 180
+
+	attendance, err := s.store.GetLatestAttendance(ctx, params.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	attendances, err := s.store.GetAttendances(ctx, params.UserID, month)
+	if err != nil {
+		return nil, err
+	}
+
+	res.TotalTime = attendances.ManipulateTotalWorkTime()
+
+	if attendance != nil {
+		res.LatestAttendance = *attendance
+	}
+	return &res, nil
 }

@@ -17,6 +17,7 @@ import (
 type Handler interface {
 	ListHandler(c *gin.Context)
 	CreateHandler(c *gin.Context)
+	SummaryHandler(c *gin.Context)
 }
 
 type attendanceService struct {
@@ -64,8 +65,7 @@ func (s *attendanceService) ListHandler(c *gin.Context) {
 		return
 	}
 
-	hasNext := query.HasNext(int(res.MaxCnt))
-	resps := responses.ToAttendancesResponses(hasNext, res.Attendances)
+	resps := responses.ToAttendancesResponses(res.Attendances)
 	c.JSON(http.StatusOK, resps)
 }
 
@@ -94,6 +94,22 @@ func (s *attendanceService) CreateHandler(c *gin.Context) {
 		return
 	}
 
-	res := responses.ToAttendanceResult(attendance)
+	res := responses.ToAttendanceCreatedResponse(attendance)
 	c.JSON(http.StatusOK, res)
+}
+
+func (s *attendanceService) SummaryHandler(c *gin.Context) {
+	userID, err := handler.GetIDByKey(c, auth.AuthorizedUserIDKey)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, responses.NewError(responses.BadAccessError))
+		return
+	}
+
+	results, err := s.service.GetAttendanceSummary(c, models.GetAttendanceSummaryParameters{UserID: userID})
+	if err != nil {
+		c.JSON(http.StatusBadRequest, responses.NewError(responses.BadAccessError))
+		return
+	}
+	resp := responses.ToAttendanceSummaryResponse(results)
+	c.JSON(http.StatusOK, resp)
 }

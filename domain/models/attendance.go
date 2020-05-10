@@ -4,6 +4,14 @@ import (
 	"time"
 )
 
+type AttendanceKind uint8
+
+const (
+	AttendanceKindNone AttendanceKind = iota
+	AttendanceKindClockIn
+	AttendanceKindClockOut
+)
+
 type AttendanceTime struct {
 	ID               int64
 	Remark           string
@@ -31,6 +39,20 @@ type Attendance struct {
 
 func (Attendance) TableName() string {
 	return "attendances"
+}
+
+type Attendances []*Attendance
+
+func (attendances Attendances) ManipulateTotalWorkTime() float64 {
+	var total float64
+	for _, attendance := range attendances {
+		if attendance.ClockedOut == nil {
+			continue
+		}
+		workTime := attendance.ClockedOut.PushedAt.Sub(attendance.ClockedIn.PushedAt)
+		total += workTime.Hours()
+	}
+	return total
 }
 
 type AttendanceDetail struct {
@@ -62,14 +84,6 @@ func (d AttendanceDetail) ToAttendance() *Attendance {
 	}
 	return attendance
 }
-
-type AttendanceKind uint8
-
-const (
-	AttendanceKindNone AttendanceKind = iota
-	AttendanceKindClockIn
-	AttendanceKindClockOut
-)
 
 func (k AttendanceKind) String() string {
 	switch k {

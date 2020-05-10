@@ -19,4 +19,5 @@ func configureAttendancesRouter(v1 *gin.RouterGroup, store sqlstore.SQLStore) {
 	attendances := v1.Group("/attendances", funcs...)
 	attendances.GET("", handler.ListHandler)
 	attendances.POST("", handler.CreateHandler)
+	attendances.GET("/summary", handler.SummaryHandler)
 }
