@@ -105,8 +105,14 @@ func (s *attendanceService) GetAttendanceSummary(ctx context.Context, params mod
 		return nil, err
 	}
 
-	// TODO: 規定時間マスタを作成する
-	res.RequiredTime = 180
+	hour, err := s.store.GetWorkingHours(ctx, flextime.Now())
+	if err != nil {
+		return nil, err
+	}
+	if hour.WorkingHours == 0 {
+		return nil, xerrors.New("No working hours set for this month")
+	}
+	res.RequiredHours = hour.WorkingHours
 
 	attendance, err := s.store.GetLatestAttendance(ctx, params.UserID)
 	if err != nil {
@@ -118,7 +124,7 @@ func (s *attendanceService) GetAttendanceSummary(ctx context.Context, params mod
 		return nil, err
 	}
 
-	res.TotalTime = attendances.ManipulateTotalWorkTime()
+	res.TotalHours = attendances.ManipulateTotalWorkHours()
 
 	if attendance != nil {
 		res.LatestAttendance = *attendance

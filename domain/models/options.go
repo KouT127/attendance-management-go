@@ -48,6 +48,6 @@ type GetAttendancesResults struct {
 
 type GetAttendanceSummaryResults struct {
 	LatestAttendance Attendance
-	TotalTime        float64
-	RequiredTime     float64
+	TotalHours       float64
+	RequiredHours    float64
 }

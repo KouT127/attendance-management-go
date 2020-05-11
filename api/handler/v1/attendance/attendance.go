@@ -107,6 +107,7 @@ func (s *attendanceService) SummaryHandler(c *gin.Context) {
 
 	results, err := s.service.GetAttendanceSummary(c, models.GetAttendanceSummaryParameters{UserID: userID})
 	if err != nil {
+		logger.NewWarn(map[string]interface{}{}, err.Error())
 		c.JSON(http.StatusBadRequest, responses.NewError(responses.BadAccessError))
 		return
 	}

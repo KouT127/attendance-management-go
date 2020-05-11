@@ -44,4 +44,7 @@ Authorization: Bearer {{token}}
 
 {
   "remark": "test"
-}
+}### 勤怠情報のサマリーを取得する。
+GET http://{{endpoint}}/v1/attendances/summary
+Content-Type: application/json
+Authorization: Bearer {{token}}

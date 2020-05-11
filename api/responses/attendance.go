@@ -38,9 +38,9 @@ type AttendancesResponses struct {
 
 type AttendanceSummaryResponse struct {
 	CommonResponse
-	LatestAttendance models.Attendance `json:"latest_attendance"`
-	RequiredTime     float64           `json:"required_time"`
-	TotalTime        float64           `json:"total_time"`
+	LatestAttendance *models.Attendance `json:"latest_attendance"`
+	RequiredHours    float64            `json:"required_time"`
+	TotalHours       float64            `json:"total_time"`
 }
 
 func toAttendanceResponse(a *models.Attendance) *AttendanceResponse {
@@ -95,9 +95,11 @@ func ToAttendancesResponses(attendances []*models.Attendance) *AttendancesRespon
 
 func ToAttendanceSummaryResponse(results *models.GetAttendanceSummaryResults) *AttendanceSummaryResponse {
 	res := AttendanceSummaryResponse{
-		TotalTime:        results.TotalTime,
-		RequiredTime:     results.RequiredTime,
-		LatestAttendance: results.LatestAttendance,
+		TotalHours:    results.TotalHours,
+		RequiredHours: results.RequiredHours,
+	}
+	if results.LatestAttendance.ID != 0 {
+		res.LatestAttendance = &results.LatestAttendance
 	}
 	res.IsSuccessful = true
 	return &res

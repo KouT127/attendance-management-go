@@ -16,12 +16,14 @@ const (
 	UserTable           = "users"
 	AttendanceTable     = "attendances"
 	AttendanceTimeTable = "attendances_time"
+	WorkingHourTable    = "working_hours"
 )
 
 type SQLStore interface {
 	Transaction
 	User
 	Attendance
+	WorkingHour
 }
 
 type sqlStore struct {

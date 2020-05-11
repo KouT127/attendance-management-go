@@ -43,7 +43,7 @@ func (Attendance) TableName() string {
 
 type Attendances []*Attendance
 
-func (attendances Attendances) ManipulateTotalWorkTime() float64 {
+func (attendances Attendances) ManipulateTotalWorkHours() float64 {
 	var total float64
 	for _, attendance := range attendances {
 		if attendance.ClockedOut == nil {
