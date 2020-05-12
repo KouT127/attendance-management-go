@@ -14,6 +14,15 @@ import (
 	"time"
 )
 
+var IgnoreGlobalOptions = cmp.Options{
+	cmpopts.IgnoreFields(models.Attendance{}, "CreatedAt"),
+	cmpopts.IgnoreFields(models.Attendance{}, "UpdatedAt"),
+	cmpopts.IgnoreFields(models.AttendanceTime{}, "CreatedAt"),
+	cmpopts.IgnoreFields(models.AttendanceTime{}, "UpdatedAt"),
+	cmpopts.IgnoreFields(models.User{}, "CreatedAt"),
+	cmpopts.IgnoreFields(models.User{}, "UpdatedAt"),
+}
+
 func Test_attendanceService_CreateOrUpdateAttendance(t *testing.T) {
 	store := sqlstore.InitTestDatabase()
 	timezone.Set("Asia/Tokyo")
@@ -65,9 +74,10 @@ func Test_attendanceService_CreateOrUpdateAttendance(t *testing.T) {
 				userID: userID,
 			},
 			want: &models.Attendance{
-				UserID:    userID,
-				CreatedAt: flextime.Now(),
-				UpdatedAt: flextime.Now(),
+				UserID:     userID,
+				AttendedAt: flextime.Now(),
+				CreatedAt:  flextime.Now(),
+				UpdatedAt:  flextime.Now(),
 				ClockedIn: &models.AttendanceTime{
 					Remark:           "test",
 					IsModified:       false,
@@ -94,9 +104,10 @@ func Test_attendanceService_CreateOrUpdateAttendance(t *testing.T) {
 				userID: userID,
 			},
 			want: &models.Attendance{
-				UserID:    userID,
-				CreatedAt: flextime.Now(),
-				UpdatedAt: flextime.Now(),
+				UserID:     userID,
+				AttendedAt: flextime.Now(),
+				CreatedAt:  flextime.Now(),
+				UpdatedAt:  flextime.Now(),
 				ClockedIn: &models.AttendanceTime{
 					Remark:           "test",
 					IsModified:       false,
@@ -130,9 +141,10 @@ func Test_attendanceService_CreateOrUpdateAttendance(t *testing.T) {
 				userID: userID,
 			},
 			want: &models.Attendance{
-				UserID:    userID,
-				CreatedAt: flextime.Now(),
-				UpdatedAt: flextime.Now(),
+				UserID:     userID,
+				AttendedAt: flextime.Now(),
+				CreatedAt:  flextime.Now(),
+				UpdatedAt:  flextime.Now(),
 				ClockedIn: &models.AttendanceTime{
 					Remark:           "test",
 					IsModified:       false,
@@ -166,9 +178,10 @@ func Test_attendanceService_CreateOrUpdateAttendance(t *testing.T) {
 				userID: userID,
 			},
 			want: &models.Attendance{
-				UserID:    userID,
-				CreatedAt: time.Date(2020, 1, 2, 0, 0, 0, 0, timezone.JSTLocation()),
-				UpdatedAt: time.Date(2020, 1, 2, 0, 0, 0, 0, timezone.JSTLocation()),
+				UserID:     userID,
+				AttendedAt: time.Date(2020, 1, 2, 0, 0, 0, 0, timezone.JSTLocation()),
+				CreatedAt:  time.Date(2020, 1, 2, 0, 0, 0, 0, timezone.JSTLocation()),
+				UpdatedAt:  time.Date(2020, 1, 2, 0, 0, 0, 0, timezone.JSTLocation()),
 				ClockedIn: &models.AttendanceTime{
 					Remark:           "test",
 					IsModified:       false,
@@ -225,7 +238,7 @@ func Test_attendanceService_CreateOrUpdateAttendance(t *testing.T) {
 				t.Errorf("CreateOrUpdateAttendance() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if diff := cmp.Diff(got, tt.want, options); diff != "" {
+			if diff := cmp.Diff(got, tt.want, options, IgnoreGlobalOptions); diff != "" {
 				t.Errorf("CreateOrUpdateAttendance() diff + want - got %v", diff)
 			}
 		})
@@ -247,9 +260,10 @@ func Test_attendanceService_GetAttendances(t *testing.T) {
 	}
 
 	attendance := &models.Attendance{
-		UserID:    user.ID,
-		CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).Truncate(time.Second),
-		UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).Truncate(time.Second),
+		UserID:     user.ID,
+		AttendedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).Truncate(time.Second),
+		CreatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).Truncate(time.Second),
+		UpdatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).Truncate(time.Second),
 	}
 
 	if err := store.CreateAttendance(context.Background(), attendance); err != nil {
@@ -299,7 +313,7 @@ func Test_attendanceService_GetAttendances(t *testing.T) {
 			},
 			want: &models.GetAttendancesResults{
 				MaxCnt: 1,
-				Attendances: []*models.Attendance{
+				Attendances: models.Attendances{
 					attendance,
 				},
 			},
@@ -319,7 +333,7 @@ func Test_attendanceService_GetAttendances(t *testing.T) {
 			},
 			want: &models.GetAttendancesResults{
 				MaxCnt:      0,
-				Attendances: []*models.Attendance{},
+				Attendances: models.Attendances{},
 			},
 			wantErr: false,
 		},
@@ -349,7 +363,7 @@ func Test_attendanceService_GetAttendances(t *testing.T) {
 				t.Errorf("GetAttendances() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if diff := cmp.Diff(got, tt.want); diff != "" {
+			if diff := cmp.Diff(got, tt.want, IgnoreGlobalOptions); diff != "" {
 				t.Errorf("GetAttendances() diff %s", diff)
 			}
 		})

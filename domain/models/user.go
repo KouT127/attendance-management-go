@@ -9,8 +9,8 @@ type User struct {
 	Name      string
 	Email     string
 	ImageURL  string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	CreatedAt time.Time `xorm:"created"`
+	UpdatedAt time.Time `xorm:"updated"`
 }
 
 func (User) TableName() string {

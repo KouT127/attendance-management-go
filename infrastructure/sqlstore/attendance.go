@@ -37,7 +37,7 @@ func (sqlStore) GetAttendancesCount(ctx context.Context, query *models.GetAttend
 	}
 	attendance := &models.Attendance{}
 	attendance.UserID = query.UserID
-	count, err = sess.Where("attendances.created_at Between ? and ? ", start, end).Count(attendance)
+	count, err = sess.Where("attendances.attended_at Between ? and ? ", start, end).Count(attendance)
 	if err != nil {
 		return 0, err
 	}
@@ -68,7 +68,7 @@ func (sqlStore) GetLatestAttendance(ctx context.Context, userID string) (*models
 			"attendances_time clocked_out_time",
 			"attendances.id = clocked_out_time.attendance_id and clocked_out_time.attendance_kind_id = 2 and clocked_out_time.is_modified = false").
 		Where("attendances.user_id = ?", userID).
-		Where("attendances.created_at Between ? and ? ", start, end).
+		Where("attendances.attended_at Between ? and ? ", start, end).
 		Limit(1).
 		OrderBy("-attendances.id").
 		Get(&attendance)
@@ -85,7 +85,7 @@ func (sqlStore) GetLatestAttendance(ctx context.Context, userID string) (*models
 
 func (sqlStore) GetAttendances(ctx context.Context, userID string, month int) (models.Attendances, error) {
 	attendances := make(models.Attendances, 0)
-
+	eng.NoAutoTime()
 	sess, err := getDBSession(ctx)
 	if err != nil {
 		return nil, err
@@ -107,7 +107,7 @@ func (sqlStore) GetAttendances(ctx context.Context, userID string, month int) (m
 		Join("left outer",
 			"attendances_time clocked_out_time",
 			"attendances.id = clocked_out_time.attendance_id and clocked_out_time.attendance_kind_id = 2 and clocked_out_time.is_modified = false").
-		Where("attendances.created_at Between ? and ? ", start, end).
+		Where("attendances.attended_at Between ? and ? ", start, end).
 		Where("attendances.user_id = ?", userID).
 		OrderBy("-attendances.id").
 		Iterate(&models.AttendanceDetail{}, func(idx int, bean interface{}) error {
@@ -135,7 +135,7 @@ func (sqlStore) UpdateOldAttendanceTime(ctx context.Context, id int64, kindID ui
 		IsModified:       false,
 	}
 	_, err = sess.UseBool("is_modified").
-		Update(&models.AttendanceTime{IsModified: true, UpdatedAt: flextime.Now()}, query)
+		Update(&models.AttendanceTime{IsModified: true}, query)
 
 	if err != nil {
 		return err

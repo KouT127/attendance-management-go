@@ -85,7 +85,7 @@ func Test_userService_GetOrCreateUser(t *testing.T) {
 				t.Errorf("GetOrCreateUser() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if diff := cmp.Diff(got, tt.want); diff != "" {
+			if diff := cmp.Diff(got, tt.want, IgnoreGlobalOptions); diff != "" {
 				t.Errorf("GetOrCreateUser() diff %s", diff)
 			}
 		})
@@ -173,7 +173,7 @@ func Test_userService_UpdateUser(t *testing.T) {
 				t.Errorf("GetOrCreateUser() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if diff := cmp.Diff(got.User, tt.want); diff != "" {
+			if diff := cmp.Diff(got.User, tt.want, IgnoreGlobalOptions); diff != "" {
 				t.Errorf("UpdateUser() diff %s", diff)
 			}
 		})

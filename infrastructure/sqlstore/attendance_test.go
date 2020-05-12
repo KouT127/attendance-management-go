@@ -7,11 +7,21 @@ import (
 	"github.com/Songmu/flextime"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	uuid "github.com/satori/go.uuid"
 	"reflect"
 	"testing"
 	"time"
 )
+
+var IgnoreGlobalOptions = cmp.Options{
+	cmpopts.IgnoreFields(models.Attendance{}, "CreatedAt"),
+	cmpopts.IgnoreFields(models.Attendance{}, "UpdatedAt"),
+	cmpopts.IgnoreFields(models.AttendanceTime{}, "CreatedAt"),
+	cmpopts.IgnoreFields(models.AttendanceTime{}, "UpdatedAt"),
+	cmpopts.IgnoreFields(models.User{}, "CreatedAt"),
+	cmpopts.IgnoreFields(models.User{}, "UpdatedAt"),
+}
 
 func TestCreateAttendance(t *testing.T) {
 	store := InitTestDatabase()
@@ -139,9 +149,10 @@ func TestFetchAttendances(t *testing.T) {
 	}
 
 	attendance := &models.Attendance{
-		UserID:    user.ID,
-		CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).Truncate(time.Second),
-		UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).Truncate(time.Second),
+		UserID:     user.ID,
+		AttendedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).Truncate(time.Second),
+		CreatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).Truncate(time.Second),
+		UpdatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).Truncate(time.Second),
 	}
 
 	if err := store.CreateAttendance(context.Background(), attendance); err != nil {
@@ -172,7 +183,7 @@ func TestFetchAttendances(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    []*models.Attendance
+		want    models.Attendances
 		wantErr bool
 	}{
 		{
@@ -192,7 +203,7 @@ func TestFetchAttendances(t *testing.T) {
 				userID: "",
 				month:  202001,
 			},
-			want:    []*models.Attendance{},
+			want:    models.Attendances{},
 			wantErr: false,
 		},
 		{
@@ -202,19 +213,19 @@ func TestFetchAttendances(t *testing.T) {
 				userID: userID,
 				month:  202001,
 			},
-			want: []*models.Attendance{
+			want: models.Attendances{
 				attendance,
 			},
 			wantErr: false,
 		},
 		{
-			name: "Should get attendances by params",
+			name: "Should not get attendances by params",
 			args: args{
 				ctx:    context.Background(),
 				userID: userID,
 				month:  202002,
 			},
-			want:    []*models.Attendance{},
+			want:    models.Attendances{},
 			wantErr: false,
 		},
 	}
@@ -226,7 +237,7 @@ func TestFetchAttendances(t *testing.T) {
 				t.Errorf("GetAttendances() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if diff := cmp.Diff(got, tt.want); diff != "" {
+			if diff := cmp.Diff(got, tt.want, IgnoreGlobalOptions); diff != "" {
 				t.Errorf("GetAttendances() diff %s", diff)
 			}
 		})

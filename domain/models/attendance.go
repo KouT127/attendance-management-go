@@ -19,8 +19,8 @@ type AttendanceTime struct {
 	AttendanceKindID uint8
 	IsModified       bool
 	PushedAt         time.Time
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
+	CreatedAt        time.Time `xorm:"created"`
+	UpdatedAt        time.Time `xorm:"updated"`
 }
 
 func (AttendanceTime) TableName() string {
@@ -28,10 +28,11 @@ func (AttendanceTime) TableName() string {
 }
 
 type Attendance struct {
-	ID        int64
-	UserID    string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID         int64
+	UserID     string
+	AttendedAt time.Time
+	CreatedAt  time.Time `xorm:"created"`
+	UpdatedAt  time.Time `xorm:"updated"`
 
 	ClockedIn  *AttendanceTime `xorm:"-"`
 	ClockedOut *AttendanceTime `xorm:"-"`
@@ -77,6 +78,7 @@ func (d AttendanceDetail) ToAttendance() *Attendance {
 	attendance := &Attendance{
 		ID:         a.ID,
 		UserID:     a.UserID,
+		AttendedAt: a.AttendedAt,
 		ClockedIn:  in,
 		ClockedOut: out,
 		CreatedAt:  a.CreatedAt,

@@ -3,8 +3,8 @@ package sqlstore
 import (
 	"context"
 	"github.com/KouT127/attendance-management/domain/models"
+	"github.com/google/go-cmp/cmp"
 	"golang.org/x/xerrors"
-	"reflect"
 	"testing"
 )
 
@@ -52,7 +52,6 @@ func TestUpdateUser(t *testing.T) {
 		t.Errorf("CreateAttendanceTime() failed%s", err)
 	}
 
-	updatedAt := user.UpdatedAt
 	type args struct {
 		ctx  context.Context
 		user *models.User
@@ -96,8 +95,7 @@ func TestUpdateUser(t *testing.T) {
 			if !tt.wantErr {
 				if tt.args.user.Name != "updatedName" ||
 					tt.args.user.Email != "updatedEmail" ||
-					tt.args.user.ImageURL != "updatedImage" ||
-					tt.args.user.UpdatedAt != updatedAt {
+					tt.args.user.ImageURL != "updatedImage" {
 					t.Errorf("UpdateUser() error = %v, wantErr %v", xerrors.New("Did not updated"), tt.wantErr)
 				}
 			}
@@ -152,7 +150,7 @@ func TestGetUser(t *testing.T) {
 				t.Errorf("GetUser() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
+			if diff := cmp.Diff(got, tt.want, IgnoreGlobalOptions); diff != "" {
 				t.Errorf("GetUser() got = %v, want %v", got, tt.want)
 			}
 		})

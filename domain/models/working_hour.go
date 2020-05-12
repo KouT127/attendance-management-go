@@ -7,8 +7,8 @@ type WorkingHour struct {
 	StartedAt    time.Time
 	FinishedAt   time.Time
 	WorkingHours float64
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	CreatedAt    time.Time `xorm:"created"`
+	UpdatedAt    time.Time `xorm:"updated"`
 }
 
 func (WorkingHour) TableName() string {

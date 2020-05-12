@@ -68,8 +68,7 @@ func (s *attendanceService) CreateOrUpdateAttendance(ctx context.Context, attend
 		attendance = &models.Attendance{}
 		attendance.UserID = userID
 		attendance.ClockedIn = attendanceTime
-		attendance.CreatedAt = flextime.Now()
-		attendance.UpdatedAt = flextime.Now()
+		attendance.AttendedAt = flextime.Now()
 		if err = s.store.CreateAttendance(ctx, attendance); err != nil {
 			return nil, err
 		}
@@ -82,8 +81,6 @@ func (s *attendanceService) CreateOrUpdateAttendance(ctx context.Context, attend
 		attendanceTime.AttendanceKindID = uint8(models.AttendanceKindClockOut)
 	}
 	attendanceTime.PushedAt = flextime.Now()
-	attendanceTime.CreatedAt = flextime.Now()
-	attendanceTime.UpdatedAt = flextime.Now()
 	attendanceTime.AttendanceID = attendance.ID
 
 	if err = s.store.CreateAttendanceTime(ctx, attendanceTime); err != nil {

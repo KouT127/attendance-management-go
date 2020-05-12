@@ -6,6 +6,7 @@ import (
 
 func deleteData() error {
 	tables := []string{
+		WorkingHourTable,
 		AttendanceTimeTable,
 		AttendanceTable,
 		UserTable,
