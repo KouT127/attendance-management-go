@@ -33,7 +33,7 @@ Authorization: Bearer {{token}}
 }
 
 ### 勤怠情報を取得する。
-GET http://{{endpoint}}/v1/attendances
+GET http://{{endpoint}}/v1/attendances?month=202005
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -44,7 +44,9 @@ Authorization: Bearer {{token}}
 
 {
   "remark": "test"
-}### 勤怠情報のサマリーを取得する。
+}
+
+### 勤怠情報のサマリーを取得する。
 GET http://{{endpoint}}/v1/attendances/summary
 Content-Type: application/json
 Authorization: Bearer {{token}}
