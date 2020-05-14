@@ -106,7 +106,7 @@ func (s *attendanceService) GetAttendanceSummary(ctx context.Context, params mod
 	if err != nil {
 		return nil, err
 	}
-	if hour.WorkingHours == 0 {
+	if hour == nil || hour.WorkingHours == 0 {
 		return nil, xerrors.New("No working hours set for this month")
 	}
 	res.RequiredHours = hour.WorkingHours

@@ -369,3 +369,106 @@ func Test_attendanceService_GetAttendances(t *testing.T) {
 		})
 	}
 }
+
+func Test_attendanceService_GetAttendanceSummary(t *testing.T) {
+	store := sqlstore.InitTestDatabase()
+	s := NewAttendanceService(store)
+	timezone.Set("Asia/Tokyo")
+	flextime.Fix(time.Date(2020, 1, 2, 10, 0, 0, 0, timezone.JSTLocation()))
+	options := cmp.Options{
+		cmpopts.IgnoreFields(models.Attendance{}, "ID"),
+		cmpopts.IgnoreFields(models.AttendanceTime{}, "ID", "AttendanceID"),
+	}
+
+	userID := uuid.NewV4().String()
+	if err := store.CreateUser(context.Background(), &models.User{
+		ID:        userID,
+		Name:      "insert user",
+		Email:     "insert",
+		ImageURL:  "insert",
+		CreatedAt: flextime.Now(),
+		UpdatedAt: flextime.Now(),
+	}); err != nil {
+		t.Errorf("CreateUser() %s", err)
+	}
+
+	at := &models.AttendanceTime{
+		Remark:           "test",
+		AttendanceKindID: uint8(models.AttendanceKindClockIn),
+		PushedAt:         time.Date(2020, 1, 2, 10, 0, 0, 0, timezone.JSTLocation()),
+	}
+
+	if _, err := s.CreateOrUpdateAttendance(context.Background(), at, userID); err != nil {
+		t.Errorf("CreateOrUpdateAttendace() failed %s", err)
+	}
+
+	flextime.Fix(time.Date(2020, 1, 2, 19, 0, 0, 0, timezone.JSTLocation()))
+	at = &models.AttendanceTime{
+		Remark:           "test",
+		AttendanceKindID: uint8(models.AttendanceKindClockOut),
+		PushedAt:         time.Date(2020, 1, 2, 19, 0, 0, 0, timezone.JSTLocation()),
+	}
+
+	attendance, err := s.CreateOrUpdateAttendance(context.Background(), at, userID)
+	if err != nil {
+		t.Errorf("CreateOrUpdateAttendace() failed %s", err)
+	}
+
+	err = store.CreateWorkingHour(context.Background(), &models.WorkingHour{
+		StartedAt:    time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+		FinishedAt:   time.Date(2020, 1, 30, 0, 0, 0, 0, time.UTC),
+		WorkingHours: 180,
+	})
+	if err != nil {
+		t.Errorf("CreateAttendaceTime() fialed %s", err)
+	}
+
+	type fields struct {
+		store sqlstore.SQLStore
+	}
+	type args struct {
+		ctx    context.Context
+		params models.GetAttendanceSummaryParameters
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *models.GetAttendanceSummaryResults
+		wantErr bool
+	}{
+		{
+			name: "Should get summary",
+			fields: fields{
+				store: store,
+			},
+			args: args{
+				ctx: context.Background(),
+				params: models.GetAttendanceSummaryParameters{
+					UserID: userID,
+				},
+			},
+			want: &models.GetAttendanceSummaryResults{
+				LatestAttendance: *attendance,
+				TotalHours:       9,
+				RequiredHours:    180,
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := &attendanceService{
+				store: tt.fields.store,
+			}
+			got, err := s.GetAttendanceSummary(tt.args.ctx, tt.args.params)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetAttendanceSummary() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if diff := cmp.Diff(got, tt.want, options, IgnoreGlobalOptions); diff != "" {
+				t.Errorf("GetAttendanceSummary() diff %s", diff)
+			}
+		})
+	}
+}
