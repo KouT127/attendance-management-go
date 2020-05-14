@@ -8,7 +8,7 @@ import (
 
 type WorkingHour interface {
 	GetWorkingHours(ctx context.Context, now time.Time) (*models.WorkingHour, error)
-	CreateWorkingHours(ctx context.Context, hour *WorkingHour) error
+	CreateWorkingHour(ctx context.Context, hour *models.WorkingHour) error
 }
 
 func (sqlStore) GetWorkingHours(ctx context.Context, now time.Time) (*models.WorkingHour, error) {
@@ -17,19 +17,22 @@ func (sqlStore) GetWorkingHours(ctx context.Context, now time.Time) (*models.Wor
 		return nil, err
 	}
 
-	WorkingHours := &models.WorkingHour{}
-	_, err = sess.
+	wh := &models.WorkingHour{}
+	has, err := sess.
 		Where("started_at < ?", now).
 		And("finished_at > ?", now).
-		Get(WorkingHours)
+		Get(wh)
 	if err != nil {
 		return nil, err
 	}
+	if !has {
+		return nil, nil
+	}
 
-	return WorkingHours, nil
+	return wh, nil
 }
 
-func (sqlStore) CreateWorkingHours(ctx context.Context, hour *WorkingHour) error {
+func (sqlStore) CreateWorkingHour(ctx context.Context, hour *models.WorkingHour) error {
 	sess, err := getDBSession(ctx)
 	if err != nil {
 		return err

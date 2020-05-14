@@ -21,6 +21,8 @@ var IgnoreGlobalOptions = cmp.Options{
 	cmpopts.IgnoreFields(models.AttendanceTime{}, "UpdatedAt"),
 	cmpopts.IgnoreFields(models.User{}, "CreatedAt"),
 	cmpopts.IgnoreFields(models.User{}, "UpdatedAt"),
+	cmpopts.IgnoreFields(models.WorkingHour{}, "CreatedAt"),
+	cmpopts.IgnoreFields(models.WorkingHour{}, "UpdatedAt"),
 }
 
 func TestCreateAttendance(t *testing.T) {
