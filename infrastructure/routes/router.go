@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/KouT127/attendance-management/infrastructure/sqlstore"
+	"github.com/KouT127/attendance-management/infrastructure/uploader"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -15,13 +16,14 @@ func configureDefaultRouter(r *gin.Engine) {
 	})
 }
 
-func configureV1Router(r *gin.Engine, store sqlstore.SQLStore) {
+func configureV1Router(r *gin.Engine, store sqlstore.SQLStore, upl uploader.Uploader) {
 	group := r.Group("/v1")
 	configureUsersRouter(group, store)
 	configureAttendancesRouter(group, store)
+	configureImagesRouter(group, store, upl)
 }
 
-func InitRouter(store sqlstore.SQLStore) {
+func InitRouter(store sqlstore.SQLStore, upl uploader.Uploader) {
 	r := gin.Default()
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -34,7 +36,7 @@ func InitRouter(store sqlstore.SQLStore) {
 	config.AllowHeaders = []string{"*"}
 	r.Use(cors.New(config))
 
-	configureV1Router(r, store)
+	configureV1Router(r, store, upl)
 	configureDefaultRouter(r)
 	http.Handle("/", r)
 	log.Fatal(r.Run(":" + port))

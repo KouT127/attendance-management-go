@@ -38,3 +38,6 @@ docker/mysql/*
 
 # mock
 **/mock/*
+
+# gen
+/gen/*
