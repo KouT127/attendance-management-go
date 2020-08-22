@@ -17,6 +17,6 @@ func configureUsersRouter(v1 *gin.RouterGroup, store sqlstore.SQLStore) {
 	}
 
 	users := v1.Group("/users", funcs...)
-	users.GET("/mine", handler.MineHandler)
+	users.POST("/mine", handler.MineHandler)
 	users.PUT("/:id", handler.UpdateHandler)
 }

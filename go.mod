@@ -1,8 +1,9 @@
 module github.com/KouT127/attendance-management
 
-go 1.13.10
+go 1.15
 
 require (
+	cloud.google.com/go v0.38.0
 	firebase.google.com/go v3.11.1+incompatible
 	github.com/Songmu/flextime v0.0.6
 	github.com/docker/go-units v0.4.0 // indirect
