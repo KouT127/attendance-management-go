@@ -13,7 +13,7 @@ import (
 )
 
 type Uploader interface {
-	UploadFromBytes(bucketName string, filePath string, b []byte) (string, error)
+	UploadFromBytes(bucketName string, filePath string, byte []byte) (string, error)
 	UploadFromImage(bucketName string, filePath string, imageData image.Image) (string, error)
 }
 
@@ -65,6 +65,3 @@ func (u GCSUploader) UploadFromBytes(bucketName string, filePath string, b []byt
 	url := url.URL{Path: fmt.Sprintf("%s/%s", bucketName, filePath)}
 	return url.String(), nil
 }
-
-// TODO: Local uploader
-type LocalUploader struct{}
