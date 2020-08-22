@@ -15,7 +15,10 @@ func SetUp() {
 func NewInfo(msg string) {
 	log.Info(msg)
 }
+func Warn(msg string) {
+	log.Warn(msg)
 
+}
 func NewWarn(fields logrus.Fields, msg string) {
 	log.WithFields(fields).Warn(msg)
 }

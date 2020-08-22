@@ -31,18 +31,23 @@ func NewUserHandler(service services.UserService) Handler {
 func (h userHandler) MineHandler(c *gin.Context) {
 	value, exists := c.Get(auth.AuthorizedUserIDKey)
 	if !exists {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "user not found",
-		})
+		logger.NewInfo("トークンが存在しません")
+		c.JSON(http.StatusBadRequest, responses.NewError("不正なリクエストです"))
 		return
 	}
 
-	userID := value.(string)
+	userID, has := value.(string)
+	if !has {
+		logger.Warn("ユーザーIDが存在しません")
+		c.JSON(http.StatusBadRequest, responses.NewError("不正なリクエストです"))
+		return
+	}
+
 	params := models.GetOrCreateUserParams{UserID: userID}
 	res, err := h.service.GetOrCreateUser(params)
 	if err != nil {
 		logger.NewWarn(logrus.Fields{"Header": c.Request.Header}, err.Error())
-		c.JSON(http.StatusBadRequest, responses.NewValidationError("user", err))
+		c.JSON(http.StatusBadRequest, responses.NewError("ユーザーが取得できませんでした"))
 		return
 	}
 
