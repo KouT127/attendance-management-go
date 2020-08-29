@@ -32,11 +32,8 @@ func (s *userService) GetOrCreateUser(params models.GetOrCreateUserParams) (*mod
 		return nil, xerrors.New("user id is empty")
 	}
 	ctx := context.Background()
-	ctx, err = s.store.Begin(ctx)
 	defer s.store.Close(ctx)
-	if err != nil {
-		return nil, err
-	}
+
 
 	user, err = s.store.GetUser(ctx, params.UserID)
 	if err != nil {
@@ -44,6 +41,11 @@ func (s *userService) GetOrCreateUser(params models.GetOrCreateUserParams) (*mod
 	}
 
 	if user.ID == "" {
+		ctx, err = s.store.Begin(ctx)
+		if err != nil {
+			return nil, err
+		}
+
 		user.ID = params.UserID
 		if err = s.store.CreateUser(ctx, user); err != nil {
 			return nil, err
